@@ -1,4 +1,5 @@
 # code-input
+[![View License](https://img.shields.io/github/license/webcoder49/code-input?style=for-the-badge)](LICENSE) [![View Releases](https://img.shields.io/github/v/release/webcoder49/code-input?style=for-the-badge)](LICENSE)
 
 > ___Fully customisable syntax-highlighted textareas.___
 
