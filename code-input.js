@@ -242,6 +242,7 @@ var codeInput = {
                         result_element.innerHTML += ` <mark class="overflow-msg">${code_input.getAttribute("data-overflow-msg") || "(Character limit reached)"}</mark>`;
                     }
                 },
+                includeCodeInputInHighlightFunc: true,
                 preElementStyled: true,
                 isCode: false
             }
@@ -256,6 +257,7 @@ var codeInput = {
                     }
                     result_element.innerHTML = html_result.join(code_input.template.delimiter);
                 },
+                includeCodeInputInHighlightFunc: true,
                 preElementStyled: true,
                 isCode: false,
                 rainbow_colors: rainbow_colors,
