@@ -150,37 +150,41 @@ var codeInput = {
             return ["value", "placeholder", "lang", "template"]; // Attributes to monitor
         }
         attributeChangedCallback(name, oldValue, newValue) {
+            if(this.isConnected) {
+                // This will sometimes be called before the element has been created, so trying to update an attribute causes an error.
+                // Thanks to Kevin Loughead for pointing this out.
+                switch (name) {
     
-            switch (name) {
+                    case "value":
     
-                case "value":
-
-                    // Update code
-                    this.update(newValue);
+                        // Update code
+                        this.update(newValue);
+        
+                        break;
+        
+                    case "placeholder":
+                        this.querySelector("textarea").placeholder = newValue;
+                        break;
+                    case "template":
+                        this.template = codeInput.usedTemplates[newValue || codeInput.defaultTemplate];
+                        if(this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
+                        else this.classList.remove("code-input_pre-element-styled");
+                        // Syntax Highlight
+                        this.update(this.value);
     
-                    break;
+                    case "lang":
+                        let code = this.querySelector("pre code");
+                        let textarea = this.querySelector("textarea");
     
-                case "placeholder":
-                    this.querySelector("textarea").placeholder = newValue;
-                    break;
-                case "template":
-                    this.template = codeInput.usedTemplates[newValue || codeInput.defaultTemplate];
-                    if(this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
-                    else this.classList.remove("code-input_pre-element-styled");
-                    // Syntax Highlight
-                    this.update(this.value);
-
-                case "lang":
-                    let code = this.querySelector("pre code");
-                    let textarea = this.querySelector("textarea");
-
-                    if(newValue != null) code.className = ("language-" + newValue);
-                    else code.className = "";
-                    
-                    if(textarea.placeholder == oldValue) textarea.placeholder = newValue
-
-                    this.update(this.value);
+                        if(newValue != null) code.className = ("language-" + newValue);
+                        else code.className = "";
+                        
+                        if(textarea.placeholder == oldValue) textarea.placeholder = newValue
+    
+                        this.update(this.value);
+                }
             }
+            
         }
 
         /* Value attribute */
