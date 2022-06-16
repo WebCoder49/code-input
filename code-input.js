@@ -142,13 +142,17 @@ var codeInput = {
             }
             new_line += text_after_cursor;
 
+            // save the current cursor position
+            let selection_start = input_element.selectionStart;
+            let selection_end = input_element.selectionEnd;
+    
             // splice our new line into the list of existing lines and join them all back up
             lines.splice(current_line + 1, 0, new_line);
             input_element.value = lines.join("\n");
 
             // move cursor to new position
-            input_element.selectionStart += number_indents + 1;  // count the indent level and the newline character
-            input_element.selectionEnd += number_indents + 1;
+            input_element.selectionStart = selection_start + number_indents + 1;  // count the indent level and the newline character
+            input_element.selectionEnd = selection_end + number_indents + 1;
 
             this.update(input_element.value);
         }
