@@ -26,6 +26,10 @@ var codeInput = {
             }
             // Update code
             result_element.innerHTML = this.escape_html(text);
+            if(this.autodetect) { // Autodetection
+                result_element.className = ""; // CODE
+                result_element.parentElement.className = ""; // PRE
+            }
             // Syntax Highlight
             if(this.template.includeCodeInputInHighlightFunc) this.template.highlight(result_element, this);
             else this.template.highlight(result_element);
@@ -140,8 +144,13 @@ var codeInput = {
             pre.append(code);
             this.append(pre);
 
-            if(this.template.isCode && lang != undefined) code.classList.add("language-" + lang);
-    
+            if(this.template.isCode) {
+                if(lang != undefined && lang != "") {
+                    code.classList.add("language-" + lang);
+                }
+                else this.autodetect = true // No lang attribute
+            }
+            
             /* Add code from value attribute - useful for loading from backend */
             this.update(value, this);
         }
@@ -189,6 +198,9 @@ var codeInput = {
                         if(newValue != undefined && newValue != "") {
                             code.classList.add("language-" + newValue);
                             console.log("ADD", "language-" + newValue);
+                        } else {
+                            // Autodetect - works with HLJS
+                            this.autodetect = true;
                         }
                         
                         if(textarea.placeholder == oldValue) textarea.placeholder = newValue;
