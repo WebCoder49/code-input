@@ -51,9 +51,9 @@ var codeInput = {
             let input_element = this.querySelector("textarea");
             let code = input_element.value;
             event.preventDefault(); // stop normal
-
-            if(input_element.selectionStart == input_element.selectionEnd) {
-
+            
+            if(!event.shiftKey && input_element.selectionStart == input_element.selectionEnd) {
+                // Shift always means dedent - this places a tab here.
                 let before_selection = code.slice(0, input_element.selectionStart); // text before tab
                 let after_selection = code.slice(input_element.selectionEnd, input_element.value.length); // text after tab
 
@@ -75,10 +75,14 @@ var codeInput = {
                 let first_line_indents = 0;
 
                 for (let i = 0; i < lines.length; i++) {
-                    letter_i += lines[i].length;
-                    if(input_element.selectionStart < letter_i && input_element.selectionEnd > letter_i - lines[i].length) {
+                    letter_i += lines[i].length+1; // newline counted
+                    
+                    console.log(lines[i], ": start", input_element.selectionStart, letter_i, "&& end", input_element.selectionEnd , letter_i - lines[i].length)
+                    if(input_element.selectionStart <= letter_i && input_element.selectionEnd >= letter_i - lines[i].length) {
+                        // Starts before or at last char and ends after or at first char
                         if(event.shiftKey) {
                             if(lines[i][0] == "\t") {
+                                // Remove first tab
                                 lines[i] = lines[i].slice(1);
                                 if(number_indents == 0) first_line_indents--;
                                 number_indents--;
