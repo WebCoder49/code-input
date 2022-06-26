@@ -135,13 +135,12 @@ var codeInput = {
     
             /* Create pre code */
             let code = document.createElement("code");
-            if(this.template.isCode && lang != null) code.classList.add("language-" + lang);
-            code.innerText = value;
-    
             let pre = document.createElement("pre");
             pre.setAttribute("aria-hidden", "true"); // Hide for screen readers
             pre.append(code);
             this.append(pre);
+
+            if(this.template.isCode && lang != undefined) code.classList.add("language-" + lang);
     
             /* Add code from value attribute - useful for loading from backend */
             this.update(value, this);
@@ -175,11 +174,24 @@ var codeInput = {
                     case "lang":
                         let code = this.querySelector("pre code");
                         let textarea = this.querySelector("textarea");
-    
-                        if(newValue != null) code.className = ("language-" + newValue);
-                        else code.className = "";
                         
-                        if(textarea.placeholder == oldValue) textarea.placeholder = newValue
+                        // Case insensitive
+                        oldValue = oldValue.toLowerCase();
+                        newValue = newValue.toLowerCase();
+    
+                        // Remove old language class and add new
+                        console.log("REMOVE", "language-" + oldValue);
+                        code.classList.remove("language-" + oldValue); // From CODE
+                        code.parentElement.classList.remove("language-" + oldValue); // From PRE
+                        code.classList.remove("language-none"); // Prism
+                        code.parentElement.classList.remove("language-none"); // Prism
+                        
+                        if(newValue != undefined && newValue != "") {
+                            code.classList.add("language-" + newValue);
+                            console.log("ADD", "language-" + newValue);
+                        }
+                        
+                        if(textarea.placeholder == oldValue) textarea.placeholder = newValue;
     
                         this.update(this.value);
                 }
