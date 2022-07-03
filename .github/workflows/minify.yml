@@ -1,5 +1,8 @@
 name: Auto-minify
-on: [push]
+on: 
+  push:
+    branches:
+      - main
 jobs:
   Minify:
     runs-on: ubuntu-latest
@@ -15,5 +18,5 @@ jobs:
       - name: Auto committing minified files
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Github Action: Auto Minified JS and CSS files"
+          commit_message: "Auto Minified JS and CSS files"
           branch: ${{ github.ref }}
