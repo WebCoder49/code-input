@@ -90,3 +90,10 @@ code-input textarea {
   resize: none;
   outline: none!important;
 }
+
+code-input:not(.code-input_registered)::before {
+  /* Display message to register */
+  content: "Use codeInput.registerTemplate to set up.";
+  display: block;
+  color: grey;
+}

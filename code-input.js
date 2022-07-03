@@ -6,6 +6,7 @@ var codeInput = {
     usedTemplates: {
     },
     defaultTemplate: undefined,
+    templateQueue: {}, // lists of elements for each unrecognised template
     CodeInput: class extends HTMLElement { // Create code input element
         constructor() {
             super(); // Element
@@ -169,12 +170,34 @@ var codeInput = {
             return text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;"); /* Global RegExp */
         }
 
-        /* Callbacks */
-        connectedCallback() {
-            // Added to document
-            this.template = codeInput.usedTemplates[this.getAttribute("template") || codeInput.defaultTemplate];
+        /* Get the template for this element or add to the unrecognised template queue. */
+        get_template() {
+            // Get name of template
+            let template_name;
+            if(this.getAttribute("template") == undefined) {
+                // Default
+                template_name = codeInput.defaultTemplate;
+            } else {
+                template_name = this.getAttribute("template");
+            }
+            // Get template
+            if(template_name in codeInput.usedTemplates) {
+                return codeInput.usedTemplates[template_name];
+            } else {
+                // Doesn't exist - add to queue
+                if( !(template_name in codeInput.templateQueue)) {
+                    codeInput.templateQueue[template_name] = [];
+                }
+                codeInput.templateQueue[template_name].push(this);
+                return undefined;
+            }
+            codeInput.usedTemplates[codeInput.defaultTemplate]
+        }
+        /* Set up element when a template is added */
+        setup() {
+            this.classList.add("code-input_registered"); // Remove register message
             if(this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
-
+            
             /* Defaults */
             let lang = this.getAttribute("lang");
             let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
@@ -215,6 +238,13 @@ var codeInput = {
             
             /* Add code from value attribute - useful for loading from backend */
             this.update(value, this);
+        }
+
+        /* Callbacks */
+        connectedCallback() {
+            // Added to document
+            this.template = this.get_template();
+            if(this.template != undefined) this.setup();
         }
         static get observedAttributes() {
             return ["value", "placeholder", "lang", "template"]; // Attributes to monitor
@@ -291,7 +321,25 @@ var codeInput = {
     registerTemplate: function(template_name, template) {
         // Set default class
         codeInput.usedTemplates[template_name] = template;
-        codeInput.defaultTemplate = template_name;
+        // Add elements w/ template from queue
+        if(template_name in codeInput.templateQueue) {
+            for(let i in codeInput.templateQueue[template_name]) {
+                elem = codeInput.templateQueue[template_name][i];
+                elem.template = template;
+                elem.setup();
+            }
+        }
+        if(codeInput.defaultTemplate == undefined) {
+            codeInput.defaultTemplate = template_name;
+            // Add elements w/ default template from queue
+            if(undefined in codeInput.templateQueue) {
+                for(let i in codeInput.templateQueue[undefined]) {
+                    elem = codeInput.templateQueue[undefined][i];
+                    elem.template = template;
+                    elem.setup();
+                }
+            }
+        }
     },
     templates: {
         custom(highlight=function() {}, preElementStyled=true, isCode=true, includeCodeInputInHighlightFunc=false) {
