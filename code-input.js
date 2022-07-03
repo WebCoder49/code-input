@@ -57,11 +57,7 @@ var codeInput = {
             // Update code
             result_element.innerHTML = this.escape_html(text);
             this.plugin_evt("beforeHighlight");
-
-            if(this.autodetect) { // Autodetection
-                result_element.className = ""; // CODE
-                result_element.parentElement.className = ""; // PRE
-            }
+            
             // Syntax Highlight
             if(this.template.includeCodeInputInHighlightFunc) this.template.highlight(result_element, this);
             else this.template.highlight(result_element);

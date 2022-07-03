@@ -1,25 +1,21 @@
-codeInput.plugins.Test = class extends codeInput.Plugin {
-    /* Runs before code is highlighted; Params: codeInput element) */
+/**
+ * Autodetect the language live and change the `lang` attribute using the syntax highlighter's 
+ * autodetect capabilities. Works with highlight.js.
+ */
+codeInput.plugins.Autodetect = class extends codeInput.Plugin {
+    /* Remove previous language class */
     beforeHighlight(codeInput) {
-        console.log(codeInput, "before highlight");
+        let result_element = codeInput.querySelector("pre code");
+        result_element.className = ""; // CODE
+        result_element.parentElement.className = ""; // PRE
     }
-    /* Runs after code is highlighted; Params: codeInput element) */
+    /* Get new language class and set `lang` attribute */
     afterHighlight(codeInput) {
-        console.log(codeInput, "after highlight");
+        let result_element = codeInput.querySelector("pre code");
+        let lang_class = result_element.className || result_element.parentElement.className;
+        let lang = lang_class.match(/lang(\w|-)*/i)[0]; // Get word starting with lang...; Get outer bracket
+        lang = lang.split("-")[1];
+        codeInput.setAttribute("lang", lang);
     }
-    /* Runs before elements are added into a `code-input`; Params: codeInput element) */
-    beforeElementsAdded(codeInput) {
-        console.log(codeInput, "before elements added");
-    }
-    /* Runs after elements are added into a `code-input` (useful for adding events to the textarea); Params: codeInput element) */
-    afterElementsAdded(codeInput) {
-        console.log(codeInput, "after elements added");
-    }
-    /* Runs when an attribute of a `code-input` is changed (you must add the attribute name to observedAttributes); Params: codeInput element, name attribute name, oldValue previous value of attribute, newValue changed value of attribute) */
-    attributeChanged(codeInput, name, oldValue, newValue) {
-        if(name == "testattr") {
-            console.log(codeInput, "testattr:", oldValue, ">", newValue);
-        }
-    }
-    observedAttributes = ["testattr"]
+    observedAttributes = []
 }
