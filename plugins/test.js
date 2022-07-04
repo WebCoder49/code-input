@@ -1,4 +1,17 @@
+/**
+ * Copy this to create a plugin, which brings extra,
+ * non-central optional functionality to code-input.
+ * Instances of plugins can be passed in in an array
+ * to the `plugins` argument when registering a template,
+ * for example like this:
+ * ```javascript
+ * codeInput.registerTemplate("syntax-highlighted", codeInput.templates.hljs(hljs, [new codeInput.plugins.Test()]));
+ * ```
+ */
 codeInput.plugins.Test = class extends codeInput.Plugin {
+    constructor() {
+        super();
+    }
     /* Runs before code is highlighted; Params: codeInput element) */
     beforeHighlight(codeInput) {
         console.log(codeInput, "before highlight");
