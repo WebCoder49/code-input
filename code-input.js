@@ -156,7 +156,7 @@ var codeInput = {
             this.template = this.get_template();
             if(this.template != undefined) this.setup();
         }
-        static get observedAttributes() {
+        get observedAttributes() {
             let attrs =  ["value", "placeholder", "lang", "template"]; // Attributes to monitor
             
             /* Add from plugins */
