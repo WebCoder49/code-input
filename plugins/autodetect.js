@@ -3,6 +3,9 @@
  * autodetect capabilities. Works with highlight.js.
  */
 codeInput.plugins.Autodetect = class extends codeInput.Plugin {
+    constructor() {
+        super();
+    }
     /* Remove previous language class */
     beforeHighlight(codeInput) {
         let result_element = codeInput.querySelector("pre code");
