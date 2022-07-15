@@ -105,10 +105,9 @@ Now that you have registered a template, you can use the custom `<code-input>` e
   ```
   *or*
   ```HTML
-  <code-input lang="HTML" placeholder="Type code here" value="<a href='https://github.com/WebCoder49/code-input'>code-input</a>" template="syntax-highlighted" oninput="console.log('Your code is', this.value)"></code-input>
+  <code-input lang="HTML" placeholder="Type code here" value="<a href='https://github.com/WebCoder49/code-input'>code-input</a>" template="syntax-highlighted" onchange="console.log('Your code is', this.value)"></code-input>
   ```
 </details>
-> ❕To use the event when text is changed in a `coed-input` element, use `oninput` rather than `onchange`.
 
 ## Contributing
 If you have any features you would like to add to `code-input`, or have found any bugs, please [open an issue](https://github.com/WebCoder49/code-input/issues) or [fork and submit a pull request](https://github.com/WebCoder49/code-input/fork)! All contributions to this open-source project would be greatly appreciated.
