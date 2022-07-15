@@ -16,9 +16,9 @@ code-input {
   width: calc(100% - 16px);
   height: 250px;
 
-  font-size: 15pt;
+  font-size: normal;
   font-family: monospace;
-  line-height: 20pt;
+  line-height: normal;
   tab-size: 2;
   caret-color: darkgrey;
   white-space: pre;
