@@ -3,13 +3,33 @@
 // Based on a CSS-Tricks Post
 
 var codeInput = {
+    observedAttributes: [
+        "value", 
+        "placeholder", 
+        "lang", 
+        "template",
+        "onchange",
+        "onselectionchange"
+    ],
+    // Attributes to monitor - needs to be global and static
+    
+    /* Templates */
     usedTemplates: {
     },
     defaultTemplate: undefined,
     templateQueue: {}, // lists of elements for each unrecognised template
+    
+    /* Plugins */
     plugins: { // Import a plugin from the plugins folder and it will be saved here.
     },
     Plugin: class {
+        constructor() {
+            console.log("code-input: plugin: Created plugin!");
+            
+            // Add attributes
+            codeInput.observedAttributes = codeInput.observedAttributes.concat(self.observedAttributes);
+        }
+
         /* Runs before code is highlighted; Params: codeInput element) */
         beforeHighlight(codeInput) {}
         /* Runs after code is highlighted; Params: codeInput element) */
@@ -22,11 +42,14 @@ var codeInput = {
         attributeChanged(codeInput, name, oldValue, newValue) {}
         observedAttributes = []
     },
+    
+    /* Main */
     CodeInput: class extends HTMLElement { // Create code input element
         constructor() {
             super(); // Element
         }
 
+        last_events = {}; // Last events applied; removed when changed so can be added to textarea, etc.
 
         /* Run this event in all plugins with a optional list of arguments */
         plugin_evt(id, args) {
@@ -146,6 +169,12 @@ var codeInput = {
             
             this.plugin_evt("afterElementsAdded");
 
+            // Events
+            textarea = this.querySelector("textarea");
+            // Add event listeners, bound so `this` can be referenced
+            this.transfer_event("change", this.querySelector("textarea"), null, this.onchange);
+            this.transfer_event("selectionchange", this.querySelector("textarea"), null, this.onselectionchange);
+
             /* Add code from value attribute - useful for loading from backend */
             this.update(value, this);
         }
@@ -156,20 +185,16 @@ var codeInput = {
             this.template = this.get_template();
             if(this.template != undefined) this.setup();
         }
-        get observedAttributes() {
-            let attrs =  ["value", "placeholder", "lang", "template"]; // Attributes to monitor
-            
-            /* Add from plugins */
-            for (let plugin in this.template.plugins) {
-                attrs = attrs.concat(plugin.observedAttributes);
-            }
-            return attrs;
+        static get observedAttributes() {         
+            return codeInput.observedAttributes;
         }
         
         attributeChangedCallback(name, oldValue, newValue) {
             if(this.isConnected) {
                 // This will sometimes be called before the element has been created, so trying to update an attribute causes an error.
                 // Thanks to Kevin Loughead for pointing this out.
+                
+                this.plugin_evt("attributeChanged", [name, oldValue, newValue]); // Plugin event
                 switch (name) {
     
                     case "value":
@@ -188,17 +213,19 @@ var codeInput = {
                         else this.classList.remove("code-input_pre-element-styled");
                         // Syntax Highlight
                         this.update(this.value);
+
+                        break;
     
                     case "lang":
                         let code = this.querySelector("pre code");
-                        let textarea = this.querySelector("textarea");
+                        let main_textarea = this.querySelector("textarea");
                         
                         // Case insensitive
                         oldValue = oldValue.toLowerCase();
                         newValue = newValue.toLowerCase();
     
                         // Remove old language class and add new
-                        console.log("REMOVE", "language-" + oldValue);
+                        console.log("code-input: Language: REMOVE", "language-" + oldValue);
                         code.classList.remove("language-" + oldValue); // From CODE
                         code.parentElement.classList.remove("language-" + oldValue); // From PRE
                         code.classList.remove("language-none"); // Prism
@@ -206,18 +233,38 @@ var codeInput = {
                         
                         if(newValue != undefined && newValue != "") {
                             code.classList.add("language-" + newValue);
-                            console.log("ADD", "language-" + newValue);
+                            console.log("code-input: Language:ADD", "language-" + newValue);
                         }
                         
-                        if(textarea.placeholder == oldValue) textarea.placeholder = newValue;
+                        if(main_textarea.placeholder == oldValue) main_textarea.placeholder = newValue;
     
                         this.update(this.value);
-                    
-                    default:
-                        this.plugin_evt("attributeChanged", [name, oldValue, newValue]); // Plugin event
+
+                        break;
+
+                    // Events
+                    case "onchange":
+                        this.transfer_event("change", this.querySelector("textarea"), oldValue, newValue);
+                        break;
+                    case "onselectionchange":
+                        this.transfer_event("selectionchange", this.querySelector("textarea"), oldValue, newValue);
+                        break;
                 }
             }
             
+        }
+
+        /* Transfer an event by name from this to an inner element. */
+        transfer_event(evt_name, transfer_to, oldValue, newValue) {
+            // Doesn't exist
+            if(oldValue) {
+                transfer_to.removeEventListener(evt_name, this.last_events[evt_name]);
+            }
+            if(newValue) {
+                this.last_events[evt_name] = this.onchange.bind(this);
+                transfer_to.addEventListener(evt_name, this.last_events[evt_name]);
+                this[`on${evt_name}`] = undefined; // Prevent duplicate
+            }
         }
 
         /* Value attribute */
@@ -235,6 +282,7 @@ var codeInput = {
             return this.setAttribute("placeholder", val);
         }
     },
+    
     registerTemplate: function(template_name, template) {
         // Set default class
         codeInput.usedTemplates[template_name] = template;
@@ -245,6 +293,7 @@ var codeInput = {
                 elem.template = template;
                 elem.setup();
             }
+            console.log(`code-input: template: Added existing elements with template ${template_name}`);
         }
         if(codeInput.defaultTemplate == undefined) {
             codeInput.defaultTemplate = template_name;
@@ -256,7 +305,9 @@ var codeInput = {
                     elem.setup();
                 }
             }
+            console.log(`code-input: template: Set template ${template_name} as default`);
         }
+        console.log(`code-input: template: Created template ${template_name}`);
     },
     templates: {
         custom(highlight=function() {}, preElementStyled=true, isCode=true, includeCodeInputInHighlightFunc=false, plugins=[]) {

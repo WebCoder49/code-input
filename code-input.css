@@ -16,9 +16,9 @@ code-input {
   width: calc(100% - 16px);
   height: 250px;
 
-  font-size: 15pt;
+  font-size: normal;
   font-family: monospace;
-  line-height: 20pt;
+  line-height: normal;
   tab-size: 2;
   caret-color: darkgrey;
   white-space: pre;
@@ -29,16 +29,8 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   margin: 0px!important;
   padding: var(--padding, 16px)!important;
   border: 0;
-  width: calc(100% - (var(--padding, 16px)*2))!important;
-  height: calc(100% - (var(--padding, 16px)*2))!important;
-}
-code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-element-styled pre code {
-  margin: 0!important;
-  border: 0!important;
-  padding: 0!important;
-  overflow: auto!important;
-  width: 100%!important;
-  height: 100%!important;
+  width: 100%;
+  height: 100%;
 }
 code-input textarea, code-input pre, code-input pre * {
   /* Also add text styles to highlighing tokens */
