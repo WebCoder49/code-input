@@ -13,7 +13,6 @@ var codeInput = {
     ],
     // Attributes to monitor - needs to be global and static
     
-    last_events: {}, // Last events applied; removed when changed so can be added to textarea, etc.
     /* Templates */
     usedTemplates: {
     },
@@ -50,6 +49,7 @@ var codeInput = {
             super(); // Element
         }
 
+        last_events = {}; // Last events applied; removed when changed so can be added to textarea, etc.
 
         /* Run this event in all plugins with a optional list of arguments */
         plugin_evt(id, args) {
@@ -172,14 +172,8 @@ var codeInput = {
             // Events
             textarea = this.querySelector("textarea");
             // Add event listeners, bound so `this` can be referenced
-            if(this.onchange) {
-                textarea.addEventListener("change", this.onchange.bind(this));
-                this.onchange = undefined; // Prevent duplicate
-            }
-            if(this.onselectionchange) {
-                textarea.addEventListener("selectionchange", this.onselectionchange.bind(this));
-                this.onselectionchange = undefined; // Prevent duplicate
-            }
+            this.transfer_event("change", this.querySelector("textarea"), null, this.onchange);
+            this.transfer_event("selectionchange", this.querySelector("textarea"), null, this.onselectionchange);
 
             /* Add code from value attribute - useful for loading from backend */
             this.update(value, this);
@@ -199,6 +193,8 @@ var codeInput = {
             if(this.isConnected) {
                 // This will sometimes be called before the element has been created, so trying to update an attribute causes an error.
                 // Thanks to Kevin Loughead for pointing this out.
+                
+                this.plugin_evt("attributeChanged", [name, oldValue, newValue]); // Plugin event
                 switch (name) {
     
                     case "value":
@@ -248,38 +244,27 @@ var codeInput = {
 
                     // Events
                     case "onchange":
-                        {
-                            // Doesn't exist
-                            let textarea = this.querySelector("textarea")
-                            if(oldValue) {
-                                textarea.removeEventListener("change", this.last_events["change"]);
-                            }
-                            if(newValue) {
-                                this.last_events["change"] = newValue.bind(this);
-                                textarea.addEventListener("change", this.last_events["change"]);
-                                this.onchange = undefined; // Prevent duplicate
-                            }
-                        }
+                        this.transfer_event("change", this.querySelector("textarea"), oldValue, newValue);
                         break;
                     case "onselectionchange":
-                        {
-                            // Doesn't exist
-                            let textarea = this.querySelector("textarea")
-                            if(oldValue) {
-                                textarea.removeEventListener("selectionchange", this.last_events["selectionchange"]);
-                            }
-                            if(newValue) {
-                                this.last_events["selectionchange"] = newValue.bind(this);
-                                textarea.addEventListener("selectionchange", this.last_events["selectionchange"]);
-                                this.onselectionchange = undefined; // Prevent duplicate
-                            }
-                        }
+                        this.transfer_event("selectionchange", this.querySelector("textarea"), oldValue, newValue);
                         break;
-
-                    this.plugin_evt("attributeChanged", [name, oldValue, newValue]); // Plugin event
                 }
             }
             
+        }
+
+        /* Transfer an event by name from this to an inner element. */
+        transfer_event(evt_name, transfer_to, oldValue, newValue) {
+            // Doesn't exist
+            if(oldValue) {
+                transfer_to.removeEventListener(evt_name, this.last_events[evt_name]);
+            }
+            if(newValue) {
+                this.last_events[evt_name] = this.onchange.bind(this);
+                transfer_to.addEventListener(evt_name, this.last_events[evt_name]);
+                this[`on${evt_name}`] = undefined; // Prevent duplicate
+            }
         }
 
         /* Value attribute */
