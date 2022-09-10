@@ -84,6 +84,7 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 <!--...-->
 <script src="plugins/autodetect.js"></script>
 <script src="plugins/indent.js"></script>
+<script src="plugins/autocomplete.js"></script>
 <!--...-->
 <script>
   codeInput.registerTemplate("syntax-highlighted", 

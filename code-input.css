@@ -9,6 +9,8 @@ code-input {
   top: 0;
   left: 0;
   display: block;
+  /* Only scroll inside elems */
+  overflow: hidden;
 
   /* Normal inline styles */
   padding: 8px;
