@@ -34,7 +34,7 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
 
         let textarea = codeInput.querySelector("textarea");
         textarea.addEventListener("keyup", this.updatePopup.bind(this, codeInput, false)); // Override this+args in bind - not just scrolling
-        document.addEventListener("click", this.updatePopup.bind(this, codeInput, false)); // Override this+args in bind - not just scrolling
+        textarea.addEventListener("click", this.updatePopup.bind(this, codeInput, false)); // Override this+args in bind - not just scrolling
         textarea.addEventListener("scroll", this.updatePopup.bind(this, codeInput, true)); // Override this+args in bind - just scrolling
     }
     /**

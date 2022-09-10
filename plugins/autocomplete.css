@@ -2,6 +2,7 @@ code-input .code-input_autocomplete_popup {
     display: block;
     position: absolute;
     margin-top: 1em; /* Popup shows under the caret */
+    z-index: 100;
 }
 
 
