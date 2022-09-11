@@ -316,6 +316,7 @@ var codeInput = {
                 includeCodeInputInHighlightFunc: includeCodeInputInHighlightFunc,
                 preElementStyled: preElementStyled,
                 isCode: isCode,
+                plugins: plugins,
             };
         },
         prism(prism, plugins=[]) { // Dependency: Prism.js (https://prismjs.com/)
@@ -338,7 +339,7 @@ var codeInput = {
         },
         characterLimit() {
             return {
-                highlight: function(result_element, code_input) {
+                highlight: function(result_element, code_input, plugins=[]) {
 
                     let character_limit = Number(code_input.getAttribute("data-character-limit"));
 
@@ -352,10 +353,11 @@ var codeInput = {
                 },
                 includeCodeInputInHighlightFunc: true,
                 preElementStyled: true,
-                isCode: false
+                isCode: false,
+                plugins: plugins,
             }
         },
-        rainbowText(rainbow_colors=["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue",  "magenta"], delimiter="") {
+        rainbowText(rainbow_colors=["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue",  "magenta"], delimiter="", plugins=[]) {
             return {
                 highlight: function(result_element, code_input) {
                     let html_result = [];
@@ -369,7 +371,8 @@ var codeInput = {
                 preElementStyled: true,
                 isCode: false,
                 rainbow_colors: rainbow_colors,
-                delimiter: delimiter
+                delimiter: delimiter,
+                plugins: plugins,
             }
         }
     }
