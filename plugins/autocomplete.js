@@ -1,5 +1,6 @@
 /**
- *
+ * Display a popup under the caret using the text in the code-input element. This works well with autocomplete suggestions.
+ * Files: autocomplete.js / autocomplete.css
  */
 codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
     /**

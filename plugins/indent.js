@@ -1,6 +1,7 @@
 /**
  * Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it 
  * possible to indent/unindent multiple lines using Tab/Shift+Tab
+ * Files: indent.js
  */
  codeInput.plugins.Indent = class extends codeInput.Plugin {
     constructor() {

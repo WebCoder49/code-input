@@ -1,6 +1,7 @@
 /**
  * Autodetect the language live and change the `lang` attribute using the syntax highlighter's 
- * autodetect capabilities. Works with highlight.js.
+ * autodetect capabilities. Works with highlight.js.Display a popup under the caret using the text in the code-input element. This works well with autocomplete suggestions.
+ * Files: autodetect.js
  */
 codeInput.plugins.Autodetect = class extends codeInput.Plugin {
     constructor() {

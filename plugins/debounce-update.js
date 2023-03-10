@@ -1,6 +1,7 @@
 /**
  * Debounce the update and highlighting function
- *  https://medium.com/@jamischarles/what-is-debouncing-2505c0648ff1
+ * https://medium.com/@jamischarles/what-is-debouncing-2505c0648ff1
+ * Files: debounce-update.js
  */
 codeInput.plugins.DebounceUpdate = class extends codeInput.Plugin {
     /**
