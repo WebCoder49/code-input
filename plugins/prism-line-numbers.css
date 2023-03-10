@@ -1,6 +1,7 @@
 /**
  * Allows code-input elements to be used with the Prism.js line-numbers plugin, as long as the code-input element 
  * or a parent element of it has the CSS class `line-numbers`.
+ * https://prismjs.com/plugins/line-numbers/
  * Files: prism-line-numbers.css
  */
 /* Update padding to match line-numbers plugin */
