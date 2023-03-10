@@ -66,10 +66,18 @@ var codeInput = {
             }
         }
 
-        /* Syntax-highlighting functions */
-        update(text) {
-            if(this.value != text) this.value = text; // Change value attribute if necessary.
-            if(this.querySelector("textarea").value != text) this.querySelector("textarea").value = text; 
+         /* Syntax-highlighting functions */
+         update(text) {
+            console.log("Update", text);
+
+            // Prevent this from running multiple times on the same input when "value" attribute is changed, 
+            // by saving the value currently updated as _inUpdateNewText. Thank you to peterprvy for this. 
+            if(this.value != text) {
+                this._inUpdateNewText = text;
+                this.value = text; // Change value attribute if necessary.
+                this._inUpdateNewText = undefined;
+            }
+            if(this.querySelector("textarea").value != text) this.querySelector("textarea").value = text;  
 
 
             let result_element = this.querySelector("pre code");
@@ -199,8 +207,10 @@ var codeInput = {
     
                     case "value":
     
-                        // Update code
-                        this.update(newValue);
+                        // Update code, only if this text has not already been updated.
+                        if(this._inUpdateNewText === undefined || newValue !== this._inUpdateNewText) {
+                            this.update(newValue); 
+                        }
         
                         break;
         
