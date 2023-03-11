@@ -31,9 +31,17 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   margin: 0px!important;
   padding: var(--padding, 16px)!important;
   border: 0;
+  width: calc(100% - var(--padding, 16px) * 2);
+  height: calc(100% - var(--padding, 16px) * 2);
+}
+code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-element-styled pre code {
+  /* Remove all margin and padding from others */
+  margin: 0px!important;
+  padding: 0px!important;
   width: 100%;
   height: 100%;
 }
+
 code-input textarea, code-input pre, code-input pre * {
   /* Also add text styles to highlighing tokens */
   font-size: inherit!important;

@@ -84,7 +84,6 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 <!--...-->
 <script src="plugins/autodetect.js"></script>
 <script src="plugins/indent.js"></script>
-<script src="plugins/autocomplete.js"></script>
 <!--...-->
 <script>
   codeInput.registerTemplate("syntax-highlighted", 
@@ -98,6 +97,8 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
   );
 </script>
 ```
+
+To see a full list of plugins and their functions, please see [plugins/README.md](./plugins/README.md).
 
 ### Using the component
 Now that you have registered a template, you can use the custom `<code-input>` element in HTML. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `lang` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events to make your element as simple or interactive as you like! 

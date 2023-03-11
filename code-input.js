@@ -68,15 +68,14 @@ var codeInput = {
 
          /* Syntax-highlighting functions */
          update(text) {
-            console.log("Update", text);
-
             // Prevent this from running multiple times on the same input when "value" attribute is changed, 
-            // by saving the value currently updated as _inUpdateNewText. Thank you to peterprvy for this. 
-            if(this.value != text) {
-                this._inUpdateNewText = text;
-                this.value = text; // Change value attribute if necessary.
-                this._inUpdateNewText = undefined;
-            }
+            // by not running when value is already equal to the input of this (implying update has already
+            // been run). Thank you to peterprvy for this. 
+            if(this.value == text) return;
+            
+            console.log("Update", text);
+            
+            this.value = text; // Change value attribute if necessary.
             if(this.querySelector("textarea").value != text) this.querySelector("textarea").value = text;  
 
 
@@ -206,11 +205,7 @@ var codeInput = {
                 switch (name) {
     
                     case "value":
-    
-                        // Update code, only if this text has not already been updated.
-                        if(this._inUpdateNewText === undefined || newValue !== this._inUpdateNewText) {
-                            this.update(newValue); 
-                        }
+                        this.update(newValue);
         
                         break;
         
@@ -227,12 +222,20 @@ var codeInput = {
                         break;
     
                     case "lang":
+
                         let code = this.querySelector("pre code");
                         let main_textarea = this.querySelector("textarea");
                         
+                        // Check not already updated
+                        if(newValue != null) {
+                            newValue = newValue.toLowerCase();
+                        
+                            if(code.classList.contains(`language-${newValue}`)) break; // Already updated
+                        }
+                        
+
                         // Case insensitive
                         oldValue = oldValue.toLowerCase();
-                        newValue = newValue.toLowerCase();
     
                         // Remove old language class and add new
                         console.log("code-input: Language: REMOVE", "language-" + oldValue);
