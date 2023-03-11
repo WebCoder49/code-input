@@ -1,3 +1,7 @@
+/**
+ * Display a popup under the caret using the text in the code-input element. This works well with autocomplete suggestions.
+ * Files: autocomplete.js / autocomplete.css
+ */
 code-input .code-input_autocomplete_popup {
     display: block;
     position: absolute;
