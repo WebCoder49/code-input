@@ -71,12 +71,14 @@ var codeInput = {
             // Prevent this from running multiple times on the same input when "value" attribute is changed, 
             // by not running when value is already equal to the input of this (implying update has already
             // been run). Thank you to peterprvy for this. 
-            if(this.value == text) return;
+            if(this.ignoreValueUpdate) return;
             
             console.log("Update", text);
-            
+            this.ignoreValueUpdate = true;
             this.value = text; // Change value attribute if necessary.
-            if(this.querySelector("textarea").value != text) this.querySelector("textarea").value = text;  
+            this.ignoreValueUpdate = false;
+            if(this.querySelector("textarea").value != text) this.queryS
+            this.querySelector("textarea").value = text;  
 
 
             let result_element = this.querySelector("pre code");
@@ -217,7 +219,7 @@ var codeInput = {
                         if(this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
                         else this.classList.remove("code-input_pre-element-styled");
                         // Syntax Highlight
-                        this.update(this.value);
+                        this.update(this.value, true);
 
                         break;
     
