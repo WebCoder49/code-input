@@ -3,23 +3,37 @@
 
 ### Autocomplete
 Display a popup under the caret using the text in the code-input element. This works well with autocomplete suggestions.
+
 Files: [autocomplete.js](./autocomplete.js) / [autocomplete.css](./autocomplete.css)
+
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/xxapjXB)
+
 ### Autodetect
 Autodetect the language live and change the `lang` attribute using the syntax highlighter's autodetect capabilities. Works with highlight.js.
+
 Files: [autodetect.js](./autodetect.js)
+
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/eYLyMae)
+
 ### Debounce Update
 Debounce the update and highlighting function ([What is Debouncing?](https://medium.com/@jamischarles/what-is-debouncing-2505c0648ff1))
+
 Files: [debounce-update.js](./debounce-update.js)
+
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/GRXyxzV)
+
 ### Indent
 Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it possible to indent/unindent multiple lines using Tab/Shift+Tab
+
 Files: [indent.js](./indent.js)
+
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/WNgdzar)
+
 ### Prism Line Numbers
 Allows code-input elements to be used with the Prism.js line-numbers plugin, as long as the code-input element or a parent element of it has the CSS class `line-numbers`. [Prism.js Plugin Docs](https://prismjs.com/plugins/line-numbers/)
+
 Files: [prism-line-numbers.css](./prism-line-numbers.css) (NO JS FILE)
+
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/XWPVrWv)
 ## Using Plugins
 Plugins allow you to add extra features to a template, like [automatic indentation](./indent.js) or [support for highlight.js's language autodetection](./autodetect.js). To use them, just:
