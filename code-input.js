@@ -5,6 +5,7 @@
 var codeInput = {
     observedAttributes: [
         "value", 
+        "name",
         "placeholder", 
         "lang", 
         "template",
@@ -156,7 +157,6 @@ var codeInput = {
     
             if (this.getAttribute("name")) {
                 textarea.setAttribute("name", this.getAttribute("name")); // for use in forms
-                this.removeAttribute("name");
             }
     
             textarea.setAttribute("oninput", "this.parentElement.update(this.value); this.parentElement.sync_scroll();");
@@ -208,7 +208,12 @@ var codeInput = {
     
                     case "value":
                         this.update(newValue);
-        
+                        break;
+
+                    case "name":
+                        if(this.querySelector("textarea") !== null) {
+                            this.querySelector("textarea").setAttribute("name", newValue); // for use in forms
+                        }
                         break;
         
                     case "placeholder":
