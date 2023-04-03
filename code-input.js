@@ -74,7 +74,7 @@ var codeInput = {
             // been run). Thank you to peterprvy for this. 
             if(this.ignoreValueUpdate) return;
             
-            console.log("Update", text);
+            //console.log("Update", text);
             this.ignoreValueUpdate = true;
             this.value = text; // Change value attribute if necessary.
             this.ignoreValueUpdate = false;
