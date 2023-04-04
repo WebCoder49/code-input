@@ -159,8 +159,8 @@ var codeInput = {
                 textarea.setAttribute("name", this.getAttribute("name")); // for use in forms
             }
     
-            textarea.setAttribute("oninput", "this.parentElement.update(this.value); this.parentElement.sync_scroll();");
-            textarea.setAttribute("onscroll", "this.parentElement.sync_scroll();");
+            textarea.addEventListener('input',(evt) => { textarea.parentElement.update(textarea.value); textarea.parentElement.sync_scroll();});
+            textarea.addEventListener('scroll',(evt) =>  textarea.parentElement.sync_scroll());
             this.append(textarea);
 
             /* Create pre code */

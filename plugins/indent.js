@@ -12,7 +12,8 @@
     afterElementsAdded(codeInput) {
         codeInput.check_tab = this.check_tab;
         codeInput.check_enter = this.check_enter;
-        codeInput.querySelector("textarea").setAttribute("onkeydown", "this.parentElement.check_tab(event); this.parentElement.check_enter(event);");
+        let textarea = codeInput.querySelector("textarea");
+        textarea.addEventListener('keydown',(event) => { textarea.parentElement.check_tab(event); textarea.parentElement.check_enter(event)});
     }
 
     /* Event handlers */
