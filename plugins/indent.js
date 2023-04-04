@@ -10,18 +10,16 @@
 
     /* Add keystroke events */
     afterElementsAdded(codeInput) {
-        codeInput.check_tab = this.check_tab;
-        codeInput.check_enter = this.check_enter;
         let textarea = codeInput.querySelector("textarea");
-        textarea.addEventListener('keydown',(event) => { textarea.parentElement.check_tab(event); textarea.parentElement.check_enter(event)});
+        textarea.addEventListener('keydown', (event) => { this.check_tab(codeInput, event); this.check_enter(codeInput, event); });
     }
 
     /* Event handlers */
-    check_tab(event) {
+    check_tab(codeInput, event) {
         if(event.key != "Tab") {
             return;
         }
-        let input_element = this.querySelector("textarea");
+        let input_element = codeInput.querySelector("textarea");
         let code = input_element.value;
         event.preventDefault(); // stop normal
         
@@ -75,16 +73,16 @@
             input_element.selectionEnd = selection_end + number_indents;
         }
 
-        this.update(input_element.value);
+        codeInput.update(input_element.value);
     }
 
-    check_enter(event) {
+    check_enter(codeInput, event) {
         if(event.key != "Enter") {
             return;
         }
         event.preventDefault(); // stop normal
 
-        let input_element = this.querySelector("textarea");
+        let input_element = codeInput.querySelector("textarea");
         let lines = input_element.value.split("\n");
         let letter_i = 0;
         let current_line = lines.length - 1;
@@ -135,6 +133,6 @@
         input_element.selectionStart = selection_start + number_indents + 1;  // count the indent level and the newline character
         input_element.selectionEnd = selection_end + number_indents + 1;
 
-        this.update(input_element.value);
+        codeInput.update(input_element.value);
     }
 }
