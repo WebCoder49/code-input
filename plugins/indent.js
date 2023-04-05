@@ -137,5 +137,17 @@
         input_element.selectionEnd = selection_end + number_indents + 1;
 
         codeInput.update(input_element.value);
+
+
+        // Update scrolls
+        input_element.scrollLeft = 0;
+        // Move down 1 line
+        let lineHeight = Number(getComputedStyle(input_element).lineHeight.split(0, -2));
+        console.log(getComputedStyle(input_element).lineHeight);
+        if(lineHeight == NaN && getComputedStyle(input_element).lineHeight.split(-2) == "px") {
+            input_element.scrollTop += lineHeight;
+        } else {
+            input_element.scrollTop += 20; // px
+        }
     }
 }
