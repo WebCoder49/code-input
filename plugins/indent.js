@@ -10,32 +10,22 @@
 
     /* Add keystroke events */
     afterElementsAdded(codeInput) {
-        codeInput.check_tab = this.check_tab;
-        codeInput.check_enter = this.check_enter;
         let textarea = codeInput.querySelector("textarea");
-        textarea.addEventListener('keydown',(event) => { textarea.parentElement.check_tab(event); textarea.parentElement.check_enter(event)});
+        textarea.addEventListener('keydown', (event) => { this.check_tab(codeInput, event); this.check_enter(codeInput, event); });
     }
 
     /* Event handlers */
-    check_tab(event) {
+    check_tab(codeInput, event) {
         if(event.key != "Tab") {
             return;
         }
-        let input_element = this.querySelector("textarea");
+        let input_element = codeInput.querySelector("textarea");
         let code = input_element.value;
         event.preventDefault(); // stop normal
         
         if(!event.shiftKey && input_element.selectionStart == input_element.selectionEnd) {
-            // Shift always means dedent - this places a tab here.
-            let before_selection = code.slice(0, input_element.selectionStart); // text before tab
-            let after_selection = code.slice(input_element.selectionEnd, input_element.value.length); // text after tab
-
-            let cursor_pos = input_element.selectionEnd + 1; // where cursor moves after tab - moving forward by 1 char to after tab
-            input_element.value = before_selection + "\t" + after_selection; // add tab char
-
-            // move cursor
-            input_element.selectionStart = cursor_pos;
-            input_element.selectionEnd = cursor_pos;
+            // Just place a tab here.
+            document.execCommand("insertText", false, "\t");
 
         } else {
             let lines = input_element.value.split("\n");
@@ -47,44 +37,59 @@
             let number_indents = 0;
             let first_line_indents = 0;
 
-            for (let i = 0; i < lines.length; i++) {
-                letter_i += lines[i].length+1; // newline counted
-                
-                console.log(lines[i], ": start", input_element.selectionStart, letter_i, "&& end", input_element.selectionEnd , letter_i - lines[i].length)
-                if(input_element.selectionStart <= letter_i && input_element.selectionEnd >= letter_i - lines[i].length) {
+            for (let i = 0; i < lines.length; i++) {                
+                // console.log(lines[i], ": start", selection_start, letter_i + lines[i].length + 1, "&& end", selection_end , letter_i + 1)
+                if((selection_start <= letter_i+lines[i].length && selection_end >= letter_i + 1)
+                || (selection_start == selection_end && selection_start <= letter_i+lines[i].length+1 && selection_end >= letter_i)) { // + 1 so newlines counted
                     // Starts before or at last char and ends after or at first char
                     if(event.shiftKey) {
                         if(lines[i][0] == "\t") {
                             // Remove first tab
-                            lines[i] = lines[i].slice(1);
-                            if(number_indents == 0) first_line_indents--;
-                            number_indents--;
+                            input_element.selectionStart = letter_i;
+                            input_element.selectionEnd = letter_i+1;
+                            document.execCommand("delete", false, "");
+
+                            // Change selection
+                            if(selection_start > letter_i) { // Indented outside selection
+                                selection_start--;
+                            }
+                            selection_end--;
+                            letter_i--;
                         }
                     } else {
-                        lines[i] = "\t" + lines[i];
-                        if(number_indents == 0) first_line_indents++;
-                        number_indents++;
-                    }
-                    
+                        // Add tab at start
+                        input_element.selectionStart = letter_i;
+                        input_element.selectionEnd = letter_i;
+                        document.execCommand("insertText", false, "\t");
+
+                        // Change selection
+                        if(selection_start > letter_i) { // Indented outside selection
+                            selection_start++;
+                        }
+                        selection_end++;
+                        letter_i++;
+                    }                    
                 }
+                
+                letter_i += lines[i].length+1; // newline counted
             }
-            input_element.value = lines.join("\n");
+            // input_element.value = lines.join("\n");
 
             // move cursor
-            input_element.selectionStart = selection_start + first_line_indents;
-            input_element.selectionEnd = selection_end + number_indents;
+            input_element.selectionStart = selection_start;
+            input_element.selectionEnd = selection_end;
         }
 
-        this.update(input_element.value);
+        codeInput.update(input_element.value);
     }
 
-    check_enter(event) {
+    check_enter(codeInput, event) {
         if(event.key != "Enter") {
             return;
         }
         event.preventDefault(); // stop normal
 
-        let input_element = this.querySelector("textarea");
+        let input_element = codeInput.querySelector("textarea");
         let lines = input_element.value.split("\n");
         let letter_i = 0;
         let current_line = lines.length - 1;
@@ -121,20 +126,29 @@
         for (let i = 0; i < number_indents; i++) {
             new_line += "\t";
         }
-        new_line += text_after_cursor;
 
         // save the current cursor position
         let selection_start = input_element.selectionStart;
         let selection_end = input_element.selectionEnd;
 
-        // splice our new line into the list of existing lines and join them all back up
-        lines.splice(current_line + 1, 0, new_line);
-        input_element.value = lines.join("\n");
+        document.execCommand("insertText", false, "\n" + new_line); // Write new line, including auto-indentation
 
         // move cursor to new position
         input_element.selectionStart = selection_start + number_indents + 1;  // count the indent level and the newline character
         input_element.selectionEnd = selection_end + number_indents + 1;
 
-        this.update(input_element.value);
+        codeInput.update(input_element.value);
+
+
+        // Update scrolls
+        input_element.scrollLeft = 0;
+        // Move down 1 line
+        let lineHeight = Number(getComputedStyle(input_element).lineHeight.split(0, -2));
+        // console.log(getComputedStyle(input_element).lineHeight);
+        if(lineHeight == NaN && getComputedStyle(input_element).lineHeight.split(-2) == "px") {
+            input_element.scrollTop += lineHeight;
+        } else {
+            input_element.scrollTop += 20; // px
+        }
     }
 }
