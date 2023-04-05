@@ -38,7 +38,7 @@
             let first_line_indents = 0;
 
             for (let i = 0; i < lines.length; i++) {                
-                console.log(lines[i], ": start", selection_start, letter_i + lines[i].length + 1, "&& end", selection_end , letter_i + 1)
+                // console.log(lines[i], ": start", selection_start, letter_i + lines[i].length + 1, "&& end", selection_end , letter_i + 1)
                 if(selection_start <= letter_i+lines[i].length && selection_end >= letter_i + 1) { // + 1 so newlines counted
                     // Starts before or at last char and ends after or at first char
                     if(event.shiftKey) {
@@ -143,7 +143,7 @@
         input_element.scrollLeft = 0;
         // Move down 1 line
         let lineHeight = Number(getComputedStyle(input_element).lineHeight.split(0, -2));
-        console.log(getComputedStyle(input_element).lineHeight);
+        // console.log(getComputedStyle(input_element).lineHeight);
         if(lineHeight == NaN && getComputedStyle(input_element).lineHeight.split(-2) == "px") {
             input_element.scrollTop += lineHeight;
         } else {
