@@ -39,7 +39,8 @@
 
             for (let i = 0; i < lines.length; i++) {                
                 // console.log(lines[i], ": start", selection_start, letter_i + lines[i].length + 1, "&& end", selection_end , letter_i + 1)
-                if(selection_start <= letter_i+lines[i].length && selection_end >= letter_i + 1) { // + 1 so newlines counted
+                if((selection_start <= letter_i+lines[i].length && selection_end >= letter_i + 1)
+                || (selection_start == selection_end && selection_start <= letter_i+lines[i].length+1 && selection_end >= letter_i)) { // + 1 so newlines counted
                     // Starts before or at last char and ends after or at first char
                     if(event.shiftKey) {
                         if(lines[i][0] == "\t") {
