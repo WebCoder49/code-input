@@ -19,7 +19,7 @@ code-input {
   height: 250px;
   font-size: normal;
   font-family: monospace;
-  line-height: 1.5; /* Inherit */
+  line-height: 1.5; /* Inherited to child elements */
   tab-size: 2;
   caret-color: darkgrey;
   white-space: pre;
