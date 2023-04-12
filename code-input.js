@@ -3,14 +3,12 @@
 // Based on a CSS-Tricks Post
 
 var codeInput = {
-    observedAttributes: [
+    observedAttributes: [ // Doesn't include events, as they are transferred by overriding {add/remove}EventListener
         "value", 
         "name",
         "placeholder", 
         "lang", 
-        "template",
-        "onchange",
-        "onselectionchange"
+        "template"
     ],
     // Attributes to monitor - needs to be global and static
     
@@ -50,7 +48,7 @@ var codeInput = {
             super(); // Element
         }
 
-        last_events = {}; // Last events applied; removed when changed so can be added to textarea, etc.
+        bound_callbacks = {}; // Callback without this context > Callback with forced codeInput elem this
 
         /* Run this event in all plugins with a optional list of arguments */
         plugin_evt(id, args) {
@@ -178,12 +176,6 @@ var codeInput = {
             
             this.plugin_evt("afterElementsAdded");
 
-            // Events
-            textarea = this.querySelector("textarea");
-            // Add event listeners, bound so `this` can be referenced
-            this.transfer_event("change", this.querySelector("textarea"), null, this.onchange);
-            this.transfer_event("selectionchange", this.querySelector("textarea"), null, this.onselectionchange);
-
             /* Add code from value attribute - useful for loading from backend */
             this.update(value, this);
         }
@@ -261,29 +253,57 @@ var codeInput = {
                         this.update(this.value);
 
                         break;
-
-                    // Events
-                    case "onchange":
-                        this.transfer_event("change", this.querySelector("textarea"), oldValue, newValue);
-                        break;
-                    case "onselectionchange":
-                        this.transfer_event("selectionchange", this.querySelector("textarea"), oldValue, newValue);
-                        break;
                 }
             }
             
         }
 
-        /* Transfer an event by name from this to an inner element. */
-        transfer_event(evt_name, transfer_to, oldValue, newValue) {
-            // Doesn't exist
-            if(oldValue) {
-                transfer_to.removeEventListener(evt_name, this.last_events[evt_name]);
+        // /* Transfer an event by name from this to an inner element. */
+        // transfer_event(evt_name, transfer_to, oldValue, newValue) {
+        //     if(oldValue) { // Remove old listener
+        //         transfer_to.removeEventListener(evt_name, this.last_events[evt_name]);
+        //     }
+        //     if(newValue) {
+        //         this.last_events[evt_name] = this[`on${evt_name}`].bind(this);
+        //         transfer_to.addEventListener(evt_name, this.last_events[evt_name]);
+        //         this.removeEventListener(evt_name, newValue);
+        //     }
+        // }
+
+        /* Override addEventListener so event listener added to necessary child. Returns callback bound to code-input element as `this` */
+        addEventListener(evt_name, callback, thirdParameter=null) {
+            let boundCallback = callback.bind(this);
+            this.bound_callbacks[callback] = boundCallback;
+            if(evt_name == "change") {
+                if(thirdParameter === null) {
+                    this.querySelector("textarea").addEventListener("change", boundCallback);
+                } else {
+                    this.querySelector("textarea").addEventListener("change", boundCallback, thirdParameter);
+                }
+            } else if(evt_name == "selectionchange") {
+                if(thirdParameter === null) {
+                    this.querySelector("textarea").addEventListener("selectionchange", boundCallback);
+                } else {
+                    this.querySelector("textarea").addEventListener("selectionchange", boundCallback, thirdParameter);
+                }
             }
-            if(newValue) {
-                this.last_events[evt_name] = this.onchange.bind(this);
-                transfer_to.addEventListener(evt_name, this.last_events[evt_name]);
-                this[`on${evt_name}`] = undefined; // Prevent duplicate
+        }
+
+        /* Override removeEventListener so event listener removed from necessary child */
+        removeEventListener(evt_name, callback, thirdParameter=null) {
+            let boundCallback = this.bound_callbacks[callback];
+            if(evt_name == "change") {
+                if(thirdParameter === null) {
+                    this.querySelector("textarea").removeEventListener("change", boundCallback);
+                } else {
+                    this.querySelector("textarea").removeEventListener("change", boundCallback, thirdParameter);
+                }
+            } else if(evt_name == "selectionchange") {
+                if(thirdParameter === null) {
+                    this.querySelector("textarea").removeEventListener("selectionchange", boundCallback);
+                } else {
+                    this.querySelector("textarea").removeEventListener("selectionchange", boundCallback, thirdParameter);
+                }
             }
         }
 
