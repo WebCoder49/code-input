@@ -4,41 +4,53 @@
  */
 
 .code-input_special-char {
-    display: inline;
+    display: inline-block;
     position: relative;
     top: 0;
     left: 0;
+
+    height: 1em;
+    /* width: set by JS */
+
+    text-decoration: none;
+    text-shadow: none;
 }
 
 .code-input_special-char::before {
     content: attr(data-top);
     color: inherit;
+    background-color: inherit;
 
-    font-size: calc(50% - 2px);
-
+    font-size: calc(100% - 2px);
     position: absolute;
-    top: 0;
+    line-height: normal;
+    top: -1em;
     left: 0;
     padding: 0;
     padding-bottom: 2px;
-
     border-top: 1px solid;
     border-left: 1px solid;
     border-right: 1px solid;
+
+    height: 1.5em;
+    width: calc(100% - 2px);
 }
 .code-input_special-char::after {
     content: attr(data-bottom);
     color: inherit;
+    background-color: inherit;
 
-    font-size: calc(50% - 2px);
-
+    font-size: calc(100% - 2px);
     position: absolute;
-    bottom: 0;
+    line-height: normal;
+    bottom: -1em;
     left: 0;
     padding: 0;
     padding-top: 2px;
-
     border-bottom: 1px solid;
     border-left: 1px solid;
     border-right: 1px solid;
+
+    height: 1.5em;
+    width: calc(100% - 2px);
 }
