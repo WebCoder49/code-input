@@ -2,6 +2,9 @@
  * Render special characters as a symbol with their hex code.
  * Files: special-chars.js, special-chars.css
  */
+
+// INCOMPLETE: TODO Optimise regex - compile at start; make so won't change contents of HTML code
+
 codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     specialCharRegExp;
 
@@ -12,12 +15,14 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     /**
      * Create a special characters plugin instance
      * @param {RegExp} specialCharRegExp The regular expression which matches special characters
+     * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code
      */
-    constructor(specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{0080}-\u{FFFF}]/ug) { // By default, covers many non-renderable ASCII characters
+    constructor(specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{FFFF}]/ug, colorInSpecialChars = false) { // By default, covers many non-renderable ASCII characters
         super();
         this.specialCharRegExp = specialCharRegExp;
-        this.cachedColors = {};
+        this.colorInSpecialChars = colorInSpecialChars;
 
+        this.cachedColors = {};
         this.cachedWidths = {};
 
         let canvas = document.createElement("canvas");
@@ -30,26 +35,42 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         this.canvasContext.font = "20px 'Consolas'"; // TODO: Make dynamic
     }
 
+    /* Runs before elements are added into a `code-input`; Params: codeInput element) */
+    beforeElementsAdded(codeInput) {
+        codeInput.classList.add("code-input_special-char_container");
+    }
+
     /* Runs after code is highlighted; Params: codeInput element) */
     afterHighlight(codeInput) {        
         let result_element = codeInput.querySelector("pre code");
         result_element.innerHTML = result_element.innerHTML.replaceAll(this.specialCharRegExp, this.specialCharReplacer.bind(this));
     }
-
     specialCharReplacer(match_char, _match_char, index, whole_string, groups) {
         let hex_code = match_char.codePointAt(0);
 
-        let colors = this.getCharacterColor(hex_code);
+        let colors;
+        if(this.colorInSpecialChars) colors = this.getCharacterColor(hex_code);
 
         hex_code = hex_code.toString(16);
-        hex_code = ("00" + hex_code).substring(hex_code.length); // So 2 chars with leading 0
+        hex_code = ("0000" + hex_code).substring(hex_code.length); // So 2 chars with leading 0
         hex_code = hex_code.toUpperCase();
 
         let char_width = this.getCharacterWidth(match_char);
-        console.log(hex_code, char_width);
 
-        // let background_color = hashed_last_hex_char + hashed_last_hex_char + hex_code.substr(0, 1) + hex_code.substr(0, 1) + hex_code.substr(1, 1) + hex_code.substr(1, 1) // So good range of colours 
-        return `<span class='code-input_special-char' data-top='${hex_code[0]}' data-bottom='${hex_code[1]}' style='background-color: #${colors[0]}; color: ${colors[1]}; width: ${char_width}px'></span>`;
+        if(this.colorInSpecialChars) {
+            if(char_width == 0) {
+                return `<span class='code-input_special-char code-input_special-char_zero-width ${hex_code[0] == "0" && hex_code[1] == "0" ? "code-input_special-char_one-byte" : ""}' data-hex0='${hex_code[0]}' data-hex1='${hex_code[1]}' data-hex2='${hex_code[2]}' data-hex3='${hex_code[3]}' style='background-color: #${colors[0]}; color: ${colors[1]};'></span>`;
+            } else {
+                return `<span class='code-input_special-char ${hex_code[0] == "0" && hex_code[1] == "0" ? "code-input_special-char_one-byte" : ""}' data-hex0='${hex_code[0]}' data-hex1='${hex_code[1]}' data-hex2='${hex_code[2]}' data-hex3='${hex_code[3]}' style='background-color: #${colors[0]}; color: ${colors[1]}; width: ${char_width}px'></span>`;
+            }
+        } else {
+            if(char_width == 0) {
+                return `<span class='code-input_special-char code-input_special-char_zero-width ${hex_code[0] == "0" && hex_code[1] == "0" ? "code-input_special-char_one-byte" : ""}' data-hex0='${hex_code[0]}' data-hex1='${hex_code[1]}' data-hex2='${hex_code[2]}' data-hex3='${hex_code[3]}'></span>`;
+            } else {
+                return `<span class='code-input_special-char ${hex_code[0] == "0" && hex_code[1] == "0" ? "code-input_special-char_one-byte" : ""}' data-hex0='${hex_code[0]}' data-hex1='${hex_code[1]}' data-hex2='${hex_code[2]}' data-hex3='${hex_code[3]}' style='width: ${char_width}px'></span>`;
+            }  
+        }
+        
     }
     
     getCharacterColor(ascii_code) {
@@ -79,21 +100,27 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     }
 
     getCharacterWidth(char) {
+        // Force zero-width characters
+        if(new RegExp("\u00AD|\u02de|[\u0300-\u036F]|[\u0483-\u0489]|\u200b").test(char) ) { return 0 }
+        // Non-renderable ASCII characters should all be rendered at same size
+        if(char != "\u0096" && new RegExp("[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]", "g").test(char)) {
+            let fallbackWidth = this.getCharacterWidth("\u0096");
+            console.log(char.codePointAt(0).toString(16), "Fallback", fallbackWidth);
+            return fallbackWidth;
+        }
         // Lazy-load - TODO: Get a cleaner way of doing this
         if(char in this.cachedWidths) {
             return this.cachedWidths[char];
         }
 
-        this.canvasContext.fillText(char, 10, 20);
+        // Try to get width
         let width = this.canvasContext.measureText(char).width;
         if(width > 20) {
             width /= 2; // Fix double-width-in-canvas Firefox bug
         } else if(width == 0) {
             let fallbackWidth = this.getCharacterWidth("\u0096");
-            this.cachedWidths[char] = fallbackWidth;
-            return fallbackWidth; // In Firefox some control chars don't render
+            return fallbackWidth; // In Firefox some control chars don't render, but all control chars are the same width
         }
-        console.log(char, this.canvasContext.measureText(char));
 
         this.cachedWidths[char] = width;
         return width;

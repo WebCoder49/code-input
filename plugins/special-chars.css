@@ -3,6 +3,13 @@
  * Files: special-chars.js, special-chars.css
  */
 
+/* Main styling */
+
+.code-input_special-char_container { /* pre element */
+    line-height: 4;
+    font-size: 20px;
+}
+
 .code-input_special-char {
     display: inline-block;
     position: relative;
@@ -14,43 +21,70 @@
 
     text-decoration: none;
     text-shadow: none;
+
+    vertical-align: middle;
 }
 
-.code-input_special-char::before {
-    content: attr(data-top);
+.code-input_special-char::before, .code-input_special-char::after {
+    white-space: pre;
     color: inherit;
     background-color: inherit;
 
     font-size: calc(100% - 2px);
     position: absolute;
-    line-height: normal;
-    top: -1em;
+    line-height: 1;
+
+    height: 2em;
+    width: calc(100% - 2px);
+    text-align: center;
+}
+
+/* Default - Two bytes - 4 hex chars */
+
+.code-input_special-char::before {
+    content: attr(data-hex0) "\A" attr(data-hex1);
+    
+    top: -1.5em;
     left: 0;
     padding: 0;
     padding-bottom: 2px;
     border-top: 1px solid;
     border-left: 1px solid;
     border-right: 1px solid;
-
-    height: 1.5em;
-    width: calc(100% - 2px);
 }
-.code-input_special-char::after {
-    content: attr(data-bottom);
-    color: inherit;
-    background-color: inherit;
 
-    font-size: calc(100% - 2px);
-    position: absolute;
-    line-height: normal;
-    bottom: -1em;
+.code-input_special-char::after {
+    content: attr(data-hex2) "\A" attr(data-hex3);
+    
+    bottom: -1.5em;
     left: 0;
     padding: 0;
     padding-top: 2px;
     border-bottom: 1px solid;
     border-left: 1px solid;
     border-right: 1px solid;
+}
 
+/* Zero-width - style so takes up no space */
+
+.code-input_special-char_zero-width {
+    z-index: 1;
+    width: 1em;
+    margin-left: -0.5em;
+    margin-right: -0.5em;
+    position: relative;
+
+    opacity: 0.75;
+}
+
+/* One byte - 2 hex chars */
+.code-input_special-char_one-byte::before {
     height: 1.5em;
-    width: calc(100% - 2px);
+    top: -1em;
+    content: attr(data-hex2);
+}
+.code-input_special-char_one-byte::after {
+    height: 1.5em;
+    bottom: -1em;
+    content: attr(data-hex3);
 }
