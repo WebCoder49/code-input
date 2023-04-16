@@ -3,6 +3,38 @@
  * Files: special-chars.js, special-chars.css
  */
 
+/*TODO: Update chars to something like this:*/
+/*
+.char_replacement {
+            text-decoration: underline;
+        }
+
+        .container {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            display: inline-block;
+        }
+
+        .demo {
+            background-color: currentColor;
+            image-rendering: pixelated;
+            display: inline-block;
+            width: 0.6em;
+            height: 1em;
+
+            mask-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAAXNSR0IArs4c6QAAABtJREFUGFdjZGBgYPj///9/RhCAMcA0bg6yHgAPmh/6BoxTcQAAAABJRU5ErkJgggAA'), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAAXNSR0IArs4c6QAAABZJREFUGFdjZGBgYPj///9/RhAggwMAitIUBr9U6sYAAAAASUVORK5CYII='), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAAXNSR0IArs4c6QAAAB9JREFUGFdj/P///38GKGCEMUCCjCgyYBFGRrAKFBkAuLYT9kYcIu0AAAAASUVORK5CYII='), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAAXNSR0IArs4c6QAAABhJREFUGFdj/P///38GKGCEMUCCjMTJAACYiBPyG8sfAgAAAABJRU5ErkJggg==');
+            mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+            mask-size: 49%, 49%, 49%, 49%;
+            mask-position: 0% 0%, 102% 0%, 0% 102%, 102% 102%;
+
+            -webkit-mask-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAAXNSR0IArs4c6QAAABtJREFUGFdjZGBgYPj///9/RhCAMcA0bg6yHgAPmh/6BoxTcQAAAABJRU5ErkJgggAA'), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAAXNSR0IArs4c6QAAABZJREFUGFdjZGBgYPj///9/RhAggwMAitIUBr9U6sYAAAAASUVORK5CYII='), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAAXNSR0IArs4c6QAAAB9JREFUGFdj/P///38GKGCEMUCCjCgyYBFGRrAKFBkAuLYT9kYcIu0AAAAASUVORK5CYII='), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAAXNSR0IArs4c6QAAABhJREFUGFdj/P///38GKGCEMUCCjMTJAACYiBPyG8sfAgAAAABJRU5ErkJggg==');
+            -webkit-mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+            -webkit-mask-size: 49%, 49%, 49%, 49%;
+            -webkit-mask-position: 0% 0%, 102% 0%, 0% 102%, 102% 102%;
+        }
+*/
+
 /* Main styling */
 
 .code-input_special-char_container { /* pre element */
