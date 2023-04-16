@@ -3,7 +3,7 @@
  * Files: special-chars.js, special-chars.css
  */
 
-// INCOMPLETE: TODO Optimise regex - compile at start; make so won't change contents of HTML code
+// INCOMPLETE: TODO Optimise regex - compile at start; Update CSS for character display; clean up + comment
 
 codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     specialCharRegExp;
@@ -17,7 +17,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
      * @param {RegExp} specialCharRegExp The regular expression which matches special characters
      * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code
      */
-    constructor(specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{FFFF}]/ug, colorInSpecialChars = false) { // By default, covers many non-renderable ASCII characters
+    constructor(specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug, colorInSpecialChars = true) { // By default, covers many non-renderable ASCII characters
         super();
         this.specialCharRegExp = specialCharRegExp;
         this.colorInSpecialChars = colorInSpecialChars;
@@ -43,9 +43,45 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     /* Runs after code is highlighted; Params: codeInput element) */
     afterHighlight(codeInput) {        
         let result_element = codeInput.querySelector("pre code");
-        result_element.innerHTML = result_element.innerHTML.replaceAll(this.specialCharRegExp, this.specialCharReplacer.bind(this));
+        this.recursivelyReplaceText(result_element);
     }
-    specialCharReplacer(match_char, _match_char, index, whole_string, groups) {
+
+    recursivelyReplaceText(element) {
+        for(let i = 0; i < element.childNodes.length; i++) {
+
+            let nextNode = element.childNodes[i];
+            if(nextNode.nodeName == "#text" && nextNode.nodeValue != "") {
+                // Replace in here
+                let oldValue = nextNode.nodeValue;
+
+                this.specialCharRegExp.lastIndex = 0;
+                let searchResult = this.specialCharRegExp.exec(oldValue);
+                if(searchResult != null) {
+                    let charIndex = searchResult.index; // Start as returns end
+
+                    nextNode = nextNode.splitText(charIndex+1).previousSibling;
+                    
+                    if(charIndex > 0) {
+                        nextNode = nextNode.splitText(charIndex); // Keep those before in difft. span
+                    }
+
+                    if(nextNode.textContent != "") {
+                        let replacementElement = this.specialCharReplacer(nextNode.textContent);
+                        nextNode.parentNode.insertBefore(replacementElement, nextNode);
+                        nextNode.textContent = "";
+                    }
+                }
+            } else if(nextNode.nodeType == 1) {
+                if(nextNode.className != "code-input_special-char" && nextNode.nodeValue != "") {
+                    // Element - recurse
+                    this.recursivelyReplaceText(nextNode);
+                }
+            }
+        }
+    }
+
+    specialCharReplacer(match_char) {
+        console.log(2, match_char);
         let hex_code = match_char.codePointAt(0);
 
         let colors;
@@ -57,20 +93,22 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
 
         let char_width = this.getCharacterWidth(match_char);
 
+        // Create element with hex code
+        let result = document.createElement("span");
+        result.classList.add("code-input_special-char");
+        result.setAttribute("data-hex0", hex_code[0]);
+        result.setAttribute("data-hex1", hex_code[1]);
+        result.setAttribute("data-hex2", hex_code[2]);
+        result.setAttribute("data-hex3", hex_code[3]);
+        // Handle zero-width chars
+        if(char_width == 0) result.classList.add("code-input_special-char_zero-width");
+        else result.style.width = char_width + "px";
+
         if(this.colorInSpecialChars) {
-            if(char_width == 0) {
-                return `<span class='code-input_special-char code-input_special-char_zero-width ${hex_code[0] == "0" && hex_code[1] == "0" ? "code-input_special-char_one-byte" : ""}' data-hex0='${hex_code[0]}' data-hex1='${hex_code[1]}' data-hex2='${hex_code[2]}' data-hex3='${hex_code[3]}' style='background-color: #${colors[0]}; color: ${colors[1]};'></span>`;
-            } else {
-                return `<span class='code-input_special-char ${hex_code[0] == "0" && hex_code[1] == "0" ? "code-input_special-char_one-byte" : ""}' data-hex0='${hex_code[0]}' data-hex1='${hex_code[1]}' data-hex2='${hex_code[2]}' data-hex3='${hex_code[3]}' style='background-color: #${colors[0]}; color: ${colors[1]}; width: ${char_width}px'></span>`;
-            }
-        } else {
-            if(char_width == 0) {
-                return `<span class='code-input_special-char code-input_special-char_zero-width ${hex_code[0] == "0" && hex_code[1] == "0" ? "code-input_special-char_one-byte" : ""}' data-hex0='${hex_code[0]}' data-hex1='${hex_code[1]}' data-hex2='${hex_code[2]}' data-hex3='${hex_code[3]}'></span>`;
-            } else {
-                return `<span class='code-input_special-char ${hex_code[0] == "0" && hex_code[1] == "0" ? "code-input_special-char_one-byte" : ""}' data-hex0='${hex_code[0]}' data-hex1='${hex_code[1]}' data-hex2='${hex_code[2]}' data-hex3='${hex_code[3]}' style='width: ${char_width}px'></span>`;
-            }  
+            result.style.backgroundColor = "#" + colors[0];
+            result.style.color = colors[1];
         }
-        
+        return result;
     }
     
     getCharacterColor(ascii_code) {
