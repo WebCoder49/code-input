@@ -129,13 +129,12 @@
 
         // save the current cursor position
         let selection_start = input_element.selectionStart;
-        let selection_end = input_element.selectionEnd;
 
         document.execCommand("insertText", false, "\n" + new_line); // Write new line, including auto-indentation
 
         // move cursor to new position
         input_element.selectionStart = selection_start + number_indents + 1;  // count the indent level and the newline character
-        input_element.selectionEnd = selection_end + number_indents + 1;
+        input_element.selectionEnd = selection_start + number_indents + 1;
 
         codeInput.update(input_element.value);
 
