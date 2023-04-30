@@ -153,9 +153,10 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
 
         // Try to get width
         let width = this.canvasContext.measureText(char).width;
+        this.canvasContext.fillText(char, 100, 100);
         if(width > 20) {
             width /= 2; // Fix double-width-in-canvas Firefox bug
-        } else if(width == 0) {
+        } else if(width == 0 && char != "\u0096") {
             let fallbackWidth = this.getCharacterWidth("\u0096");
             return fallbackWidth; // In Firefox some control chars don't render, but all control chars are the same width
         }
