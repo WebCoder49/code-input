@@ -33,39 +33,40 @@
     position: relative;
     top: 0;
     left: 0;
-
     height: 1em;
     /* width: set by JS */
-
     text-decoration: none;
     text-shadow: none;
-
     vertical-align: middle;
-    
-    outline: 1px solid currentColor;
+    outline: 0.1px solid currentColor;
 }
 
 /* Default - Two bytes - 4 hex chars */
 
 .code-input_special-char::before {
+    margin-left: 50%;
+    transform: translate(-50%, 0);
     content: " ";
-
+    
     background-color: currentColor;
     image-rendering: pixelated;
     display: inline-block;
     width: calc(100%-2px);
     height: 100%;
 
-    --char-0: var(--code-input_special-chars_0);
-    --char-1: var(--code-input_special-chars_1);
-    --char-2: var(--code-input_special-chars_2);
-    --char-3: var(--code-input_special-chars_3);
-
-    mask-image: var(--char-0), var(--char-1), var(--char-2), var(--char-3);
+    --char-0: var(
+    --code-input_special-chars_0);
+    --char-1: var(
+    --code-input_special-chars_1);
+    --char-2: var(
+    --code-input_special-chars_2);
+    --char-3: var(
+    --code-input_special-chars_3);
+    mask-image: var(
+    --char-0), var(--char-1), var(--char-2), var(--char-3);
     mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
     mask-size: 40%, 40%, 40%, 40%;
     mask-position: 10% 10%, 90% 10%, 10% 90%, 90% 90%;
-
     -webkit-mask-image: var(--char-0), var(--char-1), var(--char-2), var(--char-3);
     -webkit-mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
     -webkit-mask-size: min(40%, 0.25em), min(40%, 0.25em), min(40%, 0.25em), min(40%, 0.25em);

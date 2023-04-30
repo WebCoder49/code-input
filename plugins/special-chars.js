@@ -17,7 +17,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
      * @param {RegExp} specialCharRegExp The regular expression which matches special characters
      * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code
      */
-    constructor(specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug, colorInSpecialChars = true) { // By default, covers many non-renderable ASCII characters
+    constructor(specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug, colorInSpecialChars = false) { // By default, covers many non-renderable ASCII characters
         super();
         this.specialCharRegExp = specialCharRegExp;
         this.colorInSpecialChars = colorInSpecialChars;
