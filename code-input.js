@@ -72,7 +72,6 @@ var codeInput = {
             // been run). Thank you to peterprvy for this. 
             if(this.ignoreValueUpdate) return;
             
-            //console.log("Update", text);
             this.ignoreValueUpdate = true;
             this.value = text; // Change value attribute if necessary.
             this.ignoreValueUpdate = false;
@@ -86,6 +85,7 @@ var codeInput = {
             if (text[text.length - 1] == "\n") {
                 text += " ";
             }
+
             // Update code
             result_element.innerHTML = this.escape_html(text);
             this.plugin_evt("beforeHighlight");
@@ -216,7 +216,7 @@ var codeInput = {
                         if(this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
                         else this.classList.remove("code-input_pre-element-styled");
                         // Syntax Highlight
-                        this.update(this.value, true);
+                        this.update(this.value);
 
                         break;
     

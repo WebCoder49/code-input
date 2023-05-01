@@ -17,7 +17,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
      * @param {RegExp} specialCharRegExp The regular expression which matches special characters
      * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code
      */
-    constructor(specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug, colorInSpecialChars = false) { // By default, covers many non-renderable ASCII characters
+    constructor(specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug, colorInSpecialChars = true) { // By default, covers many non-renderable ASCII characters
         super();
         this.specialCharRegExp = specialCharRegExp;
         this.colorInSpecialChars = colorInSpecialChars;
@@ -40,9 +40,16 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         codeInput.classList.add("code-input_special-char_container");
     }
 
+    /* Runs after elements are added into a `code-input` (useful for adding events to the textarea); Params: codeInput element) */
+    afterElementsAdded(codeInput) {
+        // For some reason, special chars aren't synced the first time - TODO is there a cleaner way to do this?
+        setTimeout(() => { codeInput.update(codeInput.value); }, 100);
+    }
+
     /* Runs after code is highlighted; Params: codeInput element) */
-    afterHighlight(codeInput) {        
+    afterHighlight(codeInput) {      
         let result_element = codeInput.querySelector("pre code");
+
         this.recursivelyReplaceText(result_element);
     }
 
@@ -81,7 +88,6 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     }
 
     specialCharReplacer(match_char) {
-        console.log(2, match_char);
         let hex_code = match_char.codePointAt(0);
 
         let colors;
@@ -96,10 +102,15 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         // Create element with hex code
         let result = document.createElement("span");
         result.classList.add("code-input_special-char");
-        result.setAttribute("data-hex0", hex_code[0]);
-        result.setAttribute("data-hex1", hex_code[1]);
-        result.setAttribute("data-hex2", hex_code[2]);
-        result.setAttribute("data-hex3", hex_code[3]);
+        result.style.setProperty("--hex-0",  "var(--code-input_special-chars_" + hex_code[0] + ")");
+        result.style.setProperty("--hex-1",  "var(--code-input_special-chars_" + hex_code[1] + ")");
+        result.style.setProperty("--hex-2",  "var(--code-input_special-chars_" + hex_code[2] + ")");
+        result.style.setProperty("--hex-3",  "var(--code-input_special-chars_" + hex_code[3] + ")");
+
+        if(char_width <= 11) {
+            result.classList.add("code-input_special-char_narrow");
+        }
+        
         // Handle zero-width chars
         if(char_width == 0) result.classList.add("code-input_special-char_zero-width");
         else result.style.width = char_width + "px";
@@ -143,7 +154,6 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         // Non-renderable ASCII characters should all be rendered at same size
         if(char != "\u0096" && new RegExp("[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]", "g").test(char)) {
             let fallbackWidth = this.getCharacterWidth("\u0096");
-            console.log(char.codePointAt(0).toString(16), "Fallback", fallbackWidth);
             return fallbackWidth;
         }
         // Lazy-load - TODO: Get a cleaner way of doing this
