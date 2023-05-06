@@ -1,5 +1,5 @@
 /**
- * Render special characters as a symbol with their escape code.
+ * Render special characters and control characters as a symbol with their hex code.
  * Files: special-chars.js, special-chars.css
  */
 
@@ -35,19 +35,20 @@
     left: 0;
     height: 1em;
     /* width: set by JS */
-
     overflow: hidden;
-
     text-decoration: none;
     text-shadow: none;
-
     vertical-align: middle;
     outline: 0.1px solid currentColor;
 
-    --hex-0: var(--code-input_special-chars_0);
-    --hex-1: var(--code-input_special-chars_0);
-    --hex-2: var(--code-input_special-chars_0);
-    --hex-3: var(--code-input_special-chars_0);
+    --hex-0: var(
+    --code-input_special-chars_0);
+    --hex-1: var(
+    --code-input_special-chars_0);
+    --hex-2: var(
+    --code-input_special-chars_0);
+    --hex-3: var(
+    --code-input_special-chars_0);
 }
 
 /* Default - Two bytes - 4 hex chars */
@@ -57,7 +58,7 @@
     transform: translate(-50%, 0);
     content: " ";
     
-    background-color: currentColor;
+    background-color: var(--code-input_special-char_color, currentColor);
     image-rendering: pixelated;
     display: inline-block;
     width: calc(100%-2px);
@@ -72,14 +73,6 @@
     -webkit-mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
     -webkit-mask-size: min(40%, 0.25em), min(40%, 0.25em), min(40%, 0.25em), min(40%, 0.25em);
     -webkit-mask-position: 10% 10%, min(90%, 0.5em) 10%, 10% 90%, min(90%, 0.5em) 90%;
-}
-
-.code-input_special-char.code-input_special-char_narrow::before {
-    mask-size: 30%, 30%, 30%, 30%;
-    mask-position: 20% 20%, 80% 20%, 20% 80%, 80% 80%;
-
-    -webkit-mask-size: 30%, 30%, 30%, 30%;
-    -webkit-mask-position: 20% 20%, 80% 20%, 20% 80%, 80% 80%;
 }
 
 .code-input_special-char_zero-width {

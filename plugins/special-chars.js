@@ -1,5 +1,5 @@
 /**
- * Render special characters as a symbol with their hex code.
+ * Render special characters and control characters as a symbol with their hex code.
  * Files: special-chars.js, special-chars.css
  */
 
@@ -9,30 +9,27 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     specialCharRegExp;
 
     cachedColors; // ascii number > [background color, text color]
-    cachedWidths; // character > character width
+    cachedWidths; // font > {character > character width}
     canvasContext;
 
     /**
      * Create a special characters plugin instance
-     * @param {RegExp} specialCharRegExp The regular expression which matches special characters
      * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code
+     * @param {Boolean} inheritTextColor If `colorInSpecialChars` is false, forces the color of the hex code to inherit from syntax highlighting. Otherwise, the base colour of the `pre code` element is used to give contrast to the small characters.
+     * @param {RegExp} specialCharRegExp The regular expression which matches special characters
      */
-    constructor(specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug, colorInSpecialChars = true) { // By default, covers many non-renderable ASCII characters
+    constructor(colorInSpecialChars = false, inheritTextColor = false, specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug) { // By default, covers many non-renderable ASCII characters
         super();
+        
         this.specialCharRegExp = specialCharRegExp;
         this.colorInSpecialChars = colorInSpecialChars;
+        this.inheritTextColor = inheritTextColor;
 
         this.cachedColors = {};
         this.cachedWidths = {};
 
         let canvas = document.createElement("canvas");
-        window.addEventListener("load", () => {
-            document.body.appendChild(canvas);
-
-        });
         this.canvasContext = canvas.getContext("2d");
-        this.canvasContext.fillStyle = "black";
-        this.canvasContext.font = "20px 'Consolas'"; // TODO: Make dynamic
     }
 
     /* Runs before elements are added into a `code-input`; Params: codeInput element) */
@@ -50,10 +47,17 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     afterHighlight(codeInput) {      
         let result_element = codeInput.querySelector("pre code");
 
-        this.recursivelyReplaceText(result_element);
+        // Reset data each highlight so can change if font size, etc. changes
+        codeInput.pluginData.specialChars = {};
+        codeInput.pluginData.specialChars.textarea = codeInput.getElementsByTagName("textarea")[0];
+        codeInput.pluginData.specialChars.contrastColor = window.getComputedStyle(result_element).color;
+
+        this.recursivelyReplaceText(codeInput, result_element);
+
+        this.lastFont = window.getComputedStyle(codeInput.pluginData.specialChars.textarea).font;
     }
 
-    recursivelyReplaceText(element) {
+    recursivelyReplaceText(codeInput, element) {
         for(let i = 0; i < element.childNodes.length; i++) {
 
             let nextNode = element.childNodes[i];
@@ -73,7 +77,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
                     }
 
                     if(nextNode.textContent != "") {
-                        let replacementElement = this.specialCharReplacer(nextNode.textContent);
+                        let replacementElement = this.specialCharReplacer(codeInput, nextNode.textContent);
                         nextNode.parentNode.insertBefore(replacementElement, nextNode);
                         nextNode.textContent = "";
                     }
@@ -81,13 +85,13 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
             } else if(nextNode.nodeType == 1) {
                 if(nextNode.className != "code-input_special-char" && nextNode.nodeValue != "") {
                     // Element - recurse
-                    this.recursivelyReplaceText(nextNode);
+                    this.recursivelyReplaceText(codeInput, nextNode);
                 }
             }
         }
     }
 
-    specialCharReplacer(match_char) {
+    specialCharReplacer(codeInput, match_char) {
         let hex_code = match_char.codePointAt(0);
 
         let colors;
@@ -97,7 +101,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         hex_code = ("0000" + hex_code).substring(hex_code.length); // So 2 chars with leading 0
         hex_code = hex_code.toUpperCase();
 
-        let char_width = this.getCharacterWidth(match_char);
+        let char_width = this.getCharacterWidth(codeInput, match_char);
 
         // Create element with hex code
         let result = document.createElement("span");
@@ -106,10 +110,6 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         result.style.setProperty("--hex-1",  "var(--code-input_special-chars_" + hex_code[1] + ")");
         result.style.setProperty("--hex-2",  "var(--code-input_special-chars_" + hex_code[2] + ")");
         result.style.setProperty("--hex-3",  "var(--code-input_special-chars_" + hex_code[3] + ")");
-
-        if(char_width <= 11) {
-            result.classList.add("code-input_special-char_narrow");
-        }
         
         // Handle zero-width chars
         if(char_width == 0) result.classList.add("code-input_special-char_zero-width");
@@ -117,7 +117,9 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
 
         if(this.colorInSpecialChars) {
             result.style.backgroundColor = "#" + colors[0];
-            result.style.color = colors[1];
+            result.style.setProperty("--code-input_special-char_color", colors[1]);
+        } else if(!this.inheritTextColor) {
+            result.style.setProperty("--code-input_special-char_color", codeInput.pluginData.specialChars.contrastColor);
         }
         return result;
     }
@@ -135,11 +137,14 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
 
             // Get most suitable text color - white or black depending on background brightness
             let color_brightness = 0;
+            let luminance_coefficients = [0.299, 0.587, 0.114];
             for(let i = 0; i < 6; i += 2) {
-                color_brightness += parseInt(background_color.substring(i, i+2), 16);
+                color_brightness += parseInt(background_color.substring(i, i+2), 16) * luminance_coefficients[i/2];
             }
             // Calculate darkness
-            text_color = color_brightness < (128*3) ? "white" : "black";
+            text_color = color_brightness < 128 ? "white" : "black";
+
+            // console.log(background_color, color_brightness, text_color);
 
             this.cachedColors[ascii_code] = [background_color, text_color];
             return [background_color, text_color];
@@ -148,7 +153,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         }
     }
 
-    getCharacterWidth(char) {
+    getCharacterWidth(codeInput, char) { // TODO: Check StackOverflow question
         // Force zero-width characters
         if(new RegExp("\u00AD|\u02de|[\u0300-\u036F]|[\u0483-\u0489]|\u200b").test(char) ) { return 0 }
         // Non-renderable ASCII characters should all be rendered at same size
@@ -156,22 +161,59 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
             let fallbackWidth = this.getCharacterWidth("\u0096");
             return fallbackWidth;
         }
+
+        let font = window.getComputedStyle(codeInput.pluginData.specialChars.textarea).font;
+
         // Lazy-load - TODO: Get a cleaner way of doing this
-        if(char in this.cachedWidths) {
-            return this.cachedWidths[char];
+        if(this.cachedWidths[font] == undefined) {
+            this.cachedWidths[font] = {}; // Create new cached widths for this font
+        }
+        if(this.cachedWidths[font][char] != undefined) { // Use cached width
+            return this.cachedWidths[font][char];
         }
 
-        // Try to get width
+        // Ensure font the same
+        // console.log(font);
+        this.canvasContext.font = font;
+
+        // Try to get width from canvas
         let width = this.canvasContext.measureText(char).width;
-        this.canvasContext.fillText(char, 100, 100);
-        if(width > 20) {
+        if(width > Number(font.split("px")[0])) {
             width /= 2; // Fix double-width-in-canvas Firefox bug
         } else if(width == 0 && char != "\u0096") {
             let fallbackWidth = this.getCharacterWidth("\u0096");
             return fallbackWidth; // In Firefox some control chars don't render, but all control chars are the same width
         }
 
-        this.cachedWidths[char] = width;
+        this.cachedWidths[font][char] = width;
+
+        // console.log(this.cachedWidths);
         return width;
     }
+
+    // getCharacterWidth(char) { // Doesn't work for now - from StackOverflow suggestion https://stackoverflow.com/a/76146120/21785620
+    //     let textarea = codeInput.pluginData.specialChars.textarea;
+
+    //     // Create a temporary element to measure the width of the character
+    //     const span = document.createElement('span');
+    //     span.textContent = char;
+        
+    //     // Copy the textarea's font to the temporary element
+    //     span.style.fontSize = window.getComputedStyle(textarea).fontSize;
+    //     span.style.fontFamily = window.getComputedStyle(textarea).fontFamily;
+    //     span.style.fontWeight = window.getComputedStyle(textarea).fontWeight;
+    //     span.style.visibility = 'hidden';
+    //     span.style.position = 'absolute';
+        
+    //     // Add the temporary element to the document so we can measure its width
+    //     document.body.appendChild(span);
+        
+    //     // Get the width of the character in pixels
+    //     const width = span.offsetWidth;
+        
+    //     // Remove the temporary element from the document
+    //     document.body.removeChild(span);
+        
+    //     return width;
+    // }
 }
