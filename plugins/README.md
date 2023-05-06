@@ -35,6 +35,15 @@ Allows code-input elements to be used with the Prism.js line-numbers plugin, as 
 Files: [prism-line-numbers.css](./prism-line-numbers.css) (NO JS FILE)
 
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/XWPVrWv)
+
+### Special Chars
+Render special characters and control characters as a symbol
+with their hex code.
+
+Files: [special-chars.js](./special-chars.js) / [special-chars.css](./special-chars.css)
+
+[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/jOeYJbm)
+
 ## Using Plugins
 Plugins allow you to add extra features to a template, like [automatic indentation](./indent.js) or [support for highlight.js's language autodetection](./autodetect.js). To use them, just:
 - Import the plugins' JS/CSS files (there may only be one of these; import all of the files that exist) after you have imported `code-input` and before registering the template.
