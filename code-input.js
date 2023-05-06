@@ -322,7 +322,7 @@ var codeInput = {
             return this.setAttribute("placeholder", val);
         }
 
-        pluginData = {} // For plugins to store element-specific data under their name, e.g. <code-input>.pluginData.specialChars
+        pluginData = {}; // For plugins to store element-specific data under their name, e.g. <code-input>.pluginData.specialChars
     },
     
     registerTemplate: function(template_name, template) {
