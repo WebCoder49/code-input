@@ -75,8 +75,7 @@ var codeInput = {
             this.ignoreValueUpdate = true;
             this.value = text; // Change value attribute if necessary.
             this.ignoreValueUpdate = false;
-            if(this.querySelector("textarea").value != text) this.queryS
-            this.querySelector("textarea").value = text;  
+            if(this.querySelector("textarea").value != text) this.querySelector("textarea").value = text;  
 
 
             let result_element = this.querySelector("pre code");
