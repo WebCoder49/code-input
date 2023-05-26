@@ -3,67 +3,157 @@
 // Based on a CSS-Tricks Post
 
 var codeInput = {
-    observedAttributes: [ // Doesn't include events, as they are transferred by overriding {add/remove}EventListener
+    /**
+     * A list of attributes that will trigger the 
+     * `codeInput.CodeInput.attributeChangedCallback` 
+     * when modified in a code-input element. This
+     * does not include events, which are handled in
+     * `codeInput.CodeInput.addEventListener` and
+     * `codeInput.CodeInput.removeEventListener`.
+     */
+    observedAttributes: [
         "value", 
         "name",
         "placeholder", 
         "lang", 
         "template"
     ],
-    // Attributes to monitor - needs to be global and static
     
-    /* Templates */
+    /* ------------------------------------
+    *  ------------Templates---------------
+    *  ------------------------------------ 
+    * Each code-input element has a template attribute that 
+    * tells it which template to use.
+    * Each template contains functions and preferences that 
+    * run the syntax-highlighting and let code-input control 
+    * the highlighting. */
+
+    /**
+     * The templates currently available for any code-input elements
+     * to use. Registered using `codeInput.registerTemplate`.
+     * Key - Template Name
+     * Value - A Template Object
+     * @type {Object}
+     */
     usedTemplates: {
     },
+    /**
+     * The name of the default template that a code-input element that
+     * does not specify the template attribute uses. 
+     * @type {string}
+     */
     defaultTemplate: undefined,
-    templateQueue: {}, // lists of elements for each unrecognised template
+    /**
+     * A queue of elements waiting for a template to be registered,
+     * allowing elements to be created in HTML with a template before
+     * the template is registered in JS, for ease of use.
+     * Key - Template Name
+     * Value - A code-input element
+     * @type {Object}
+     */
+    templateNotYetRegisteredQueue: {},
     
-    /* Plugins */
-    plugins: { // Import a plugin from the plugins folder and it will be saved here.
+    /* ------------------------------------
+    *  ------------Plugins-----------------
+    *  ------------------------------------ 
+    * Plugins are imported from the plugins folder. They will then
+    * provide custom extra functionality to code-input elements. */
+    
+    /**
+     * Where plugins are stored, after they are imported. The plugin
+     * file assigns them a space in this object.
+     * Key - Plugin Name
+     * Value - Plugin
+     * @type {Object}
+     */
+    plugins: {
     },
+
+    /**
+     * A Plugin (see above)
+     */
     Plugin: class {
         constructor() {
             console.log("code-input: plugin: Created plugin!");
-            
-            // Add attributes
+
             codeInput.observedAttributes = codeInput.observedAttributes.concat(self.observedAttributes);
         }
 
-        /* Runs before code is highlighted; Params: codeInput element) */
+        /**
+         * Runs before code is highlighted.
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         */
         beforeHighlight(codeInput) {}
-        /* Runs after code is highlighted; Params: codeInput element) */
+        /**
+         * Runs after code is highlighted.
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         */
         afterHighlight(codeInput) {}
-        /* Runs before elements are added into a `code-input`; Params: codeInput element) */
+        /**
+         * Runs before elements are added into a code-input element.
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         */
         beforeElementsAdded(codeInput) {}
-        /* Runs after elements are added into a `code-input` (useful for adding events to the textarea); Params: codeInput element) */
+        /**
+         * Runs after elements are added into a code-input element (useful for adding events to the textarea).
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         */
         afterElementsAdded(codeInput) {}
-        /* Runs when an attribute of a `code-input` is changed (you must add the attribute name to observedAttributes); Params: codeInput element, name attribute name, oldValue previous value of attribute, newValue changed value of attribute) */
+        /**
+         * Runs when an attribute of a code-input element is changed (you must add the attribute name to `codeInput.Plugin.observedAttributes` first).
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         * @param {string} name - The name of the attribute
+         * @param {string} oldValue - The value of the attribute before it was changed
+         * @param {string} newValue - The value of the attribute after it is changed
+         */
         attributeChanged(codeInput, name, oldValue, newValue) {}
+        /**
+         * The HTML attributes to watch for this plugin, and report any 
+         * modifications to the `codeInput.Plugin.attributeChanged` method.
+         */
         observedAttributes = []
     },
     
-    /* Main */
-    CodeInput: class extends HTMLElement { // Create code input element
+    /* ------------------------------------
+    *  -------------Main-------------------
+    *  ------------------------------------ */
+
+    /**
+     * A code-input element.
+     */
+    CodeInput: class extends HTMLElement {
         constructor() {
             super(); // Element
         }
 
-        bound_callbacks = {}; // Callback without this context > Callback with forced codeInput elem this
+        /**
+         * When events are transferred to the textarea element, callbacks
+         * are bound to set the this variable to the code-inpute element
+         * rather than the textarea. This allows the callback to be converted
+         * to a bound one:
+         * Key - Callback not bound
+         * Value - Callback that is bound, with this equalling the code-input element in the callback 
+         */
+        boundEventCallbacks = {}; // TODO
 
-        /* Run this event in all plugins with a optional list of arguments */
-        plugin_evt(id, args) {
-            // Run the event `id` in each plugin
+        /** Trigger this event in all plugins with a optional list of arguments 
+         * @param {string} eventName - the name of the event to trigger
+         * @param {Array} args - the arguments to pass into the event callback in the template after the code-input element. Normally left empty
+        */
+        pluginEvt(eventName, args) {
             for (let i in this.template.plugins) {
                 let plugin = this.template.plugins[i];
-                if (id in plugin) {
+                if (eventName in plugin) {
                     if(args === undefined) {
-                        plugin[id](this);
+                        plugin[eventName](this);
                     } else {
-                        plugin[id](this, ...args);
+                        plugin[eventName](this, ...args);
                     }
                 }
             }
         }
+
+        // TODO: Clean up
 
          /* Syntax-highlighting functions */
          update(text) {
@@ -78,7 +168,7 @@ var codeInput = {
             if(this.querySelector("textarea").value != text) this.querySelector("textarea").value = text;  
 
 
-            let result_element = this.querySelector("pre code");
+            let resultElement = this.querySelector("pre code");
     
             // Handle final newlines (see article)
             if (text[text.length - 1] == "\n") {
@@ -86,48 +176,48 @@ var codeInput = {
             }
 
             // Update code
-            result_element.innerHTML = this.escape_html(text);
-            this.plugin_evt("beforeHighlight");
+            resultElement.innerHTML = this.escapeHtml(text);
+            this.pluginEvt("beforeHighlight");
 
             // Syntax Highlight
-            if(this.template.includeCodeInputInHighlightFunc) this.template.highlight(result_element, this);
-            else this.template.highlight(result_element);
+            if(this.template.includeCodeInputInHighlightFunc) this.template.highlight(resultElement, this);
+            else this.template.highlight(resultElement);
            
-            this.plugin_evt("afterHighlight");
+            this.pluginEvt("afterHighlight");
         }
 
-        sync_scroll() {
+        syncScroll() {
             /* Scroll result to scroll coords of event - sync with textarea */
-            let input_element = this.querySelector("textarea");
-            let result_element = this.template.preElementStyled ? this.querySelector("pre") : this.querySelector("pre code");
+            let inputElement = this.querySelector("textarea");
+            let resultElement = this.template.preElementStyled ? this.querySelector("pre") : this.querySelector("pre code");
             // Get and set x and y
-            result_element.scrollTop = input_element.scrollTop;
-            result_element.scrollLeft = input_element.scrollLeft;
+            resultElement.scrollTop = inputElement.scrollTop;
+            resultElement.scrollLeft = inputElement.scrollLeft;
         }
 
-        escape_html(text) {
+        escapeHtml(text) {
             return text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;"); /* Global RegExp */
         }
 
         /* Get the template for this element or add to the unrecognised template queue. */
-        get_template() {
+        getTemplate() {
             // Get name of template
-            let template_name;
+            let templateName;
             if(this.getAttribute("template") == undefined) {
                 // Default
-                template_name = codeInput.defaultTemplate;
+                templateName = codeInput.defaultTemplate;
             } else {
-                template_name = this.getAttribute("template");
+                templateName = this.getAttribute("template");
             }
             // Get template
-            if(template_name in codeInput.usedTemplates) {
-                return codeInput.usedTemplates[template_name];
+            if(templateName in codeInput.usedTemplates) {
+                return codeInput.usedTemplates[templateName];
             } else {
                 // Doesn't exist - add to queue
-                if( !(template_name in codeInput.templateQueue)) {
-                    codeInput.templateQueue[template_name] = [];
+                if( !(templateName in codeInput.templateNotYetRegisteredQueue)) {
+                    codeInput.templateNotYetRegisteredQueue[templateName] = [];
                 }
-                codeInput.templateQueue[template_name].push(this);
+                codeInput.templateNotYetRegisteredQueue[templateName].push(this);
                 return undefined;
             }
             codeInput.usedTemplates[codeInput.defaultTemplate]
@@ -137,7 +227,7 @@ var codeInput = {
             this.classList.add("code-input_registered"); // Remove register message
             if(this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
 
-            this.plugin_evt("beforeElementsAdded");
+            this.pluginEvt("beforeElementsAdded");
 
             /* Defaults */
             let lang = this.getAttribute("lang");
@@ -156,8 +246,8 @@ var codeInput = {
                 textarea.setAttribute("name", this.getAttribute("name")); // for use in forms
             }
     
-            textarea.addEventListener('input',(evt) => { textarea.parentElement.update(textarea.value); textarea.parentElement.sync_scroll();});
-            textarea.addEventListener('scroll',(evt) =>  textarea.parentElement.sync_scroll());
+            textarea.addEventListener('input',(evt) => { textarea.parentElement.update(textarea.value); textarea.parentElement.syncScroll();});
+            textarea.addEventListener('scroll',(evt) =>  textarea.parentElement.syncScroll());
             this.append(textarea);
 
             /* Create pre code */
@@ -173,7 +263,7 @@ var codeInput = {
                 }
             }
             
-            this.plugin_evt("afterElementsAdded");
+            this.pluginEvt("afterElementsAdded");
 
             /* Add code from value attribute - useful for loading from backend */
             this.update(value, this);
@@ -182,7 +272,7 @@ var codeInput = {
         /* Callbacks */
         connectedCallback() {
             // Added to document
-            this.template = this.get_template();
+            this.template = this.getTemplate();
             if(this.template != undefined) this.setup();
         }
         static get observedAttributes() {         
@@ -194,7 +284,7 @@ var codeInput = {
                 // This will sometimes be called before the element has been created, so trying to update an attribute causes an error.
                 // Thanks to Kevin Loughead for pointing this out.
                 
-                this.plugin_evt("attributeChanged", [name, oldValue, newValue]); // Plugin event
+                this.pluginEvt("attributeChanged", [name, oldValue, newValue]); // Plugin event
                 switch (name) {
     
                     case "value":
@@ -222,7 +312,7 @@ var codeInput = {
                     case "lang":
 
                         let code = this.querySelector("pre code");
-                        let main_textarea = this.querySelector("textarea");
+                        let mainTextarea = this.querySelector("textarea");
                         
                         // Check not already updated
                         if(newValue != null) {
@@ -247,7 +337,7 @@ var codeInput = {
                             console.log("code-input: Language:ADD", "language-" + newValue);
                         }
                         
-                        if(main_textarea.placeholder == oldValue) main_textarea.placeholder = newValue;
+                        if(mainTextarea.placeholder == oldValue) mainTextarea.placeholder = newValue;
     
                         this.update(this.value);
 
@@ -257,29 +347,17 @@ var codeInput = {
             
         }
 
-        // /* Transfer an event by name from this to an inner element. */
-        // transfer_event(evt_name, transfer_to, oldValue, newValue) {
-        //     if(oldValue) { // Remove old listener
-        //         transfer_to.removeEventListener(evt_name, this.last_events[evt_name]);
-        //     }
-        //     if(newValue) {
-        //         this.last_events[evt_name] = this[`on${evt_name}`].bind(this);
-        //         transfer_to.addEventListener(evt_name, this.last_events[evt_name]);
-        //         this.removeEventListener(evt_name, newValue);
-        //     }
-        // }
-
         /* Override addEventListener so event listener added to necessary child. Returns callback bound to code-input element as `this` */
-        addEventListener(evt_name, callback, thirdParameter=null) {
+        addEventListener(evtName, callback, thirdParameter=null) {
             let boundCallback = callback.bind(this);
-            this.bound_callbacks[callback] = boundCallback;
-            if(evt_name == "change") {
+            this.boundEventCallbacks[callback] = boundCallback;
+            if(evtName == "change") {
                 if(thirdParameter === null) {
                     this.querySelector("textarea").addEventListener("change", boundCallback);
                 } else {
                     this.querySelector("textarea").addEventListener("change", boundCallback, thirdParameter);
                 }
-            } else if(evt_name == "selectionchange") {
+            } else if(evtName == "selectionchange") {
                 if(thirdParameter === null) {
                     this.querySelector("textarea").addEventListener("selectionchange", boundCallback);
                 } else {
@@ -289,15 +367,15 @@ var codeInput = {
         }
 
         /* Override removeEventListener so event listener removed from necessary child */
-        removeEventListener(evt_name, callback, thirdParameter=null) {
-            let boundCallback = this.bound_callbacks[callback];
-            if(evt_name == "change") {
+        removeEventListener(evtName, callback, thirdParameter=null) {
+            let boundCallback = this.boundEventCallbacks[callback];
+            if(evtName == "change") {
                 if(thirdParameter === null) {
                     this.querySelector("textarea").removeEventListener("change", boundCallback);
                 } else {
                     this.querySelector("textarea").removeEventListener("change", boundCallback, thirdParameter);
                 }
-            } else if(evt_name == "selectionchange") {
+            } else if(evtName == "selectionchange") {
                 if(thirdParameter === null) {
                     this.querySelector("textarea").removeEventListener("selectionchange", boundCallback);
                 } else {
@@ -324,31 +402,31 @@ var codeInput = {
         pluginData = {}; // For plugins to store element-specific data under their name, e.g. <code-input>.pluginData.specialChars
     },
     
-    registerTemplate: function(template_name, template) {
+    registerTemplate: function(templateName, template) {
         // Set default class
-        codeInput.usedTemplates[template_name] = template;
+        codeInput.usedTemplates[templateName] = template;
         // Add elements w/ template from queue
-        if(template_name in codeInput.templateQueue) {
-            for(let i in codeInput.templateQueue[template_name]) {
-                elem = codeInput.templateQueue[template_name][i];
+        if(templateName in codeInput.templateNotYetRegisteredQueue) {
+            for(let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
+                elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.template = template;
                 elem.setup();
             }
-            console.log(`code-input: template: Added existing elements with template ${template_name}`);
+            console.log(`code-input: template: Added existing elements with template ${templateName}`);
         }
         if(codeInput.defaultTemplate == undefined) {
-            codeInput.defaultTemplate = template_name;
+            codeInput.defaultTemplate = templateName;
             // Add elements w/ default template from queue
-            if(undefined in codeInput.templateQueue) {
-                for(let i in codeInput.templateQueue[undefined]) {
-                    elem = codeInput.templateQueue[undefined][i];
+            if(undefined in codeInput.templateNotYetRegisteredQueue) {
+                for(let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
+                    elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.template = template;
                     elem.setup();
                 }
             }
-            console.log(`code-input: template: Set template ${template_name} as default`);
+            console.log(`code-input: template: Set template ${templateName} as default`);
         }
-        console.log(`code-input: template: Created template ${template_name}`);
+        console.log(`code-input: template: Created template ${templateName}`);
     },
     templates: {
         custom(highlight=function() {}, preElementStyled=true, isCode=true, includeCodeInputInHighlightFunc=false, plugins=[]) {
@@ -380,16 +458,16 @@ var codeInput = {
         },
         characterLimit() {
             return {
-                highlight: function(result_element, code_input, plugins=[]) {
+                highlight: function(resultElement, codeInput, plugins=[]) {
 
-                    let character_limit = Number(code_input.getAttribute("data-character-limit"));
+                    let characterLimit = Number(codeInput.getAttribute("data-character-limit"));
 
-                    let normal_characters = code_input.escape_html(code_input.value.slice(0, character_limit));
-                    let overflow_characters = code_input.escape_html(code_input.value.slice(character_limit));
+                    let normalCharacters = codeInput.escapeHtml(codeInput.value.slice(0, characterLimit));
+                    let overflowCharacters = codeInput.escapeHtml(codeInput.value.slice(characterLimit));
                     
-                    result_element.innerHTML = `${normal_characters}<mark class="overflow">${overflow_characters}</mark>`;
-                    if(overflow_characters.length > 0) {
-                        result_element.innerHTML += ` <mark class="overflow-msg">${code_input.getAttribute("data-overflow-msg") || "(Character limit reached)"}</mark>`;
+                    resultElement.innerHTML = `${normalCharacters}<mark class="overflow">${overflowCharacters}</mark>`;
+                    if(overflowCharacters.length > 0) {
+                        resultElement.innerHTML += ` <mark class="overflow-msg">${codeInput.getAttribute("data-overflow-msg") || "(Character limit reached)"}</mark>`;
                     }
                 },
                 includeCodeInputInHighlightFunc: true,
@@ -398,20 +476,20 @@ var codeInput = {
                 plugins: plugins,
             }
         },
-        rainbowText(rainbow_colors=["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue",  "magenta"], delimiter="", plugins=[]) {
+        rainbowText(rainbowColors=["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue",  "magenta"], delimiter="", plugins=[]) {
             return {
-                highlight: function(result_element, code_input) {
-                    let html_result = [];
-                    let sections = code_input.value.split(code_input.template.delimiter);
+                highlight: function(resultElement, codeInput) {
+                    let htmlResult = [];
+                    let sections = codeInput.value.split(codeInput.template.delimiter);
                     for (let i = 0; i < sections.length; i++) {
-                        html_result.push(`<span style="color: ${code_input.template.rainbow_colors[i % code_input.template.rainbow_colors.length]}">${code_input.escape_html(sections[i])}</span>`);
+                        htmlResult.push(`<span style="color: ${codeInput.template.rainbowColors[i % codeInput.template.rainbowColors.length]}">${codeInput.escapeHtml(sections[i])}</span>`);
                     }
-                    result_element.innerHTML = html_result.join(code_input.template.delimiter);
+                    resultElement.innerHTML = htmlResult.join(codeInput.template.delimiter);
                 },
                 includeCodeInputInHighlightFunc: true,
                 preElementStyled: true,
                 isCode: false,
-                rainbow_colors: rainbow_colors,
+                rainbowColors: rainbowColors,
                 delimiter: delimiter,
                 plugins: plugins,
             }
