@@ -4,11 +4,21 @@
 
 var codeInput = {
     observedAttributes: [ // Doesn't include events, as they are transferred by overriding {add/remove}EventListener
-        "value", 
-        "name",
+        "value",
         "placeholder", 
         "lang", 
         "template"
+    ],
+
+    textareaSyncAttributes: [ // Attributes to move to the textarea after they are applied on the code-input element.
+        "value",
+        "name",
+        // Form validation - https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation
+        "required",
+        "minlength", "maxlength",
+        "min", "max",
+        "type",
+        "pattern"
     ],
     // Attributes to monitor - needs to be global and static
     
@@ -151,10 +161,13 @@ var codeInput = {
             textarea.placeholder = placeholder;
             textarea.value = value;
             textarea.setAttribute("spellcheck", "false");
-    
-            if (this.getAttribute("name")) {
-                textarea.setAttribute("name", this.getAttribute("name")); // for use in forms
-            }
+
+            // Synchronise attributes to textarea
+            codeInput.textareaSyncAttributes.forEach((attribute) => {
+                if(this.hasAttribute(attribute)) {
+                    textarea.setAttribute(attribute, this.getAttribute(attribute));
+                }
+            });
     
             textarea.addEventListener('input',(evt) => { textarea.parentElement.update(textarea.value); textarea.parentElement.sync_scroll();});
             textarea.addEventListener('scroll',(evt) =>  textarea.parentElement.sync_scroll());
@@ -186,7 +199,7 @@ var codeInput = {
             if(this.template != undefined) this.setup();
         }
         static get observedAttributes() {         
-            return codeInput.observedAttributes;
+            return codeInput.observedAttributes.concat(codeInput.textareaSyncAttributes);
         }
         
         attributeChangedCallback(name, oldValue, newValue) {
@@ -199,12 +212,6 @@ var codeInput = {
     
                     case "value":
                         this.update(newValue);
-                        break;
-
-                    case "name":
-                        if(this.querySelector("textarea") !== null) {
-                            this.querySelector("textarea").setAttribute("name", newValue); // for use in forms
-                        }
                         break;
         
                     case "placeholder":
@@ -252,6 +259,11 @@ var codeInput = {
                         this.update(this.value);
 
                         break;
+                    default:
+                        if(codeInput.textareaSyncAttributes.includes(name)) {
+                            this.querySelector("textarea").setAttribute(name, newValue);
+                        }
+                        break;
                 }
             }
             
@@ -284,6 +296,18 @@ var codeInput = {
                     this.querySelector("textarea").addEventListener("selectionchange", boundCallback);
                 } else {
                     this.querySelector("textarea").addEventListener("selectionchange", boundCallback, thirdParameter);
+                }
+            } else if(evt_name == "invalid") {
+                if(thirdParameter === null) {
+                    this.querySelector("textarea").addEventListener("invalid", boundCallback);
+                } else {
+                    this.querySelector("textarea").addEventListener("invalid", boundCallback, thirdParameter);
+                }
+            } else if(evt_name == "input") {
+                if(thirdParameter === null) {
+                    this.querySelector("textarea").addEventListener("input", boundCallback);
+                } else {
+                    this.querySelector("textarea").addEventListener("input", boundCallback, thirdParameter);
                 }
             }
         }
@@ -319,6 +343,37 @@ var codeInput = {
         }
         set placeholder(val) {
             return this.setAttribute("placeholder", val);
+        }
+
+        /* Form validation */
+        get validity() {
+            return this.querySelector("textarea").validity;
+        }
+        get validationMessage() {
+            return this.querySelector("textarea").validationMessage;
+        }
+        setCustomValidity(error) {
+            return this.querySelector("textarea").setCustomValidity(error);
+        }
+        checkValidity() {
+            return this.querySelector("textarea").checkValidity();
+        }
+        reportValidity() {
+            return this.querySelector("textarea").reportValidity();
+        }
+
+
+        /* Sync all attributes that can be set on the `code-input` element to the `textarea` element */
+        setAttribute(qualifiedName, value) {
+            super.setAttribute(qualifiedName, value); // code-input
+            this.querySelector("textarea").setAttribute(qualifiedName, value); // textarea
+        }
+
+        getAttribute(qualifiedName) {
+            if(this.querySelector("textarea") == null) {
+                return super.getAttribute(qualifiedName);
+            }
+            return this.querySelector("textarea").getAttribute(qualifiedName); // textarea
         }
 
         pluginData = {}; // For plugins to store element-specific data under their name, e.g. <code-input>.pluginData.specialChars
