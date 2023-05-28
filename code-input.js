@@ -16,8 +16,8 @@ var codeInput = {
      */
     observedAttributes: [
         "value",
-        "placeholder", 
-        "lang", 
+        "placeholder",
+        "lang",
         "template"
     ],
 
@@ -35,6 +35,18 @@ var codeInput = {
         "min", "max",
         "type",
         "pattern"
+    ],
+
+    /**
+     * A list of events whose listeners will be moved to 
+     * the textarea after they are added to the 
+     * code-input element.
+     */
+    textareaSyncEvents: [
+        "change",
+        "selectionchange",
+        "invalid",
+        "input"
     ],
 
     /* ------------------------------------
@@ -364,7 +376,7 @@ var codeInput = {
 
             this.pluginEvt("afterHighlight");
         }
-        
+
         /**
          * Synchronise the scrolling of the textarea to the result element.
          */
@@ -408,7 +420,7 @@ var codeInput = {
                 return undefined;
             }
         }
-        
+
         /**
          * Set up and initialise the textarea.
          * This will be called once the template has been added.
@@ -434,14 +446,14 @@ var codeInput = {
 
             // Synchronise attributes to textarea
             codeInput.textareaSyncAttributes.forEach((attribute) => {
-                if(this.hasAttribute(attribute)) {
+                if (this.hasAttribute(attribute)) {
                     textarea.setAttribute(attribute, this.getAttribute(attribute));
                 }
             });
-    
-            textarea.addEventListener('input',(evt) => { textarea.parentElement.update(textarea.value); textarea.parentElement.sync_scroll();});
-            textarea.addEventListener('scroll',(evt) =>  textarea.parentElement.sync_scroll());
-          
+
+            textarea.addEventListener('input', (evt) => { textarea.parentElement.update(textarea.value); textarea.parentElement.sync_scroll(); });
+            textarea.addEventListener('scroll', (evt) => textarea.parentElement.sync_scroll());
+
             this.append(textarea);
 
             // Create result element
@@ -504,7 +516,7 @@ var codeInput = {
          * to `codeInput.CodeInput.attributeChangedCallback` when modified.
          */
         static get observedAttributes() {
-           return codeInput.observedAttributes.concat(codeInput.textareaSyncAttributes);
+            return codeInput.observedAttributes.concat(codeInput.textareaSyncAttributes);
         }
 
         /**
@@ -568,7 +580,7 @@ var codeInput = {
 
                         break;
                     default:
-                        if(codeInput.textareaSyncAttributes.includes(name)) {
+                        if (codeInput.textareaSyncAttributes.includes(name)) {
                             this.querySelector("textarea").setAttribute(name, newValue);
                         }
                         break;
@@ -576,39 +588,32 @@ var codeInput = {
             }
 
         }
-        
+
+        /* ------------------------------------
+        *  -----------Overrides----------------
+        *  ------------------------------------
+        * Override/Implement ordinary HTML textarea functionality so that the <code-input>
+        * element acts just like a <textarea>. */
+
         /**
          * @override
          */
         addEventListener(type, listener, options = undefined) {
             let boundCallback = listener.bind(this);
             this.boundEventCallbacks[listener] = boundCallback;
-            if (type == "change") {
+
+            if (codeInput.textareaSyncEvents.includes(type)) {
                 if (options === undefined) {
-                    this.querySelector("textarea").addEventListener("change", boundCallback);
+                    this.querySelector("textarea").addEventListener(type, boundCallback);
                 } else {
-                    this.querySelector("textarea").addEventListener("change", boundCallback, options);
-                }
-            } else if (type == "selectionchange") {
-                if (options === undefined) {
-                    this.querySelector("textarea").addEventListener("selectionchange", boundCallback);
-                } else {
-                    this.querySelector("textarea").addEventListener("selectionchange", boundCallback, options);
-                }
-            } else if(evt_name == "invalid") {
-                if(thirdParameter === null) {
-                    this.querySelector("textarea").addEventListener("invalid", boundCallback);
-                } else {
-                    this.querySelector("textarea").addEventListener("invalid", boundCallback, thirdParameter);
-                }
-            } else if(evt_name == "input") {
-                if(thirdParameter === null) {
-                    this.querySelector("textarea").addEventListener("input", boundCallback);
-                } else {
-                    this.querySelector("textarea").addEventListener("input", boundCallback, thirdParameter);
+                    this.querySelector("textarea").addEventListener(type, boundCallback, options);
                 }
             } else {
-                super.addEventListener(type, listener, options);
+                if (options === undefined) {
+                    super.addEventListener(type, boundCallback);
+                } else {
+                    super.addEventListener(type, boundCallback, options);
+                }
             }
         }
 
@@ -647,7 +652,7 @@ var codeInput = {
         set value(val) {
             return this.setAttribute("value", val);
         }
-        
+
         /**
          * Get the placeholder of the code-input element that appears
          * when no code has been entered.
@@ -664,40 +669,73 @@ var codeInput = {
             return this.setAttribute("placeholder", val);
         }
 
-        /* Form validation */
+        /**
+         * Returns a  ValidityState object that represents the validity states of an element.
+         * 
+         * See `HTMLTextAreaElement.validity`
+         */
         get validity() {
             return this.querySelector("textarea").validity;
         }
+
+        /**
+         * Returns the error message that would be displayed if the user submits the form, or an empty string if no error message. 
+         * It also triggers the standard error message, such as "this is a required field". The result is that the user sees validation 
+         * messages without actually submitting.
+         * 
+         * See `HTMLTextAreaElement.validationMessage`
+         */
         get validationMessage() {
             return this.querySelector("textarea").validationMessage;
         }
+
+        /**
+         * Sets a custom error message that is displayed when a form is submitted.
+         * 
+         * See `HTMLTextAreaElement.setCustomValidity`
+         * @param error Sets a custom error message that is displayed when a form is submitted.
+         */
         setCustomValidity(error) {
             return this.querySelector("textarea").setCustomValidity(error);
         }
+
+        /**
+         * Returns whether a form will validate when it is submitted, 
+         * without having to submit it.
+         * 
+         * See `HTMLTextAreaElement.checkValidity`
+         */
         checkValidity() {
             return this.querySelector("textarea").checkValidity();
         }
+
+        /**
+         * See `HTMLTextAreaElement.reportValidity`
+         */
         reportValidity() {
             return this.querySelector("textarea").reportValidity();
         }
 
 
-        /* Sync all attributes that can be set on the `code-input` element to the `textarea` element */
+        /**
+         * @override
+         */
         setAttribute(qualifiedName, value) {
             super.setAttribute(qualifiedName, value); // code-input
             this.querySelector("textarea").setAttribute(qualifiedName, value); // textarea
         }
 
+        /**
+         * @override
+         */
         getAttribute(qualifiedName) {
-            if(this.querySelector("textarea") == null) {
+            if (this.querySelector("textarea") == null) {
                 return super.getAttribute(qualifiedName);
             }
             return this.querySelector("textarea").getAttribute(qualifiedName); // textarea
         }
 
-        pluginData = {}; // For plugins to store element-specific data under their name, e.g. <code-input>.pluginData.specialChars
-        
-         /**
+        /**
          * Allows plugins to store data in the scope of a single element.
          * Key - name of the plugin
          * Value - object of data to be stored; different plugins may use this differently.
