@@ -1,16 +1,32 @@
-// CodeInput
-// by WebCoder49
-// Based on a CSS-Tricks Post
-
+/**
+ * **code-input** is a library which lets you create custom HTML `<code-input>`
+ * elements that act like `<textarea>` elements but support syntax-highlighted
+ * code, implemented using any typical syntax highlighting library. [MIT-Licensed]
+ * 
+ * **<https://github.com/WebCoder49/code-input>**
+ */
 var codeInput = {
-    observedAttributes: [ // Doesn't include events, as they are transferred by overriding {add/remove}EventListener
+    /**
+     * A list of attributes that will trigger the 
+     * `codeInput.CodeInput.attributeChangedCallback` 
+     * when modified in a code-input element. This
+     * does not include events, which are handled in
+     * `codeInput.CodeInput.addEventListener` and
+     * `codeInput.CodeInput.removeEventListener`.
+     */
+    observedAttributes: [
         "value",
         "placeholder", 
         "lang", 
         "template"
     ],
 
-    textareaSyncAttributes: [ // Attributes to move to the textarea after they are applied on the code-input element.
+    /**
+     * A list of attributes that will be moved to 
+     * the textarea after they are applied on the 
+     * code-input element.
+     */
+    textareaSyncAttributes: [
         "value",
         "name",
         // Form validation - https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation
@@ -20,143 +36,397 @@ var codeInput = {
         "type",
         "pattern"
     ],
-    // Attributes to monitor - needs to be global and static
-    
-    /* Templates */
+
+    /* ------------------------------------
+    *  ------------Templates---------------
+    *  ------------------------------------ */
+
+    /**
+     * The templates currently available for any code-input elements
+     * to use. Registered using `codeInput.registerTemplate`.
+     * Key - Template Name
+     * Value - A Template Object
+     * @type {Object}
+     */
     usedTemplates: {
     },
+    /**
+     * The name of the default template that a code-input element that
+     * does not specify the template attribute uses. 
+     * @type {string}
+     */
     defaultTemplate: undefined,
-    templateQueue: {}, // lists of elements for each unrecognised template
-    
-    /* Plugins */
-    plugins: { // Import a plugin from the plugins folder and it will be saved here.
+    /**
+     * A queue of elements waiting for a template to be registered,
+     * allowing elements to be created in HTML with a template before
+     * the template is registered in JS, for ease of use.
+     * Key - Template Name
+     * Value - An array of code-input elements
+     * @type {Object}
+     */
+    templateNotYetRegisteredQueue: {},
+
+    /**
+     * Register a template so code-input elements with a template attribute that equals the templateName will use the template.
+     * See `codeInput.templates` for constructors to create templates.
+     * @param {string} templateName - the name to register the template under
+     * @param {Object} template - a Template object instance - see `codeInput.templates`  
+     */
+    registerTemplate: function (templateName, template) {
+        codeInput.usedTemplates[templateName] = template;
+        // Add waiting code-input elements wanting this template from queue
+        if (templateName in codeInput.templateNotYetRegisteredQueue) {
+            for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
+                elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
+                elem.template = template;
+                elem.setup();
+            }
+            console.log(`code-input: template: Added existing elements with template ${templateName}`);
+        }
+        if (codeInput.defaultTemplate == undefined) {
+            codeInput.defaultTemplate = templateName;
+            // Add elements with default template from queue
+            if (undefined in codeInput.templateNotYetRegisteredQueue) {
+                for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
+                    elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
+                    elem.template = template;
+                    elem.setup();
+                }
+            }
+            console.log(`code-input: template: Set template ${templateName} as default`);
+        }
+        console.log(`code-input: template: Created template ${templateName}`);
     },
+
+    /**
+     * Constructors for creating templates.
+     * Each code-input element has a template attribute that 
+     * tells it which template to use.
+     * Each template contains functions and preferences that 
+     * run the syntax-highlighting and let code-input control 
+     * the highlighting.
+     * For adding small pieces of functionality, please see `codeInput.plugins`.
+     */
+    templates: {
+        /**
+         * Constructor to create a custom template instance. Pass this into `codeInput.registerTemplate` to use it.
+         * I would strongly recommend using the built-in simpler template `codeInput.templates.prism` or `codeInput.templates.hljs`.
+         * @param {Function} highlight - a callback to highlight the code, that takes an HTML `<code>` element inside a `<pre>` element as a parameter
+         * @param {boolean} preElementStyled - is the <pre> element CSS-styled as well as the `<code>` element? If true, `<pre>` element's scrolling is synchronised; if false, <code> element's scrolling is synchronised.
+         * @param {boolean} isCode - is this for writing code? If true, the code-input's lang HTML attribute can be used, and the `<code>` element will be given the class name 'language-[lang attribute's value]'.
+         * @param {boolean} includeCodeInputInHighlightFunc - Setting this to true passes the `<code-input>` element as a second argument to the highlight function.
+         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+         * @returns template object
+         */
+        custom(highlight = function () { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
+            return {
+                highlight: highlight,
+                includeCodeInputInHighlightFunc: includeCodeInputInHighlightFunc,
+                preElementStyled: preElementStyled,
+                isCode: isCode,
+                plugins: plugins,
+            };
+        },
+        /**
+         * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
+         * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
+         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+         * @returns template object
+         */
+        prism(prism, plugins = []) { // Dependency: Prism.js (https://prismjs.com/)
+            return {
+                includeCodeInputInHighlightFunc: false,
+                highlight: prism.highlightElement,
+                preElementStyled: true,
+                isCode: true,
+                plugins: plugins,
+            };
+        },
+        /**
+         * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
+         * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
+         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+         * @returns template object
+         */
+        hljs(hljs, plugins = []) { // Dependency: Highlight.js (https://highlightjs.org/)
+            return {
+                includeCodeInputInHighlightFunc: false,
+                highlight: hljs.highlightElement,
+                preElementStyled: false,
+                isCode: true,
+                plugins: plugins,
+            };
+        },
+
+        /**
+         * Constructor to create a proof-of-concept template that gives a message if too many characters are typed.
+         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+         * @returns template object
+         */
+        characterLimit(plugins) {
+            return {
+                highlight: function (resultElement, codeInput, plugins = []) {
+
+                    let characterLimit = Number(codeInput.getAttribute("data-character-limit"));
+
+                    let normalCharacters = codeInput.escapeHtml(codeInput.value.slice(0, characterLimit));
+                    let overflowCharacters = codeInput.escapeHtml(codeInput.value.slice(characterLimit));
+
+                    resultElement.innerHTML = `${normalCharacters}<mark class="overflow">${overflowCharacters}</mark>`;
+                    if (overflowCharacters.length > 0) {
+                        resultElement.innerHTML += ` <mark class="overflow-msg">${codeInput.getAttribute("data-overflow-msg") || "(Character limit reached)"}</mark>`;
+                    }
+                },
+                includeCodeInputInHighlightFunc: true,
+                preElementStyled: true,
+                isCode: false,
+                plugins: plugins,
+            }
+        },
+
+        /**
+         * Constructor to create a proof-of-concept template that shows text in a repeating series of colors.
+         * @param {string[]} rainbowColors - An array of CSS colors, in the order each color will be shown
+         * @param {string} delimiter - The character used to split up parts of text where each part is a different colour (e.g. "" = characters, " " = words)
+         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+         * @returns template object
+         */
+        rainbowText(rainbowColors = ["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue", "magenta"], delimiter = "", plugins = []) {
+            return {
+                highlight: function (resultElement, codeInput) {
+                    let htmlResult = [];
+                    let sections = codeInput.value.split(codeInput.template.delimiter);
+                    for (let i = 0; i < sections.length; i++) {
+                        htmlResult.push(`<span style="color: ${codeInput.template.rainbowColors[i % codeInput.template.rainbowColors.length]}">${codeInput.escapeHtml(sections[i])}</span>`);
+                    }
+                    resultElement.innerHTML = htmlResult.join(codeInput.template.delimiter);
+                },
+                includeCodeInputInHighlightFunc: true,
+                preElementStyled: true,
+                isCode: false,
+                rainbowColors: rainbowColors,
+                delimiter: delimiter,
+                plugins: plugins,
+            }
+        },
+
+        /**
+         * @deprecated Please use `codeInput.characterLimit(plugins)`
+         */
+        character_limit() {
+            return this.characterLimit([]);
+        },
+        /**
+         * @deprecated Please use `codeInput.rainbowText`
+         */
+        rainbow_text(rainbowColors = ["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue", "magenta"], delimiter = "", plugins = []) {
+            return this.rainbowText(rainbowColors, delimiter, plugins);
+        }
+    },
+
+    /* ------------------------------------
+    *  ------------Plugins-----------------
+    *  ------------------------------------ */
+
+    /**
+     * Where plugins are stored, after they are imported. The plugin
+     * file assigns them a space in this object.
+     * For adding completely new syntax-highlighting algorithms, please see `codeInput.templates`.
+     * Key - plugin name
+     * Value - plugin object
+     * @type {Object}
+     */
+    plugins: {
+    },
+
+    /**
+     * Plugins are imported from the plugins folder. They will then
+     * provide custom extra functionality to code-input elements.
+     */
     Plugin: class {
         constructor() {
             console.log("code-input: plugin: Created plugin!");
-            
-            // Add attributes
+
             codeInput.observedAttributes = codeInput.observedAttributes.concat(self.observedAttributes);
         }
 
-        /* Runs before code is highlighted; Params: codeInput element) */
-        beforeHighlight(codeInput) {}
-        /* Runs after code is highlighted; Params: codeInput element) */
-        afterHighlight(codeInput) {}
-        /* Runs before elements are added into a `code-input`; Params: codeInput element) */
-        beforeElementsAdded(codeInput) {}
-        /* Runs after elements are added into a `code-input` (useful for adding events to the textarea); Params: codeInput element) */
-        afterElementsAdded(codeInput) {}
-        /* Runs when an attribute of a `code-input` is changed (you must add the attribute name to observedAttributes); Params: codeInput element, name attribute name, oldValue previous value of attribute, newValue changed value of attribute) */
-        attributeChanged(codeInput, name, oldValue, newValue) {}
+        /**
+         * Runs before code is highlighted.
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         */
+        beforeHighlight(codeInput) { }
+        /**
+         * Runs after code is highlighted.
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         */
+        afterHighlight(codeInput) { }
+        /**
+         * Runs before elements are added into a code-input element.
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         */
+        beforeElementsAdded(codeInput) { }
+        /**
+         * Runs after elements are added into a code-input element (useful for adding events to the textarea).
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         */
+        afterElementsAdded(codeInput) { }
+        /**
+         * Runs when an attribute of a code-input element is changed (you must add the attribute name to `codeInput.Plugin.observedAttributes` first).
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         * @param {string} name - The name of the attribute
+         * @param {string} oldValue - The value of the attribute before it was changed
+         * @param {string} newValue - The value of the attribute after it is changed
+         */
+        attributeChanged(codeInput, name, oldValue, newValue) { }
+        /**
+         * The HTML attributes to watch for this plugin, and report any 
+         * modifications to the `codeInput.Plugin.attributeChanged` method.
+         */
         observedAttributes = []
     },
-    
-    /* Main */
-    CodeInput: class extends HTMLElement { // Create code input element
+
+    /* ------------------------------------
+    *  -------------Main-------------------
+    *  ------------------------------------ */
+
+    /**
+     * A code-input element.
+     */
+    CodeInput: class extends HTMLElement {
         constructor() {
             super(); // Element
         }
 
-        bound_callbacks = {}; // Callback without this context > Callback with forced codeInput elem this
+        /**
+         * When events are transferred to the textarea element, callbacks
+         * are bound to set the this variable to the code-inpute element
+         * rather than the textarea. This allows the callback to be converted
+         * to a bound one:
+         * Key - Callback not bound
+         * Value - Callback that is bound, with this equalling the code-input element in the callback 
+         */
+        boundEventCallbacks = {};
 
-        /* Run this event in all plugins with a optional list of arguments */
-        plugin_evt(id, args) {
-            // Run the event `id` in each plugin
+        /** Trigger this event in all plugins with a optional list of arguments 
+         * @param {string} eventName - the name of the event to trigger
+         * @param {Array} args - the arguments to pass into the event callback in the template after the code-input element. Normally left empty
+        */
+        pluginEvt(eventName, args) {
             for (let i in this.template.plugins) {
                 let plugin = this.template.plugins[i];
-                if (id in plugin) {
-                    if(args === undefined) {
-                        plugin[id](this);
+                if (eventName in plugin) {
+                    if (args === undefined) {
+                        plugin[eventName](this);
                     } else {
-                        plugin[id](this, ...args);
+                        plugin[eventName](this, ...args);
                     }
                 }
             }
         }
 
-         /* Syntax-highlighting functions */
-         update(text) {
+        /* ------------------------------------
+        *  ----------Main Functionality--------
+        *  ------------------------------------ 
+        * The main function of a code-input element is to take 
+        * code written in its textarea element, copy this code into
+        * the result (pre code) element, then use the template object
+        * to syntax-highlight it. */
+
+        /** Update the text value to the result element, after the textarea contents have changed.
+         * @param {string} value - The text value of the code-input element
+         */
+        update(value) {
             // Prevent this from running multiple times on the same input when "value" attribute is changed, 
             // by not running when value is already equal to the input of this (implying update has already
             // been run). Thank you to peterprvy for this. 
-            if(this.ignoreValueUpdate) return;
-            
+            if (this.ignoreValueUpdate) return;
+
             this.ignoreValueUpdate = true;
-            this.value = text; // Change value attribute if necessary.
+            this.value = value;
             this.ignoreValueUpdate = false;
-            if(this.querySelector("textarea").value != text) this.querySelector("textarea").value = text;  
+            if (this.querySelector("textarea").value != value) this.querySelector("textarea").value = value;
 
 
-            let result_element = this.querySelector("pre code");
-    
-            // Handle final newlines (see article)
-            if (text[text.length - 1] == "\n") {
-                text += " ";
+            let resultElement = this.querySelector("pre code");
+
+            // Handle final newlines
+            if (value[value.length - 1] == "\n") {
+                value += " ";
             }
 
             // Update code
-            result_element.innerHTML = this.escape_html(text);
-            this.plugin_evt("beforeHighlight");
+            resultElement.innerHTML = this.escapeHtml(value);
+            this.pluginEvt("beforeHighlight");
 
             // Syntax Highlight
-            if(this.template.includeCodeInputInHighlightFunc) this.template.highlight(result_element, this);
-            else this.template.highlight(result_element);
-           
-            this.plugin_evt("afterHighlight");
+            if (this.template.includeCodeInputInHighlightFunc) this.template.highlight(resultElement, this);
+            else this.template.highlight(resultElement);
+
+            this.pluginEvt("afterHighlight");
+        }
+        
+        /**
+         * Synchronise the scrolling of the textarea to the result element.
+         */
+        syncScroll() {
+            let inputElement = this.querySelector("textarea");
+            let resultElement = this.template.preElementStyled ? this.querySelector("pre") : this.querySelector("pre code");
+
+            resultElement.scrollTop = inputElement.scrollTop;
+            resultElement.scrollLeft = inputElement.scrollLeft;
         }
 
-        sync_scroll() {
-            /* Scroll result to scroll coords of event - sync with textarea */
-            let input_element = this.querySelector("textarea");
-            let result_element = this.template.preElementStyled ? this.querySelector("pre") : this.querySelector("pre code");
-            // Get and set x and y
-            result_element.scrollTop = input_element.scrollTop;
-            result_element.scrollLeft = input_element.scrollLeft;
-        }
-
-        escape_html(text) {
+        /**
+         * HTML-escape an arbitrary string.
+         * @param {string} text - The original, unescaped text
+         * @returns {string} - The new, HTML-escaped text
+         */
+        escapeHtml(text) {
             return text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;"); /* Global RegExp */
         }
 
-        /* Get the template for this element or add to the unrecognised template queue. */
-        get_template() {
-            // Get name of template
-            let template_name;
-            if(this.getAttribute("template") == undefined) {
+        /**
+         * Get the template object this code-input element is using.
+         * @returns {Object} - Template object
+         */
+        getTemplate() {
+            let templateName;
+            if (this.getAttribute("template") == undefined) {
                 // Default
-                template_name = codeInput.defaultTemplate;
+                templateName = codeInput.defaultTemplate;
             } else {
-                template_name = this.getAttribute("template");
+                templateName = this.getAttribute("template");
             }
-            // Get template
-            if(template_name in codeInput.usedTemplates) {
-                return codeInput.usedTemplates[template_name];
+            if (templateName in codeInput.usedTemplates) {
+                return codeInput.usedTemplates[templateName];
             } else {
                 // Doesn't exist - add to queue
-                if( !(template_name in codeInput.templateQueue)) {
-                    codeInput.templateQueue[template_name] = [];
+                if (!(templateName in codeInput.templateNotYetRegisteredQueue)) {
+                    codeInput.templateNotYetRegisteredQueue[templateName] = [];
                 }
-                codeInput.templateQueue[template_name].push(this);
+                codeInput.templateNotYetRegisteredQueue[templateName].push(this);
                 return undefined;
             }
-            codeInput.usedTemplates[codeInput.defaultTemplate]
         }
-        /* Set up element when a template is added */
+        
+        /**
+         * Set up and initialise the textarea.
+         * This will be called once the template has been added.
+         */
         setup() {
             this.classList.add("code-input_registered"); // Remove register message
-            if(this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
+            if (this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
 
-            this.plugin_evt("beforeElementsAdded");
+            this.pluginEvt("beforeElementsAdded");
 
-            /* Defaults */
+            // First-time attribute sync
             let lang = this.getAttribute("lang");
             let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
             let value = this.value || this.innerHTML || "";
-    
+
             this.innerHTML = ""; // Clear Content
-    
-            /* Create Textarea */
+
+            // Create textarea
             let textarea = document.createElement("textarea");
             textarea.placeholder = placeholder;
             textarea.value = value;
@@ -171,91 +441,129 @@ var codeInput = {
     
             textarea.addEventListener('input',(evt) => { textarea.parentElement.update(textarea.value); textarea.parentElement.sync_scroll();});
             textarea.addEventListener('scroll',(evt) =>  textarea.parentElement.sync_scroll());
+          
             this.append(textarea);
 
-            /* Create pre code */
+            // Create result element
             let code = document.createElement("code");
             let pre = document.createElement("pre");
             pre.setAttribute("aria-hidden", "true"); // Hide for screen readers
             pre.append(code);
             this.append(pre);
 
-            if(this.template.isCode) {
-                if(lang != undefined && lang != "") {
+            if (this.template.isCode) {
+                if (lang != undefined && lang != "") {
                     code.classList.add("language-" + lang);
                 }
             }
-            
-            this.plugin_evt("afterElementsAdded");
 
-            /* Add code from value attribute - useful for loading from backend */
-            this.update(value, this);
+            this.pluginEvt("afterElementsAdded");
+
+            this.update(value);
         }
-        
-        /* Callbacks */
+
+        /**
+         * @deprecated Please use `codeInput.CodeInput.syncScroll`
+         */
+        sync_scroll() {
+            this.syncScroll();
+        }
+
+        /**
+         * @deprecated Please use `codeInput.CodeInput.escapeHtml`
+         */
+        escape_html(text) {
+            return this.escapeHtml(text);
+        }
+
+        /**
+         * @deprecated Please use `codeInput.CodeInput.escapeHtml`
+         */
+        get_template() {
+            return this.getTemplate();
+        }
+
+
+        /* ------------------------------------
+        *  -----------Callbacks----------------
+        *  ------------------------------------
+        * Implement the `HTMLElement` callbacks
+        * to trigger the main functionality properly. */
+
+        /**
+         * When the code-input element has been added to the document,
+         * find its template and set up the element.
+         */
         connectedCallback() {
-            // Added to document
-            this.template = this.get_template();
-            if(this.template != undefined) this.setup();
+            this.template = this.getTemplate();
+            if (this.template != undefined) this.setup();
         }
-        static get observedAttributes() {         
-            return codeInput.observedAttributes.concat(codeInput.textareaSyncAttributes);
+
+        /**
+         * Get the HTML attributes that need to be monitored and reported
+         * to `codeInput.CodeInput.attributeChangedCallback` when modified.
+         */
+        static get observedAttributes() {
+           return codeInput.observedAttributes.concat(codeInput.textareaSyncAttributes);
         }
-        
+
+        /**
+         * Triggered when an HTML attribute in `codeInput.CodeInput.observedAttributes`
+         * has been modified.
+         * @param {string} name - The name of the attribute
+         * @param {string} oldValue - The value of the attribute before it was changed
+         * @param {string} newValue - The value of the attribute after it is changed
+         */
         attributeChangedCallback(name, oldValue, newValue) {
-            if(this.isConnected) {
-                // This will sometimes be called before the element has been created, so trying to update an attribute causes an error.
-                // Thanks to Kevin Loughead for pointing this out.
-                
-                this.plugin_evt("attributeChanged", [name, oldValue, newValue]); // Plugin event
+            if (this.isConnected) {
+                this.pluginEvt("attributeChanged", [name, oldValue, newValue]);
                 switch (name) {
-    
+
                     case "value":
                         this.update(newValue);
                         break;
-        
                     case "placeholder":
                         this.querySelector("textarea").placeholder = newValue;
                         break;
                     case "template":
                         this.template = codeInput.usedTemplates[newValue || codeInput.defaultTemplate];
-                        if(this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
+                        if (this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
                         else this.classList.remove("code-input_pre-element-styled");
                         // Syntax Highlight
                         this.update(this.value);
 
                         break;
-    
+
                     case "lang":
 
                         let code = this.querySelector("pre code");
-                        let main_textarea = this.querySelector("textarea");
-                        
+                        let mainTextarea = this.querySelector("textarea");
+
                         // Check not already updated
-                        if(newValue != null) {
+                        if (newValue != null) {
                             newValue = newValue.toLowerCase();
-                        
-                            if(code.classList.contains(`language-${newValue}`)) break; // Already updated
+
+                            if (code.classList.contains(`language-${newValue}`)) break; // Already updated
                         }
-                        
+
 
                         // Case insensitive
                         oldValue = oldValue.toLowerCase();
-    
+
                         // Remove old language class and add new
                         console.log("code-input: Language: REMOVE", "language-" + oldValue);
                         code.classList.remove("language-" + oldValue); // From CODE
                         code.parentElement.classList.remove("language-" + oldValue); // From PRE
                         code.classList.remove("language-none"); // Prism
                         code.parentElement.classList.remove("language-none"); // Prism
-                        
-                        if(newValue != undefined && newValue != "") {
+
+                        if (newValue != undefined && newValue != "") {
                             code.classList.add("language-" + newValue);
                             console.log("code-input: Language:ADD", "language-" + newValue);
                         }
-                        
-                        if(main_textarea.placeholder == oldValue) main_textarea.placeholder = newValue;
-    
+
+                        if (mainTextarea.placeholder == oldValue) mainTextarea.placeholder = newValue;
+
                         this.update(this.value);
 
                         break;
@@ -266,36 +574,26 @@ var codeInput = {
                         break;
                 }
             }
-            
+
         }
-
-        // /* Transfer an event by name from this to an inner element. */
-        // transfer_event(evt_name, transfer_to, oldValue, newValue) {
-        //     if(oldValue) { // Remove old listener
-        //         transfer_to.removeEventListener(evt_name, this.last_events[evt_name]);
-        //     }
-        //     if(newValue) {
-        //         this.last_events[evt_name] = this[`on${evt_name}`].bind(this);
-        //         transfer_to.addEventListener(evt_name, this.last_events[evt_name]);
-        //         this.removeEventListener(evt_name, newValue);
-        //     }
-        // }
-
-        /* Override addEventListener so event listener added to necessary child. Returns callback bound to code-input element as `this` */
-        addEventListener(evt_name, callback, thirdParameter=null) {
-            let boundCallback = callback.bind(this);
-            this.bound_callbacks[callback] = boundCallback;
-            if(evt_name == "change") {
-                if(thirdParameter === null) {
+        
+        /**
+         * @override
+         */
+        addEventListener(type, listener, options = undefined) {
+            let boundCallback = listener.bind(this);
+            this.boundEventCallbacks[listener] = boundCallback;
+            if (type == "change") {
+                if (options === undefined) {
                     this.querySelector("textarea").addEventListener("change", boundCallback);
                 } else {
-                    this.querySelector("textarea").addEventListener("change", boundCallback, thirdParameter);
+                    this.querySelector("textarea").addEventListener("change", boundCallback, options);
                 }
-            } else if(evt_name == "selectionchange") {
-                if(thirdParameter === null) {
+            } else if (type == "selectionchange") {
+                if (options === undefined) {
                     this.querySelector("textarea").addEventListener("selectionchange", boundCallback);
                 } else {
-                    this.querySelector("textarea").addEventListener("selectionchange", boundCallback, thirdParameter);
+                    this.querySelector("textarea").addEventListener("selectionchange", boundCallback, options);
                 }
             } else if(evt_name == "invalid") {
                 if(thirdParameter === null) {
@@ -309,38 +607,59 @@ var codeInput = {
                 } else {
                     this.querySelector("textarea").addEventListener("input", boundCallback, thirdParameter);
                 }
+            } else {
+                super.addEventListener(type, listener, options);
             }
         }
 
-        /* Override removeEventListener so event listener removed from necessary child */
-        removeEventListener(evt_name, callback, thirdParameter=null) {
-            let boundCallback = this.bound_callbacks[callback];
-            if(evt_name == "change") {
-                if(thirdParameter === null) {
+        /**
+         * @override
+         */
+        removeEventListener(type, listener, options = null) {
+            let boundCallback = this.boundEventCallbacks[listener];
+            if (type == "change") {
+                if (options === null) {
                     this.querySelector("textarea").removeEventListener("change", boundCallback);
                 } else {
-                    this.querySelector("textarea").removeEventListener("change", boundCallback, thirdParameter);
+                    this.querySelector("textarea").removeEventListener("change", boundCallback, options);
                 }
-            } else if(evt_name == "selectionchange") {
-                if(thirdParameter === null) {
+            } else if (type == "selectionchange") {
+                if (options === null) {
                     this.querySelector("textarea").removeEventListener("selectionchange", boundCallback);
                 } else {
-                    this.querySelector("textarea").removeEventListener("selectionchange", boundCallback, thirdParameter);
+                    this.querySelector("textarea").removeEventListener("selectionchange", boundCallback, options);
                 }
+            } else {
+                super.removeEventListener(type, listener, options);
             }
         }
 
-        /* Value attribute */
+        /**
+         * Get the text contents of the code-input element.
+         */
         get value() {
             return this.getAttribute("value");
         }
+        /**
+         * Set the text contents of the code-input element.
+         * @param {string} val - New text contents
+         */
         set value(val) {
             return this.setAttribute("value", val);
         }
-        /* Placeholder attribute */
+        
+        /**
+         * Get the placeholder of the code-input element that appears
+         * when no code has been entered.
+         */
         get placeholder() {
             return this.getAttribute("placeholder");
         }
+        /**
+         * Set the placeholder of the code-input element that appears
+         * when no code has been entered.
+         * @param {string} val - New placeholder
+         */
         set placeholder(val) {
             return this.setAttribute("placeholder", val);
         }
@@ -377,101 +696,14 @@ var codeInput = {
         }
 
         pluginData = {}; // For plugins to store element-specific data under their name, e.g. <code-input>.pluginData.specialChars
-    },
-    
-    registerTemplate: function(template_name, template) {
-        // Set default class
-        codeInput.usedTemplates[template_name] = template;
-        // Add elements w/ template from queue
-        if(template_name in codeInput.templateQueue) {
-            for(let i in codeInput.templateQueue[template_name]) {
-                elem = codeInput.templateQueue[template_name][i];
-                elem.template = template;
-                elem.setup();
-            }
-            console.log(`code-input: template: Added existing elements with template ${template_name}`);
-        }
-        if(codeInput.defaultTemplate == undefined) {
-            codeInput.defaultTemplate = template_name;
-            // Add elements w/ default template from queue
-            if(undefined in codeInput.templateQueue) {
-                for(let i in codeInput.templateQueue[undefined]) {
-                    elem = codeInput.templateQueue[undefined][i];
-                    elem.template = template;
-                    elem.setup();
-                }
-            }
-            console.log(`code-input: template: Set template ${template_name} as default`);
-        }
-        console.log(`code-input: template: Created template ${template_name}`);
-    },
-    templates: {
-        custom(highlight=function() {}, preElementStyled=true, isCode=true, includeCodeInputInHighlightFunc=false, plugins=[]) {
-            return {
-                highlight: highlight, 
-                includeCodeInputInHighlightFunc: includeCodeInputInHighlightFunc,
-                preElementStyled: preElementStyled,
-                isCode: isCode,
-                plugins: plugins,
-            };
-        },
-        prism(prism, plugins=[]) { // Dependency: Prism.js (https://prismjs.com/)
-            return {
-                includeCodeInputInHighlightFunc: false,
-                highlight: prism.highlightElement, 
-                preElementStyled: true,
-                isCode: true,
-                plugins: plugins,
-            };
-        },
-        hljs(hljs, plugins=[]) { // Dependency: Highlight.js (https://highlightjs.org/)
-            return {
-                includeCodeInputInHighlightFunc: false,
-                highlight: hljs.highlightElement, 
-                preElementStyled: false,
-                isCode: true,
-                plugins: plugins,
-            };
-        },
-        characterLimit() {
-            return {
-                highlight: function(result_element, code_input, plugins=[]) {
-
-                    let character_limit = Number(code_input.getAttribute("data-character-limit"));
-
-                    let normal_characters = code_input.escape_html(code_input.value.slice(0, character_limit));
-                    let overflow_characters = code_input.escape_html(code_input.value.slice(character_limit));
-                    
-                    result_element.innerHTML = `${normal_characters}<mark class="overflow">${overflow_characters}</mark>`;
-                    if(overflow_characters.length > 0) {
-                        result_element.innerHTML += ` <mark class="overflow-msg">${code_input.getAttribute("data-overflow-msg") || "(Character limit reached)"}</mark>`;
-                    }
-                },
-                includeCodeInputInHighlightFunc: true,
-                preElementStyled: true,
-                isCode: false,
-                plugins: plugins,
-            }
-        },
-        rainbowText(rainbow_colors=["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue",  "magenta"], delimiter="", plugins=[]) {
-            return {
-                highlight: function(result_element, code_input) {
-                    let html_result = [];
-                    let sections = code_input.value.split(code_input.template.delimiter);
-                    for (let i = 0; i < sections.length; i++) {
-                        html_result.push(`<span style="color: ${code_input.template.rainbow_colors[i % code_input.template.rainbow_colors.length]}">${code_input.escape_html(sections[i])}</span>`);
-                    }
-                    result_element.innerHTML = html_result.join(code_input.template.delimiter);
-                },
-                includeCodeInputInHighlightFunc: true,
-                preElementStyled: true,
-                isCode: false,
-                rainbow_colors: rainbow_colors,
-                delimiter: delimiter,
-                plugins: plugins,
-            }
-        }
+        
+         /**
+         * Allows plugins to store data in the scope of a single element.
+         * Key - name of the plugin
+         * Value - object of data to be stored; different plugins may use this differently.
+         */
+        pluginData = {};
     }
 }
 
-customElements.define("code-input", codeInput.CodeInput); // Set tag
+customElements.define("code-input", codeInput.CodeInput);
