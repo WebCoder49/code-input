@@ -85,6 +85,18 @@ var codeInput = {
      * @param {Object} template - a Template object instance - see `codeInput.templates`  
      */
     registerTemplate: function (templateName, template) {
+        if(!(typeof templateName == "string" || templateName instanceof String)) throw TypeError(`Template for "${templateName}" must be a string.`);
+        if(!(typeof template.highlight == "function" || template.highlight instanceof Function)) throw TypeError(`Template for "${templateName}" invalid, because the highlight function provided is not a function; it is "${template.highlight}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        if(!(typeof template.includeCodeInputInHighlightFunc == "boolean" || template.includeCodeInputInHighlightFunc instanceof Boolean)) throw TypeError(`Template for "${templateName}" invalid, because the includeCodeInputInHighlightFunc value provided is not a true or false; it is "${template.includeCodeInputInHighlightFunc}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        if(!(typeof template.preElementStyled == "boolean" || template.preElementStyled instanceof Boolean)) throw TypeError(`Template for "${templateName}" invalid, because the preElementStyled value provided is not a true or false; it is "${template.preElementStyled}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        if(!(typeof template.isCode == "boolean" || template.isCode instanceof Boolean)) throw TypeError(`Template for "${templateName}" invalid, because the isCode value provided is not a true or false; it is "${template.isCode}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        if(!Array.isArray(template.plugins)) throw TypeError(`Template for "${templateName}" invalid, because the plugin array provided is not an array; it is "${template.plugins}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        template.plugins.forEach((plugin, i) => {
+            if(!(plugin instanceof codeInput.Plugin)) {
+                throw TypeError(`Template for "${templateName}" invalid, because the plugin provided at index ${i} is not valid; it is "${template.plugins[i]}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+            }
+        });
+        
         codeInput.usedTemplates[templateName] = template;
         // Add waiting code-input elements wanting this template from queue
         if (templateName in codeInput.templateNotYetRegisteredQueue) {
@@ -257,7 +269,7 @@ var codeInput = {
      */
     Plugin: class {
         constructor() {
-            console.log("code-input: plugin: Created plugin!");
+            console.log("code-input: plugin: Created plugin");
 
             codeInput.observedAttributes = codeInput.observedAttributes.concat(self.observedAttributes);
         }
