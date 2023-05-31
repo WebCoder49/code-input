@@ -16,21 +16,17 @@ Unlike other front-end code-editor projects, the simplicity of how `code-input` 
 
 The `<code-input>` element works like a `<textarea>` and therefore **works in HTML5 forms and supports using the `value` and `placeholder` attributes, as well as the `onchange` event.**
 
-<details>
-<summary>
-
-## Getting Started With `code-input`
-</summary>
+## 🚀 Getting Started With `code-input` (in 4 simple steps)
 
 `code-input` is designed to be **both easy to use and customisable**. Here's how to use it to create syntax-highlighted textareas: 
 
-### Import `code-input`
+### 1. Import `code-input`
 - **First, import your favourite syntax-highlighter's JS and CSS theme files** to turn editable. 
 - Then, import the CSS and JS files of `code-input` from a downloaded release or a CDN. The non-minified files are useful for using during development.
 
 <details>
 <summary>
-Locally downloaded
+Locally downloaded (Click)
 </summary>
 
 ```html
@@ -41,17 +37,17 @@ Locally downloaded
 </details>
 <details>
 <summary>
-From JSDelivr CDN
+From JSDelivr CDN (click)
 </summary>
 
 ```html
 <!--In the <head>-->
-<script src="https://cdn.jsdelivr.net/npm/@webcoder49/code-input@1.5/code-input.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@webcoder49/code-input@1.5/code-input.min.css">
+<script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@1.3/code-input.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@1.3/code-input.min.css">
 ```
 </details>
 
-### Creating a template
+### 2. Creating a template
 The next step is to set up a `template` to link `code-input` to your syntax-highlighter. If you're using Prism.js or highlight.js, you can use the built-in template, or you can create your own otherwise. In these examples, I am registering the template as `"syntax-highlighted"`, but you can use any template name as long as you are consistent.
 
 - *Highlight.js:*
@@ -71,13 +67,13 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
       /* Highlight code in result_element - code is already escaped so it doesn't become HTML */
     },
     true, /* Optional - Is the `pre` element styled as well as the `code` element? Changing this to false uses the code element as the scrollable one rather than the pre element */
-    true, /* Optional - This is used for editing code - setting this to true overrides the Tab key and uses it for indentation */
+    true, /* Optional - This is used for editing code - setting this to true sets the `code` element's class to `language-<the code-input's lang attribute>` */
     false /* Optional - Setting this to true passes the `<code-input>` element as a second argument to the highlight function to be used for getting data- attribute values and using the DOM for the code-input */,
     [] // Array of plugins (see below)
   ));
   ```
 
-### Adding plugins
+### 3. Adding plugins
 [Plugins](./plugins/) allow you to add extra features to a template, like [automatic indentation](plugins/indent.js) or [support for highlight.js's language autodetection](plugins/autodetect.js). To use them, just:
 - Import the plugins' JS files after you have imported `code-input` and before registering the template.
 - Place instances of the plugins in the array of plugins argument when registering, like this:
@@ -102,7 +98,7 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 
 To see a full list of plugins and their functions, please see [plugins/README.md](./plugins/README.md).
 
-### Using the component
+### 4. Using the component
 Now that you have registered a template, you can use the custom `<code-input>` element in HTML. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `lang` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events to make your element as simple or interactive as you like! 
   ```HTML
   <code-input lang="HTML"></code-input>
@@ -111,7 +107,6 @@ Now that you have registered a template, you can use the custom `<code-input>` e
   ```HTML
   <code-input lang="HTML" placeholder="Type code here" value="<a href='https://github.com/WebCoder49/code-input'>code-input</a>" template="syntax-highlighted" onchange="console.log('Your code is', this.value)"></code-input>
   ```
-</details>
 
 ## Contributing
 If you have any features you would like to add to `code-input`, or have found any bugs, please [open an issue](https://github.com/WebCoder49/code-input/issues) or [fork and submit a pull request](https://github.com/WebCoder49/code-input/fork)! All contributions to this open-source project would be greatly appreciated.
