@@ -3,7 +3,7 @@
  * possible to indent/unindent multiple lines using Tab/Shift+Tab
  * Files: indent.js
  */
- codeInput.plugins.Indent = class extends codeInput.Plugin {
+codeInput.plugins.Indent = class extends codeInput.Plugin {
     constructor() {
         super();
     }
@@ -129,6 +129,7 @@
 
         // save the current cursor position
         let selection_start = input_element.selectionStart;
+        let selection_end = input_element.selectionEnd;
 
         document.execCommand("insertText", false, "\n" + new_line); // Write new line, including auto-indentation
 
