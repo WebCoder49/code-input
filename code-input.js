@@ -322,6 +322,12 @@ var codeInput = {
         }
 
         /**
+        * expose textarea and pre elements
+        */
+        textarea = null;
+        pre = null;
+
+        /**
          * When events are transferred to the textarea element, callbacks
          * are bound to set the this variable to the code-inpute element
          * rather than the textarea. This allows the callback to be converted
@@ -474,6 +480,9 @@ var codeInput = {
             pre.setAttribute("aria-hidden", "true"); // Hide for screen readers
             pre.append(code);
             this.append(pre);
+
+            this.textarea = textarea;
+            this.pre = pre;
 
             if (this.template.isCode) {
                 if (lang != undefined && lang != "") {
