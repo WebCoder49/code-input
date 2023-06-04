@@ -322,6 +322,12 @@ var codeInput = {
         }
 
         /**
+        * Form-Associated Custom Element Callbacks
+        * https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-face-example
+        */
+        static formAssociated = true;
+
+        /**
          * When events are transferred to the textarea element, callbacks
          * are bound to set the this variable to the code-inpute element
          * rather than the textarea. This allows the callback to be converted
@@ -448,13 +454,14 @@ var codeInput = {
             let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
             let value = this.value || this.innerHTML || "";
 
-            this.innerHTML = ""; // Clear Content
-
             // Create textarea
             let textarea = document.createElement("textarea");
             textarea.placeholder = placeholder;
             textarea.value = value;
+            textarea.innerHTML = this.innerHTML;
             textarea.setAttribute("spellcheck", "false");
+
+            this.innerHTML = ""; // Clear Content
 
             // Synchronise attributes to textarea
             codeInput.textareaSyncAttributes.forEach((attribute) => {
@@ -753,6 +760,13 @@ var codeInput = {
          * Value - object of data to be stored; different plugins may use this differently.
          */
         pluginData = {};
+
+        /**
+        * Update value on form reset
+        */
+        formResetCallback() {
+            this.update(this.querySelector("textarea").value);
+        }
     }
 }
 
