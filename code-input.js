@@ -27,6 +27,7 @@ var codeInput = {
      * code-input element.
      */
     textareaSyncAttributes: [
+        "aria-*",
         "value",
         "name",
         // Form validation - https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation
@@ -478,6 +479,15 @@ var codeInput = {
 
             // Synchronise attributes to textarea
             codeInput.textareaSyncAttributes.forEach((attribute) => {
+                if (attribute.indexOf("*") > -1) {
+                    const reg = new RegExp("^"+attribute.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&').replace("*", ".*") + "$", "i");
+                    for(const attr of this.attributes) {
+                        if (attr.nodeName.match(reg)) {
+                            textarea.setAttribute(attr.nodeName, attr.nodeValue);
+                        }
+                    }
+                    return;
+                }
                 if (this.hasAttribute(attribute)) {
                     textarea.setAttribute(attribute, this.getAttribute(attribute));
                 }
