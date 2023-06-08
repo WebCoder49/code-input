@@ -320,6 +320,10 @@ var codeInput = {
         constructor() {
             super(); // Element
         }
+        /**
+        * Store value internally
+        */
+        _value = '';
 
         /**
         * expose children elements
@@ -330,7 +334,7 @@ var codeInput = {
 
         /**
          * When events are transferred to the textarea element, callbacks
-         * are bound to set the this variable to the code-inpute element
+         * are bound to set the this variable to the code-input element
          * rather than the textarea. This allows the callback to be converted
          * to a bound one:
          * Key - Callback not bound
@@ -555,7 +559,7 @@ var codeInput = {
                 switch (name) {
 
                     case "value":
-                        this.update(newValue);
+                        this.value = newValue;
                         break;
                     case "placeholder":
                         this.TEXTAREA.placeholder = newValue;
@@ -666,14 +670,18 @@ var codeInput = {
          * Get the text contents of the code-input element.
          */
         get value() {
-            return this.getAttribute("value");
+            return this._value;
         }
         /**
          * Set the text contents of the code-input element.
          * @param {string} val - New text contents
          */
         set value(val) {
-            return this.setAttribute("value", val);
+            if (val === null || val === undefined) {
+                val = "";
+            }
+            this.update(val);
+            return val;
         }
 
         /**
