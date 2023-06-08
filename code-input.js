@@ -327,11 +327,19 @@ var codeInput = {
         _value = '';
 
         /**
-        * expose children elements
+        * Exposed child textarea element for user to input code in
         */
-        TEXTAREA = null;
-        PRE = null;
-        CODE = null;
+        textareaElement = null;
+        /**
+        * Exposed child pre element where syntax-highlighted code is outputted.
+        * Contains this.codeElement as its only child.
+        */
+        preElement = null;
+        /**
+        * Exposed child pre element's child code element where syntax-highlighted code is outputted.
+        * Has this.preElement as its parent.
+        */
+        codeElement = null;
 
         /**
         * Form-Associated Custom Element Callbacks
@@ -386,10 +394,10 @@ var codeInput = {
             this.ignoreValueUpdate = true;
             this.value = value;
             this.ignoreValueUpdate = false;
-            if (this.TEXTAREA.value != value) this.TEXTAREA.value = value;
+            if (this.textareaElement.value != value) this.textareaElement.value = value;
 
 
-            let resultElement = this.CODE;
+            let resultElement = this.codeElement;
 
             // Handle final newlines
             if (value[value.length - 1] == "\n") {
@@ -411,8 +419,8 @@ var codeInput = {
          * Synchronise the scrolling of the textarea to the result element.
          */
         syncScroll() {
-            let inputElement = this.TEXTAREA;
-            let resultElement = this.template.preElementStyled ? this.PRE : this.CODE;
+            let inputElement = this.textareaElement;
+            let resultElement = this.template.preElementStyled ? this.preElement : this.codeElement;
 
             resultElement.scrollTop = inputElement.scrollTop;
             resultElement.scrollLeft = inputElement.scrollLeft;
@@ -469,7 +477,7 @@ var codeInput = {
             // Create textarea
             let textarea = document.createElement("textarea");
             textarea.placeholder = placeholder;
-            if(this.value != "") {
+            if(value != "") { // TODO: Check
                 textarea.value = value;
             }
             textarea.innerHTML = this.innerHTML;
@@ -505,9 +513,9 @@ var codeInput = {
             pre.append(code);
             this.append(pre);
 
-            this.TEXTAREA = textarea;
-            this.PRE = pre;
-            this.CODE = code;
+            this.textareaElement = textarea;
+            this.preElement = pre;
+            this.codeElement = code;
 
             if (this.template.isCode) {
                 if (lang != undefined && lang != "") {
@@ -581,7 +589,7 @@ var codeInput = {
                         this.value = newValue;
                         break;
                     case "placeholder":
-                        this.TEXTAREA.placeholder = newValue;
+                        this.textareaElement.placeholder = newValue;
                         break;
                     case "template":
                         this.template = codeInput.usedTemplates[newValue || codeInput.defaultTemplate];
@@ -594,8 +602,8 @@ var codeInput = {
 
                     case "lang":
 
-                        let code = this.CODE;
-                        let mainTextarea = this.TEXTAREA;
+                        let code = this.codeElement;
+                        let mainTextarea = this.textareaElement;
 
                         // Check not already updated
                         if (newValue != null) {
@@ -610,8 +618,8 @@ var codeInput = {
 
                         // Remove old language class and add new
                         console.log("code-input: Language: REMOVE", "language-" + oldValue);
-                        code.classList.remove("language-" + oldValue); // From CODE
-                        code.parentElement.classList.remove("language-" + oldValue); // From PRE
+                        code.classList.remove("language-" + oldValue); // From codeElement
+                        code.parentElement.classList.remove("language-" + oldValue); // From preElement
                         code.classList.remove("language-none"); // Prism
                         code.parentElement.classList.remove("language-none"); // Prism
 
@@ -627,7 +635,7 @@ var codeInput = {
                         break;
                     default:
                         if (codeInput.textareaSyncAttributes.includes(name)) {
-                            this.TEXTAREA.setAttribute(name, newValue);
+                            this.textareaElement.setAttribute(name, newValue);
                         }
                         break;
                 }
@@ -650,9 +658,9 @@ var codeInput = {
 
             if (codeInput.textareaSyncEvents.includes(type)) {
                 if (options === undefined) {
-                    this.TEXTAREA.addEventListener(type, boundCallback);
+                    this.textareaElement.addEventListener(type, boundCallback);
                 } else {
-                    this.TEXTAREA.addEventListener(type, boundCallback, options);
+                    this.textareaElement.addEventListener(type, boundCallback, options);
                 }
             } else {
                 if (options === undefined) {
@@ -670,15 +678,15 @@ var codeInput = {
             let boundCallback = this.boundEventCallbacks[listener];
             if (type == "change") {
                 if (options === null) {
-                    this.TEXTAREA.removeEventListener("change", boundCallback);
+                    this.textareaElement.removeEventListener("change", boundCallback);
                 } else {
-                    this.TEXTAREA.removeEventListener("change", boundCallback, options);
+                    this.textareaElement.removeEventListener("change", boundCallback, options);
                 }
             } else if (type == "selectionchange") {
                 if (options === null) {
-                    this.TEXTAREA.removeEventListener("selectionchange", boundCallback);
+                    this.textareaElement.removeEventListener("selectionchange", boundCallback);
                 } else {
-                    this.TEXTAREA.removeEventListener("selectionchange", boundCallback, options);
+                    this.textareaElement.removeEventListener("selectionchange", boundCallback, options);
                 }
             } else {
                 super.removeEventListener(type, listener, options);
@@ -725,7 +733,7 @@ var codeInput = {
          * See `HTMLTextAreaElement.validity`
          */
         get validity() {
-            return this.TEXTAREA.validity;
+            return this.textareaElement.validity;
         }
 
         /**
@@ -736,7 +744,7 @@ var codeInput = {
          * See `HTMLTextAreaElement.validationMessage`
          */
         get validationMessage() {
-            return this.TEXTAREA.validationMessage;
+            return this.textareaElement.validationMessage;
         }
 
         /**
@@ -746,7 +754,7 @@ var codeInput = {
          * @param error Sets a custom error message that is displayed when a form is submitted.
          */
         setCustomValidity(error) {
-            return this.TEXTAREA.setCustomValidity(error);
+            return this.textareaElement.setCustomValidity(error);
         }
 
         /**
@@ -756,14 +764,14 @@ var codeInput = {
          * See `HTMLTextAreaElement.checkValidity`
          */
         checkValidity() {
-            return this.TEXTAREA.checkValidity();
+            return this.textareaElement.checkValidity();
         }
 
         /**
          * See `HTMLTextAreaElement.reportValidity`
          */
         reportValidity() {
-            return this.TEXTAREA.reportValidity();
+            return this.textareaElement.reportValidity();
         }
 
 
@@ -772,17 +780,17 @@ var codeInput = {
          */
         setAttribute(qualifiedName, value) {
             super.setAttribute(qualifiedName, value); // code-input
-            this.TEXTAREA.setAttribute(qualifiedName, value); // textarea
+            this.textareaElement.setAttribute(qualifiedName, value); // textarea
         }
 
         /**
          * @override
          */
         getAttribute(qualifiedName) {
-            if (this.TEXTAREA == null) {
+            if (this.textareaElement == null) {
                 return super.getAttribute(qualifiedName);
             }
-            return this.TEXTAREA.getAttribute(qualifiedName); // textarea
+            return this.textareaElement.getAttribute(qualifiedName); // textarea
         }
 
         /**
@@ -793,10 +801,10 @@ var codeInput = {
         pluginData = {};
 
         /**
-        * Update value on form reset
+        * Update value on form reset from value attribute
         */
         formResetCallback() {
-            this.update(this.querySelector("textarea").value);
+            this.update(this.querySelector("textarea").getAttribute("value"));
         }
     }
 }
