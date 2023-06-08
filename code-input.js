@@ -452,12 +452,14 @@ var codeInput = {
             // First-time attribute sync
             let lang = this.getAttribute("lang");
             let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
-            let value = this.value || this.innerHTML || "";
+            let value = this.value || "";
 
             // Create textarea
             let textarea = document.createElement("textarea");
             textarea.placeholder = placeholder;
-            textarea.value = value;
+            if(this.value != "") {
+                textarea.value = value;
+            }
             textarea.innerHTML = this.innerHTML;
             textarea.setAttribute("spellcheck", "false");
 
