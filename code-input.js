@@ -801,10 +801,10 @@ var codeInput = {
         pluginData = {};
 
         /**
-        * Update value on form reset from value attribute
+        * Update value on form reset
         */
         formResetCallback() {
-            this.update(this.querySelector("textarea").getAttribute("value"));
+            this.update(this.textareaElement.innerHTML);
         }
     }
 }
