@@ -487,17 +487,16 @@ var codeInput = {
 
             // Synchronise attributes to textarea
             codeInput.textareaSyncAttributes.forEach((attribute) => {
-                if (attribute.indexOf("*") > -1) {
-                    const reg = new RegExp("^"+attribute.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&').replace("*", ".*") + "$", "i");
-                    for(const attr of this.attributes) {
-                        if (attr.nodeName.match(reg)) {
-                            textarea.setAttribute(attr.nodeName, attr.nodeValue);
-                        }
-                    }
-                    return;
-                }
                 if (this.hasAttribute(attribute)) {
                     textarea.setAttribute(attribute, this.getAttribute(attribute));
+                }
+            });
+            codeInput.textareaSyncAttributes.regexp.forEach((reg) =>
+            {
+                for(const attr of this.attributes) {
+                    if (attr.nodeName.match(reg)) {
+                        textarea.setAttribute(attr.nodeName, attr.nodeValue);
+                    }
                 }
             });
 
@@ -563,6 +562,30 @@ var codeInput = {
         connectedCallback() {
             this.template = this.getTemplate();
             if (this.template != undefined) this.setup();
+            this.mutationObserver = new MutationObserver(this.mutationObserverCallback.bind(this));
+            this.mutationObserver.observe(this, {
+                attributes: true,
+                attributeOldValue: true
+            });
+        }
+
+        mutationObserverCallback(mutationList, observer) {
+            for (const mutation of mutationList) {
+                if (mutation.type !== 'attributes')
+                    continue;
+
+                for(let i = 0; i < codeInput.observedAttributes.regexp.length; i++) {
+                    const reg = codeInput.observedAttributes.regexp[i];
+                    if (mutation.attributeName.match(reg)) {
+                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, mutation.newValue);
+                    }
+                }
+
+            }
+        }
+
+        disconnectedCallback() {
+            this.mutationObserver.disconnect();
         }
 
         /**
@@ -636,6 +659,17 @@ var codeInput = {
                     default:
                         if (codeInput.textareaSyncAttributes.includes(name)) {
                             this.textareaElement.setAttribute(name, newValue);
+                        }
+                        else
+                        {
+                            codeInput.textareaSyncAttributes.regexp.forEach((attribute) =>
+                            {
+                                for(const attr of this.attributes) {
+                                    if (attr.nodeName.match(attribute)) {
+                                        this.textareaElement.setAttribute(attr.nodeName, attr.nodeValue);
+                                    }
+                                }
+                            });
                         }
                         break;
                 }
@@ -805,8 +839,43 @@ var codeInput = {
         */
         formResetCallback() {
             this.update(this.textareaElement.innerHTML);
-        }
+        };
+    },
+
+}
+/**
+ * convert wildcards into regex
+ */
+
+{
+    Object.defineProperty(codeInput.textareaSyncAttributes, 'regexp', {
+        value: [],
+        writable: false,
+        enumerable: false,
+        configurable: false
+    });
+    
+    Object.defineProperty(codeInput.observedAttributes, 'regexp', {
+        value: [],
+        writable: false,
+        enumerable: false,
+        configurable: false
+    });
+    const wildcard2regex = list => {
+        for(let i = 0; i < list.length; i++) {
+            const name = list[i];
+            if (name.indexOf("*") < 0)
+                continue;
+        
+            list.regexp.push(new RegExp("^" +
+                                name.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&')
+                                    .replace("*", ".*")
+                                + "$", "i"));
+            list.splice(i--, 1);
+        };
     }
+    wildcard2regex(codeInput.textareaSyncAttributes);
+    wildcard2regex(codeInput.observedAttributes);
 }
 
 customElements.define("code-input", codeInput.CodeInput);
