@@ -5,6 +5,9 @@
  * 
  * **<https://github.com/WebCoder49/code-input>**
  */
+
+// TODO: Stop annoying "glitch" with delaying until load?; Fix input evtListener
+
 var codeInput = {
     /**
      * A list of attributes that will trigger the 
@@ -27,7 +30,7 @@ var codeInput = {
      * code-input element.
      */
     textareaSyncAttributes: [
-        "aria-*",
+        "aria-*", // TODO: Check this with PR comment
         "value",
         "name",
         // Form validation - https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation
@@ -104,7 +107,7 @@ var codeInput = {
             for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
                 elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.template = template;
-                elem.setup();
+                window.addEventListener("load", () => { elem.setup(); }); // So innerHTML can be read
             }
             console.log(`code-input: template: Added existing elements with template ${templateName}`);
         }
@@ -115,7 +118,7 @@ var codeInput = {
                 for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
                     elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.template = template;
-                    elem.setup();
+                    window.addEventListener("load", () => { elem.setup(); }); // So innerHTML can be read
                 }
             }
             console.log(`code-input: template: Set template ${templateName} as default`);
@@ -472,12 +475,13 @@ var codeInput = {
             // First-time attribute sync
             let lang = this.getAttribute("lang");
             let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
-            let value = this.value || "";
+            let value = this.innerHTML || this.getAttribute("value") || "";
+            // Value attribute deprecated, but included for compatibility
 
             // Create textarea
             let textarea = document.createElement("textarea");
             textarea.placeholder = placeholder;
-            if(value != "") { // TODO: Check
+            if(value != "") {
                 textarea.value = value;
             }
             textarea.innerHTML = this.innerHTML;
@@ -504,18 +508,20 @@ var codeInput = {
             textarea.addEventListener('input', (evt) => { textarea.parentElement.update(textarea.value); textarea.parentElement.sync_scroll(); });
             textarea.addEventListener('scroll', (evt) => textarea.parentElement.sync_scroll());
 
+            // Save element internally
+            this.textareaElement = textarea;
             this.append(textarea);
 
             // Create result element
             let code = document.createElement("code");
             let pre = document.createElement("pre");
             pre.setAttribute("aria-hidden", "true"); // Hide for screen readers
-            pre.append(code);
-            this.append(pre);
 
-            this.textareaElement = textarea;
+            // Save elements internally
             this.preElement = pre;
             this.codeElement = code;
+            pre.append(code);
+            this.append(pre);
 
             if (this.template.isCode) {
                 if (lang != undefined && lang != "") {
@@ -562,7 +568,13 @@ var codeInput = {
          */
         connectedCallback() {
             this.template = this.getTemplate();
-            if (this.template != undefined) this.setup();
+            if (this.template != undefined) {
+                this.classList.add("code-input_registered");
+                window.addEventListener("load", () => { 
+                    this.setup();
+                    this.classList.add("code-input_loaded");
+                });
+            } 
         }
 
         /**
@@ -658,9 +670,9 @@ var codeInput = {
 
             if (codeInput.textareaSyncEvents.includes(type)) {
                 if (options === undefined) {
-                    this.textareaElement.addEventListener(type, boundCallback);
+                    window.addEventListener("load", () => { this.textareaElement.addEventListener(type, boundCallback); });
                 } else {
-                    this.textareaElement.addEventListener(type, boundCallback, options);
+                    window.addEventListener("load", () => { this.textareaElement.addEventListener(type, boundCallback, options); });
                 }
             } else {
                 if (options === undefined) {
@@ -804,7 +816,8 @@ var codeInput = {
         * Update value on form reset
         */
         formResetCallback() {
-            this.update(this.textareaElement.innerHTML);
+            this.update(this.textareaElement.innerHTML || this.getAttribute("value"));
+            // Value attribute deprecated, but included for compatibility reasons.
         }
     }
 }
