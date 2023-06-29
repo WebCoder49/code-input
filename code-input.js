@@ -275,7 +275,16 @@ var codeInput = {
         constructor() {
             console.log("code-input: plugin: Created plugin");
 
-            codeInput.observedAttributes = codeInput.observedAttributes.concat(self.observedAttributes);
+            codeInput.observedAttributes.forEach((attribute) => {
+                // Move plugin attribute to codeInput observed attributes
+                let regexFromWildcard = codeInput.wildcard2regex(attribute);
+                if(regexFromWildcard == null) {
+                    // Not a wildcard
+                    codeInput.observedAttributes.push(attribute);
+                } else {
+                    codeInput.observedAttributes.regex.push(regexFromWildcard);
+                }
+            });
         }
 
         /**
@@ -589,10 +598,9 @@ var codeInput = {
                 for(let i = 0; i < codeInput.observedAttributes.regexp.length; i++) {
                     const reg = codeInput.observedAttributes.regexp[i];
                     if (mutation.attributeName.match(reg)) {
-                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, mutation.newValue);
+                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                     }
                 }
-
             }
         }
 
@@ -660,7 +668,7 @@ var codeInput = {
 
                         if (newValue != undefined && newValue != "") {
                             code.classList.add("language-" + newValue);
-                            console.log("code-input: Language:ADD", "language-" + newValue);
+                            console.log("code-input: Language: ADD", "language-" + newValue);
                         }
 
                         if (mainTextarea.placeholder == oldValue) mainTextarea.placeholder = newValue;
@@ -670,15 +678,18 @@ var codeInput = {
                         break;
                     default:
                         if (codeInput.textareaSyncAttributes.includes(name)) {
-                            this.textareaElement.setAttribute(name, newValue);
-                        }
-                        else
-                        {
-                            codeInput.textareaSyncAttributes.regexp.forEach((attribute) =>
-                            {
-                                for(const attr of this.attributes) {
-                                    if (attr.nodeName.match(attribute)) {
-                                        this.textareaElement.setAttribute(attr.nodeName, attr.nodeValue);
+                            if(newValue == null) {
+                                this.textareaElement.removeAttribute(name);
+                            } else {
+                                this.textareaElement.setAttribute(name, newValue);
+                            }
+                        } else {
+                            codeInput.textareaSyncAttributes.regexp.forEach((attribute) => {
+                                if (name.match(attribute)) {
+                                    if(newValue == null) {
+                                        this.textareaElement.removeAttribute(name);
+                                    } else {
+                                        this.textareaElement.setAttribute(name, newValue);
                                     }
                                 }
                             });
@@ -855,6 +866,30 @@ var codeInput = {
         };
     },
 
+    arrayWildcards2regex(list) {
+        for(let i = 0; i < list.length; i++) {
+            const name = list[i];
+            if (name.indexOf("*") < 0)
+                continue;
+
+            list.regexp.push(new RegExp("^" +
+                                name.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&')
+                                    .replace("*", ".*")
+                                + "$", "i"));
+            list.splice(i--, 1);
+        };
+    },
+
+    wildcard2regex(wildcard) {
+        if (wildcard.indexOf("*") < 0)
+            return null;
+
+        return new RegExp("^" +
+                wildcard.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&')
+                    .replace("*", ".*")
+                + "$", "i");
+    }
+
 }
 /**
  * convert wildcards into regex
@@ -867,28 +902,17 @@ var codeInput = {
         enumerable: false,
         configurable: false
     });
-    
+    codeInput.observedAttributes = codeInput.observedAttributes.concat(codeInput.textareaSyncAttributes);
+
     Object.defineProperty(codeInput.observedAttributes, 'regexp', {
         value: [],
         writable: false,
         enumerable: false,
         configurable: false
     });
-    const wildcard2regex = list => {
-        for(let i = 0; i < list.length; i++) {
-            const name = list[i];
-            if (name.indexOf("*") < 0)
-                continue;
-        
-            list.regexp.push(new RegExp("^" +
-                                name.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&')
-                                    .replace("*", ".*")
-                                + "$", "i"));
-            list.splice(i--, 1);
-        };
-    }
-    wildcard2regex(codeInput.textareaSyncAttributes);
-    wildcard2regex(codeInput.observedAttributes);
+
+    codeInput.arrayWildcards2regex(codeInput.textareaSyncAttributes);
+    codeInput.arrayWildcards2regex(codeInput.observedAttributes);
 }
 
 customElements.define("code-input", codeInput.CodeInput);
