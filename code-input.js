@@ -520,6 +520,15 @@ var codeInput = {
         }
 
         /**
+         * HTML-unescape an arbitrary string.
+         * @param {string} text - The original, HTML-escaped text
+         * @returns {string} - The new, unescaped text
+         */
+        unescapeHtml(text) {
+            return text.replace(new RegExp("&amp;", "g"), "&").replace(new RegExp("&lt;", "g"), "<").replace(new RegExp("&gt;", "g"), ">"); /* Global RegExp */
+        }
+
+        /**
          * Get the template object this code-input element is using.
          * @returns {Object} - Template object
          */
@@ -556,8 +565,10 @@ var codeInput = {
             // First-time attribute sync
             let lang = this.getAttribute("lang");
             let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
-            let value = this.innerHTML || this.getAttribute("value") || "";
+            let value = this.unescapeHtml(this.innerHTML) || this.getAttribute("value") || "";
             // Value attribute deprecated, but included for compatibility
+
+            this.initialValue = value; // For form reset
 
             // Create textarea
             let textarea = document.createElement("textarea");
@@ -935,8 +946,7 @@ var codeInput = {
         * Update value on form reset
         */
         formResetCallback() {
-            this.update(this.textareaElement.innerHTML || this.getAttribute("value"));
-            // Value attribute deprecated, but included for compatibility reasons.
+            this.update(this.initialValue);
         };
     },
 

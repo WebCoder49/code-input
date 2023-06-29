@@ -19,7 +19,7 @@
 ## What are the advantages of using code-input, and what can it be used for?
 Unlike other front-end code-editor projects, the simplicity of how `code-input` works means it is **highly customisable**. As it is not a full-featured editor, you can **choose what features you want it to include, and use your favourite syntax-highlighting algorithms and themes**.
 
-The `<code-input>` element works like a `<textarea>` and therefore **works in HTML5 forms and supports using the `value` and `placeholder` attributes, as well as the `onchange` event.**
+The `<code-input>` element works like a `<textarea>` and therefore **works in HTML5 forms and supports using the `name`, `value` and `placeholder` attributes, events like `onchange`, form resets, to name a few...**
 
 ## 🚀 Getting Started With `code-input` (in 4 simple steps)
 
@@ -114,13 +114,6 @@ Now that you have registered a template, you can use the custom `<code-input>` e
   ```HTML
   <code-input lang="HTML" placeholder="Type code here" template="syntax-highlighted" onchange="console.log('Your code is', this.value)"><a href='https://github.com/WebCoder49/code-input'>code-input</a></code-input>
   ```
-
-### *Next:* What Else Can `code-input` do?
-*The two sides to the library:*
-
-1. **Our aim is to make `code-input` work from the start like an ordinary `<textarea>` element, with `name` attribute support, form reset functions, and accessible `aria-` attribute support, etc. leading to HTML form compatibility.** 
-
-2. Thanks to many contributions, suggestions and bug identifications from the open-source community, `code-input`'s capabilities are constantly growing. With customisable plugins, you can also turn `code-input` into whatever you want. 
 
 ## Contributing
 If you have any features you would like to add to `code-input`, or have found any bugs, please [open an issue](https://github.com/WebCoder49/code-input/issues) or [fork and submit a pull request](https://github.com/WebCoder49/code-input/fork)! All contributions to this open-source project would be greatly appreciated.
