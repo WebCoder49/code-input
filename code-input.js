@@ -89,15 +89,16 @@ var codeInput = {
      * @param {Object} template - a Template object instance - see `codeInput.templates`  
      */
     registerTemplate: function (templateName, template) {
-        if(!(typeof templateName == "string" || templateName instanceof String)) throw TypeError(`Template for "${templateName}" must be a string.`);
-        if(!(typeof template.highlight == "function" || template.highlight instanceof Function)) throw TypeError(`Template for "${templateName}" invalid, because the highlight function provided is not a function; it is "${template.highlight}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
-        if(!(typeof template.includeCodeInputInHighlightFunc == "boolean" || template.includeCodeInputInHighlightFunc instanceof Boolean)) throw TypeError(`Template for "${templateName}" invalid, because the includeCodeInputInHighlightFunc value provided is not a true or false; it is "${template.includeCodeInputInHighlightFunc}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
-        if(!(typeof template.preElementStyled == "boolean" || template.preElementStyled instanceof Boolean)) throw TypeError(`Template for "${templateName}" invalid, because the preElementStyled value provided is not a true or false; it is "${template.preElementStyled}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
-        if(!(typeof template.isCode == "boolean" || template.isCode instanceof Boolean)) throw TypeError(`Template for "${templateName}" invalid, because the isCode value provided is not a true or false; it is "${template.isCode}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
-        if(!Array.isArray(template.plugins)) throw TypeError(`Template for "${templateName}" invalid, because the plugin array provided is not an array; it is "${template.plugins}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        if(!(typeof templateName == "string" || templateName instanceof String)) throw TypeError(`code-input: Template for "${templateName}" must be a string.`);
+        if(!(typeof template.highlight == "function" || template.highlight instanceof Function)) throw TypeError(`code-input: Template for "${templateName}" invalid, because the highlight function provided is not a function; it is "${template.highlight}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        if(!(typeof template.includeCodeInputInHighlightFunc == "boolean" || template.includeCodeInputInHighlightFunc instanceof Boolean)) throw TypeError(`code-input: Template for "${templateName}" invalid, because the includeCodeInputInHighlightFunc value provided is not a true or false; it is "${template.includeCodeInputInHighlightFunc}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        if(!(typeof template.preElementStyled == "boolean" || template.preElementStyled instanceof Boolean)) throw TypeError(`code-input: Template for "${templateName}" invalid, because the preElementStyled value provided is not a true or false; it is "${template.preElementStyled}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        if(!(typeof template.isCode == "boolean" || template.isCode instanceof Boolean)) throw TypeError(`code-input: Template for "${templateName}" invalid, because the isCode value provided is not a true or false; it is "${template.isCode}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        if(!Array.isArray(template.plugins)) throw TypeError(`code-input: Template for "${templateName}" invalid, because the plugin array provided is not an array; it is "${template.plugins}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+        
         template.plugins.forEach((plugin, i) => {
             if(!(plugin instanceof codeInput.Plugin)) {
-                throw TypeError(`Template for "${templateName}" invalid, because the plugin provided at index ${i} is not valid; it is "${template.plugins[i]}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
+                throw TypeError(`code-input: Template for "${templateName}" invalid, because the plugin provided at index ${i} is not valid; it is "${template.plugins[i]}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
             }
         });
         
@@ -107,7 +108,7 @@ var codeInput = {
             for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
                 elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.template = template;
-                window.addEventListener("load", () => { elem.setup(); }); // So innerHTML can be read
+                codeInput.runOnceLoaded(() => { elem.setup(); }, elem); // So innerHTML can be read
             }
             console.log(`code-input: template: Added existing elements with template ${templateName}`);
         }
@@ -118,7 +119,7 @@ var codeInput = {
                 for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
                     elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.template = template;
-                    window.addEventListener("load", () => { elem.setup(); }); // So innerHTML can be read
+                    codeInput.runOnceLoaded(() => { elem.setup(); }, elem); // So innerHTML can be read
                 }
             }
             console.log(`code-input: template: Set template ${templateName} as default`);
@@ -127,7 +128,72 @@ var codeInput = {
     },
 
     /**
-     * Constructors for creating templates.
+     * Please see `codeInput.templates.prism` or `codeInput.templates.hljs`.
+     * Templates are used in `<code-input>` elements and once registered with
+     * `codeInput.registerTemplate` will be in charge of the highlighting
+     * algorithm and settings for all code-inputs with a `template` attribute
+     * matching the registered name.
+     */
+    Template: class {
+        /**
+         * Constructor to create a custom template instance. Pass this into `codeInput.registerTemplate` to use it.
+         * I would strongly recommend using the built-in simpler template `codeInput.templates.prism` or `codeInput.templates.hljs`.
+         * @param {Function} highlight - a callback to highlight the code, that takes an HTML `<code>` element inside a `<pre>` element as a parameter
+         * @param {boolean} preElementStyled - is the `<pre>` element CSS-styled as well as the `<code>` element? If true, `<pre>` element's scrolling is synchronised; if false, `<code>` element's scrolling is synchronised.
+         * @param {boolean} isCode - is this for writing code? If true, the code-input's lang HTML attribute can be used, and the `<code>` element will be given the class name 'language-[lang attribute's value]'.
+         * @param {boolean} includeCodeInputInHighlightFunc - Setting this to true passes the `<code-input>` element as a second argument to the highlight function.
+         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.Plugin`
+         * @returns template object
+         */
+        constructor(highlight = function () { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
+            this.highlight = highlight;
+            this.preElementStyled = preElementStyled;
+            this.isCode = isCode;
+            this.includeCodeInputInHighlightFunc = includeCodeInputInHighlightFunc;
+            this.plugins = plugins;
+        }
+
+        /**
+         * A callback to highlight the code, that takes an HTML `<code>` element 
+         * inside a `<pre>` element as a parameter, and an optional second
+         * `<code-input>` element parameter if `this.includeCodeInputInHighlightFunc` is
+         * `true`.
+         */
+        highlight = function() {};
+
+        /**
+         * Is the <pre> element CSS-styled as well as the `<code>` element? 
+         * If `true`, `<pre>` element's scrolling is synchronised; if false, 
+         * <code> element's scrolling is synchronised.
+         */
+        preElementStyled = true;
+
+        /**
+         * Is this for writing code? 
+         * If true, the code-input's lang HTML attribute can be used, 
+         * and the `<code>` element will be given the class name 
+         * 'language-[lang attribute's value]'.
+         */
+        isCode = true;
+
+        /**
+         * Setting this to true passes the `<code-input>` element as a 
+         * second argument to the highlight function.
+         */
+        includeCodeInputInHighlightFunc = false;
+
+        /**
+         * An array of plugin objects to add extra features - 
+         * see `codeInput.Plugin`.
+         */
+        plugins = [];
+    },
+
+    /**
+     * For creating a custom template from scratch, please 
+     * use `new codeInput.Template(...)`
+     * 
+     * Shortcut functions for creating templates.
      * Each code-input element has a template attribute that 
      * tells it which template to use.
      * Each template contains functions and preferences that 
@@ -136,25 +202,6 @@ var codeInput = {
      * For adding small pieces of functionality, please see `codeInput.plugins`.
      */
     templates: {
-        /**
-         * Constructor to create a custom template instance. Pass this into `codeInput.registerTemplate` to use it.
-         * I would strongly recommend using the built-in simpler template `codeInput.templates.prism` or `codeInput.templates.hljs`.
-         * @param {Function} highlight - a callback to highlight the code, that takes an HTML `<code>` element inside a `<pre>` element as a parameter
-         * @param {boolean} preElementStyled - is the <pre> element CSS-styled as well as the `<code>` element? If true, `<pre>` element's scrolling is synchronised; if false, <code> element's scrolling is synchronised.
-         * @param {boolean} isCode - is this for writing code? If true, the code-input's lang HTML attribute can be used, and the `<code>` element will be given the class name 'language-[lang attribute's value]'.
-         * @param {boolean} includeCodeInputInHighlightFunc - Setting this to true passes the `<code-input>` element as a second argument to the highlight function.
-         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-         * @returns template object
-         */
-        custom(highlight = function () { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
-            return {
-                highlight: highlight,
-                includeCodeInputInHighlightFunc: includeCodeInputInHighlightFunc,
-                preElementStyled: preElementStyled,
-                isCode: isCode,
-                plugins: plugins,
-            };
-        },
         /**
          * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
          * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
@@ -249,7 +296,20 @@ var codeInput = {
          */
         rainbow_text(rainbowColors = ["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue", "magenta"], delimiter = "", plugins = []) {
             return this.rainbowText(rainbowColors, delimiter, plugins);
-        }
+        },
+        
+        /**
+         * @deprecated Please use `new codeInput.Template()`
+         */
+        custom(highlight = function () { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
+            return {
+                highlight: highlight,
+                includeCodeInputInHighlightFunc: includeCodeInputInHighlightFunc,
+                preElementStyled: preElementStyled,
+                isCode: isCode,
+                plugins: plugins,
+            };
+        },
     },
 
     /* ------------------------------------
@@ -257,15 +317,27 @@ var codeInput = {
     *  ------------------------------------ */
 
     /**
+     * Before using any plugin in this namespace, please ensure you import its JavaScript
+     * files (in the plugins folder), or continue to get a more detailed error in the developer
+     * console.
+     * 
      * Where plugins are stored, after they are imported. The plugin
      * file assigns them a space in this object.
      * For adding completely new syntax-highlighting algorithms, please see `codeInput.templates`.
+     * 
      * Key - plugin name
+     * 
      * Value - plugin object
      * @type {Object}
      */
-    plugins: {
-    },
+    plugins: new Proxy({}, {
+        get(plugins, name) {
+            if(plugins[name] == undefined) {
+                throw ReferenceError(`code-input: Plugin '${name}' is not defined. Please ensure you import the necessary files from the plugins folder in the WebCoder49/code-input repository, in the <head> of your HTML, before the plugin is instatiated.`);
+            }
+            return plugins[name];
+        }
+    }),
 
     /**
      * Plugins are imported from the plugins folder. They will then
@@ -578,10 +650,10 @@ var codeInput = {
             this.template = this.getTemplate();
             if (this.template != undefined) {
                 this.classList.add("code-input_registered");
-                window.addEventListener("load", () => { 
+                codeInput.runOnceLoaded(() => { 
                     this.setup();
                     this.classList.add("code-input_loaded");
-                });
+                }, this);
             }
             this.mutationObserver = new MutationObserver(this.mutationObserverCallback.bind(this));
             this.mutationObserver.observe(this, {
@@ -715,9 +787,9 @@ var codeInput = {
 
             if (codeInput.textareaSyncEvents.includes(type)) {
                 if (options === undefined) {
-                    window.addEventListener("load", () => { this.textareaElement.addEventListener(type, boundCallback); });
+                    codeInput.runOnceLoaded(() => { this.textareaElement.addEventListener(type, boundCallback); }, this);
                 } else {
-                    window.addEventListener("load", () => { this.textareaElement.addEventListener(type, boundCallback, options); });
+                    codeInput.runOnceLoaded(() => { this.textareaElement.addEventListener(type, boundCallback, options); }, this);
                 }
             } else {
                 if (options === undefined) {
@@ -837,7 +909,9 @@ var codeInput = {
          */
         setAttribute(qualifiedName, value) {
             super.setAttribute(qualifiedName, value); // code-input
-            this.textareaElement.setAttribute(qualifiedName, value); // textarea
+            if(this.textareaElement != null) {
+                this.textareaElement.setAttribute(qualifiedName, value); // textarea
+            }
         }
 
         /**
@@ -888,8 +962,19 @@ var codeInput = {
                 wildcard.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&')
                     .replace("*", ".*")
                 + "$", "i");
-    }
+    },
 
+    /** 
+     * To ensure the DOM is ready, run this callback after the window 
+     * has loaded (or now if it has already loaded)
+     */
+    runOnceLoaded(callback, codeInputElem) {
+        if(codeInputElem.textareaElement != null) {
+            callback(); // Fully loaded
+        } else {
+            window.addEventListener("load", callback);
+        }
+    },
 }
 /**
  * convert wildcards into regex

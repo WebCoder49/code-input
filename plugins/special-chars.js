@@ -3,8 +3,6 @@
  * Files: special-chars.js, special-chars.css
  */
 
-// INCOMPLETE: TODO Optimise regex - compile at start; Update CSS for character display; clean up + comment
-
 codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     specialCharRegExp;
 
@@ -13,7 +11,8 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     canvasContext;
 
     /**
-     * Create a special characters plugin instance
+     * Create a special characters plugin instance.
+     * Default = covers many non-renderable ASCII characters.
      * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code
      * @param {Boolean} inheritTextColor If `colorInSpecialChars` is false, forces the color of the hex code to inherit from syntax highlighting. Otherwise, the base colour of the `pre code` element is used to give contrast to the small characters.
      * @param {RegExp} specialCharRegExp The regular expression which matches special characters

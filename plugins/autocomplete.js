@@ -5,7 +5,7 @@
 codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
     /**
      * Pass in a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
-     * @param {function} updatePopupCallback  
+     * @param {function} updatePopupCallback  a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
      */
     constructor(updatePopupCallback) {
         super();
