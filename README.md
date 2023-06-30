@@ -125,3 +125,4 @@ If you have any features you would like to add to `code-input`, or have found an
 |![](https://contrib.rocks/image?repo=WebCoder49%2Fcode-input)|
 |---|
 |...have contributed pull requests so far.|
+|(source: [contrib.rocks]())|
