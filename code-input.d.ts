@@ -5,7 +5,13 @@ export as namespace codeInput;
  * provide custom extra functionality to code-input elements.
  */
 export abstract class Plugin {
-  constructor()
+  /**
+   * Create a Plugin
+   * 
+   * @param {Array<string>} observedAttributes - The HTML attributes to watch for this plugin, and report any 
+   * modifications to the `codeInput.Plugin.attributeChanged` method.
+   */
+  constructor(observedAttributes: Array<string>)
   /**
    * Runs before code is highlighted.
    * @param {codeInput.CodeInput} codeInput - The codeInput element

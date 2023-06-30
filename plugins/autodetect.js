@@ -5,7 +5,7 @@
  */
 codeInput.plugins.Autodetect = class extends codeInput.Plugin {
     constructor() {
-        super();
+        super([]); // No observed attributes
     }
     /* Remove previous language class */
     beforeHighlight(codeInput) {
@@ -25,5 +25,4 @@ codeInput.plugins.Autodetect = class extends codeInput.Plugin {
             codeInput.setAttribute("lang", lang);
         }
     }
-    observedAttributes = []
 }

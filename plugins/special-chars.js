@@ -18,7 +18,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
      * @param {RegExp} specialCharRegExp The regular expression which matches special characters
      */
     constructor(colorInSpecialChars = false, inheritTextColor = false, specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug) { // By default, covers many non-renderable ASCII characters
-        super();
+        super([]); // No observed attributes
         
         this.specialCharRegExp = specialCharRegExp;
         this.colorInSpecialChars = colorInSpecialChars;
@@ -152,7 +152,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         }
     }
 
-    getCharacterWidth(codeInput, char) { // TODO: Check StackOverflow question
+    getCharacterWidth(codeInput, char) {
         // Force zero-width characters
         if(new RegExp("\u00AD|\u02de|[\u0300-\u036F]|[\u0483-\u0489]|\u200b").test(char) ) { return 0 }
         // Non-renderable ASCII characters should all be rendered at same size

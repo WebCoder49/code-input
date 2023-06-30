@@ -6,7 +6,6 @@
  * **<https://github.com/WebCoder49/code-input>**
  */
 
-// TODO: Stop annoying "glitch" with delaying until load?; Fix input evtListener
 
 var codeInput = {
     /**
@@ -30,7 +29,7 @@ var codeInput = {
      * code-input element.
      */
     textareaSyncAttributes: [
-        "aria-*", // TODO: Check this with PR comment
+        "aria-*",
         "value",
         "name",
         // Form validation - https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation
@@ -108,7 +107,7 @@ var codeInput = {
             for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
                 elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.template = template;
-                codeInput.runOnceLoaded(() => { elem.setup(); }, elem); // So innerHTML can be read
+                codeInput.runOnceWindowLoaded(() => { elem.setup(); }, elem); // So innerHTML can be read
             }
             console.log(`code-input: template: Added existing elements with template ${templateName}`);
         }
@@ -119,7 +118,7 @@ var codeInput = {
                 for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
                     elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.template = template;
-                    codeInput.runOnceLoaded(() => { elem.setup(); }, elem); // So innerHTML can be read
+                    codeInput.runOnceWindowLoaded(() => { elem.setup(); }, elem); // So innerHTML can be read
                 }
             }
             console.log(`code-input: template: Set template ${templateName} as default`);
@@ -344,17 +343,23 @@ var codeInput = {
      * provide custom extra functionality to code-input elements.
      */
     Plugin: class {
-        constructor() {
+        /**
+         * Create a Plugin
+         * 
+         * @param {Array<string>} observedAttributes - The HTML attributes to watch for this plugin, and report any 
+         * modifications to the `codeInput.Plugin.attributeChanged` method.
+         */
+        constructor(observedAttributes) {
             console.log("code-input: plugin: Created plugin");
 
-            codeInput.observedAttributes.forEach((attribute) => {
+            observedAttributes.forEach((attribute) => {
                 // Move plugin attribute to codeInput observed attributes
                 let regexFromWildcard = codeInput.wildcard2regex(attribute);
                 if(regexFromWildcard == null) {
                     // Not a wildcard
                     codeInput.observedAttributes.push(attribute);
                 } else {
-                    codeInput.observedAttributes.regex.push(regexFromWildcard);
+                    codeInput.observedAttributes.regexp.push(regexFromWildcard);
                 }
             });
         }
@@ -387,11 +392,6 @@ var codeInput = {
          * @param {string} newValue - The value of the attribute after it is changed
          */
         attributeChanged(codeInput, name, oldValue, newValue) { }
-        /**
-         * The HTML attributes to watch for this plugin, and report any 
-         * modifications to the `codeInput.Plugin.attributeChanged` method.
-         */
-        observedAttributes = []
     },
 
     /* ------------------------------------
@@ -468,8 +468,14 @@ var codeInput = {
 
         /** Update the text value to the result element, after the textarea contents have changed.
          * @param {string} value - The text value of the code-input element
+         * @param {boolean} originalUpdate - Whether this update originates from the textarea's content; if so, run it first so custom updates override it.
          */
         update(value) {
+            if(this.textareaElement == null) {
+                this.addEventListener("code-input_load", () => { this.update(value) }); // Only run when fully loaded
+                return;
+            }
+
             // Prevent this from running multiple times on the same input when "value" attribute is changed, 
             // by not running when value is already equal to the input of this (implying update has already
             // been run). Thank you to peterprvy for this. 
@@ -623,6 +629,8 @@ var codeInput = {
             this.pluginEvt("afterElementsAdded");
 
             this.update(value);
+
+            this.dispatchEvent(new CustomEvent("code-input_load"));
         }
 
         /**
@@ -661,7 +669,7 @@ var codeInput = {
             this.template = this.getTemplate();
             if (this.template != undefined) {
                 this.classList.add("code-input_registered");
-                codeInput.runOnceLoaded(() => { 
+                codeInput.runOnceWindowLoaded(() => { 
                     this.setup();
                     this.classList.add("code-input_loaded");
                 }, this);
@@ -678,6 +686,14 @@ var codeInput = {
                 if (mutation.type !== 'attributes')
                     continue;
 
+                /* Check regular attributes */
+                for(let i = 0; i < codeInput.observedAttributes.length; i++) {
+                    if (mutation.attributeName == codeInput.observedAttributes[i]) {
+                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
+                    }
+                }
+
+                /* Check wildcard attributes */
                 for(let i = 0; i < codeInput.observedAttributes.regexp.length; i++) {
                     const reg = codeInput.observedAttributes.regexp[i];
                     if (mutation.attributeName.match(reg)) {
@@ -692,16 +708,8 @@ var codeInput = {
         }
 
         /**
-         * Get the HTML attributes that need to be monitored and reported
-         * to `codeInput.CodeInput.attributeChangedCallback` when modified.
-         */
-        static get observedAttributes() {
-            return codeInput.observedAttributes.concat(codeInput.textareaSyncAttributes);
-        }
-
-        /**
-         * Triggered when an HTML attribute in `codeInput.CodeInput.observedAttributes`
-         * has been modified.
+         * Triggered when an observed HTML attribute
+         * has been modified (called from `mutationObserverCallback`).
          * @param {string} name - The name of the attribute
          * @param {string} oldValue - The value of the attribute before it was changed
          * @param {string} newValue - The value of the attribute after it is changed
@@ -798,9 +806,17 @@ var codeInput = {
 
             if (codeInput.textareaSyncEvents.includes(type)) {
                 if (options === undefined) {
-                    codeInput.runOnceLoaded(() => { this.textareaElement.addEventListener(type, boundCallback); }, this);
+                    if(this.textareaElement == null) {
+                        this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback); });
+                    } else {
+                        this.textareaElement.addEventListener(type, boundCallback);
+                    }
                 } else {
-                    codeInput.runOnceLoaded(() => { this.textareaElement.addEventListener(type, boundCallback, options); }, this);
+                    if(this.textareaElement == null) {
+                        this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback, options); });
+                    } else {
+                        this.textareaElement.addEventListener(type, boundCallback, options);
+                    }
                 }
             } else {
                 if (options === undefined) {
@@ -847,6 +863,7 @@ var codeInput = {
             if (val === null || val === undefined) {
                 val = "";
             }
+            this._value = val;
             this.update(val);
             return val;
         }
@@ -978,7 +995,7 @@ var codeInput = {
      * To ensure the DOM is ready, run this callback after the window 
      * has loaded (or now if it has already loaded)
      */
-    runOnceLoaded(callback, codeInputElem) {
+    runOnceWindowLoaded(callback, codeInputElem) {
         if(codeInputElem.textareaElement != null) {
             callback(); // Fully loaded
         } else {
