@@ -122,7 +122,7 @@ Now that you have registered a template, you can use the custom `<code-input>` e
 If you have any features you would like to add to `code-input`, or have found any bugs, please [open an issue](https://github.com/WebCoder49/code-input/issues) or [fork and submit a pull request](https://github.com/WebCoder49/code-input/fork)! All contributions to this open-source project would be greatly appreciated.
 
 
-|![](https://contrib.rocks/image?repo=WebCoder49%2Fcode-input)|
+|[![Contributors](https://contrib.rocks/image?repo=WebCoder49%2Fcode-input)](https://github.com/WebCoder49/code-input/graphs/contributors)|
 |---|
 |...have contributed pull requests so far.|
-|(source: [contrib.rocks]())|
+|(source: [contrib.rocks](https://contrib.rocks))|
