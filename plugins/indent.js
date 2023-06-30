@@ -5,7 +5,7 @@
  */
 codeInput.plugins.Indent = class extends codeInput.Plugin {
     constructor() {
-        super();
+        super([]); // No observed attributes
     }
 
     /* Add keystroke events */

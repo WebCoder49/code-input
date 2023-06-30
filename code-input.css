@@ -33,6 +33,14 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   width: calc(100% - var(--padding, 16px) * 2);
   height: calc(100% - var(--padding, 16px) * 2);
 }
+
+code-input:not(.code-input_loaded) {
+  margin: 0px!important;
+  margin-bottom: calc(-1 * var(--padding, 16px))!important;
+  padding: var(--padding, 16px)!important;
+  border: 0;
+}
+
 code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-element-styled pre code {
   /* Remove all margin and padding from others */
   margin: 0px!important;
@@ -67,6 +75,12 @@ code-input pre {
   z-index: 0;
 }
 
+code-input:not(.code-input_loaded) pre, code-input:not(.code-input_loaded) textarea {
+  opacity: 0;
+}
+code-input:not(.code-input_loaded)::after {
+  color: #ccc;
+}
 
 /* Make textarea almost completely transparent */
 

@@ -9,7 +9,7 @@ codeInput.plugins.DebounceUpdate = class extends codeInput.Plugin {
      * @param {Number} delayMs Delay, in ms, to wait until updating the syntax highlighting 
      */
     constructor(delayMs) {
-        super();
+        super([]); // No observed attributes
         this.delayMs = delayMs;
     }
     /* Runs before elements are added into a `code-input`; Params: codeInput element) */

@@ -10,7 +10,9 @@
  */
 codeInput.plugins.Test = class extends codeInput.Plugin {
     constructor() {
-        super();
+        super(["testattr", "test-*"]); 
+        // Array of observed attributes as parameter
+        // Wildcard "*" matches any text
     }
     /* Runs before code is highlighted; Params: codeInput element) */
     beforeHighlight(codeInput) {
@@ -28,11 +30,8 @@ codeInput.plugins.Test = class extends codeInput.Plugin {
     afterElementsAdded(codeInput) {
         console.log(codeInput, "after elements added");
     }
-    /* Runs when an attribute of a `code-input` is changed (you must add the attribute name to observedAttributes); Params: codeInput element, name attribute name, oldValue previous value of attribute, newValue changed value of attribute) */
+    /* Runs when an observed attribute of a `code-input` is changed (you must add the attribute name in the constructor); Params: codeInput element, name attribute name, oldValue previous value of attribute, newValue changed value of attribute) */
     attributeChanged(codeInput, name, oldValue, newValue) {
-        if(name == "testattr") {
-            console.log(codeInput, "testattr:", oldValue, ">", newValue);
-        }
+        console.log(codeInput, name, ":", oldValue, ">", newValue);
     }
-    observedAttributes = ["testattr"]
 }

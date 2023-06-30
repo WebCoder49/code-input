@@ -5,10 +5,10 @@
 codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
     /**
      * Pass in a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
-     * @param {function} updatePopupCallback  
+     * @param {function} updatePopupCallback  a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
      */
     constructor(updatePopupCallback) {
-        super();
+        super([]); // No observed attributes
         this.updatePopupCallback = updatePopupCallback;
     }
     /* When a key is pressed, or scrolling occurs, update the autocomplete */
@@ -75,6 +75,5 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         }
         return {"top": afterSpan.offsetTop - textarea.scrollTop, "left": afterSpan.offsetLeft - textarea.scrollLeft};
     }
-    observedAttributes = [];
     updatePopupCallback = function() {};
 }

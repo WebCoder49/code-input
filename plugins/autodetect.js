@@ -1,11 +1,11 @@
 /**
  * Autodetect the language live and change the `lang` attribute using the syntax highlighter's 
- * autodetect capabilities. Works with highlight.js.
+ * autodetect capabilities. Works with highlight.js only.
  * Files: autodetect.js
  */
 codeInput.plugins.Autodetect = class extends codeInput.Plugin {
     constructor() {
-        super();
+        super([]); // No observed attributes
     }
     /* Remove previous language class */
     beforeHighlight(codeInput) {
@@ -25,5 +25,4 @@ codeInput.plugins.Autodetect = class extends codeInput.Plugin {
             codeInput.setAttribute("lang", lang);
         }
     }
-    observedAttributes = []
 }

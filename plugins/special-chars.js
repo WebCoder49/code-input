@@ -3,8 +3,6 @@
  * Files: special-chars.js, special-chars.css
  */
 
-// INCOMPLETE: TODO Optimise regex - compile at start; Update CSS for character display; clean up + comment
-
 codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     specialCharRegExp;
 
@@ -13,13 +11,14 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     canvasContext;
 
     /**
-     * Create a special characters plugin instance
+     * Create a special characters plugin instance.
+     * Default = covers many non-renderable ASCII characters.
      * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code
      * @param {Boolean} inheritTextColor If `colorInSpecialChars` is false, forces the color of the hex code to inherit from syntax highlighting. Otherwise, the base colour of the `pre code` element is used to give contrast to the small characters.
      * @param {RegExp} specialCharRegExp The regular expression which matches special characters
      */
     constructor(colorInSpecialChars = false, inheritTextColor = false, specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug) { // By default, covers many non-renderable ASCII characters
-        super();
+        super([]); // No observed attributes
         
         this.specialCharRegExp = specialCharRegExp;
         this.colorInSpecialChars = colorInSpecialChars;
@@ -153,7 +152,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         }
     }
 
-    getCharacterWidth(codeInput, char) { // TODO: Check StackOverflow question
+    getCharacterWidth(codeInput, char) {
         // Force zero-width characters
         if(new RegExp("\u00AD|\u02de|[\u0300-\u036F]|[\u0483-\u0489]|\u200b").test(char) ) { return 0 }
         // Non-renderable ASCII characters should all be rendered at same size
