@@ -7,9 +7,10 @@
 > ___Fully customisable, editable syntax-highlighted textareas that can be placed in any HTML form.___ [[🚀 View the Demo](https://codepen.io/WebCoder49/details/jOypJOx)]
 
 ![Using code-input with many different themes](https://user-images.githubusercontent.com/69071853/133924472-05edde5c-23e7-4350-a41b-5a74d2dc1a9a.gif)
-*This demonstration uses themes from [Prism.js](https://prismjs.com/) and [highlight.js](https://highlightjs.org/), two syntax-highlighting programs which work well and have compatibility built-in with code-input.*
+*This demonstration uses themes from [Prism.js](https://prismjs.com/) and [highlight.js](https://highlightjs.org/), two syntax-highlighting programs which work well with and have compatibility built-in with code-input.*
 
-*A frontend JavaScript library, with:* [![TypeScript Bindings - Click to Use](https://img.shields.io/static/v1?label=TypeScript%20Bindings&message=Click%20to%Use&style=for-the-badge&logo=typescript&logoColor=white)](https://github.com/WebCoder49/code-input-for-typescript)
+*A frontend JavaScript library, with:*<br/>
+[![TypeScript Bindings - Click to Use](https://img.shields.io/static/v1?label=TypeScript%20Bindings&message=Click%20to%20Use&style=for-the-badge&color=blue&logo=typescript&logoColor=white)](https://github.com/WebCoder49/code-input-for-typescript)
 
 ---
 
@@ -19,7 +20,9 @@
 ## What are the advantages of using code-input, and what can it be used for?
 Unlike other front-end code-editor projects, the simplicity of how `code-input` works means it is **highly customisable**. As it is not a full-featured editor, you can **choose what features you want it to include, and use your favourite syntax-highlighting algorithms and themes**.
 
-The `<code-input>` element works like a `<textarea>` and therefore **works in HTML5 forms and supports using the `name`, `value` and `placeholder` attributes, events like `onchange`, form resets, to name a few...**
+The `<code-input>` element works like a `<textarea>` and therefore **works in HTML5 forms and supports using the `name`, `value` and `placeholder` attributes, events like `onchange`, form resets, to name a few...** [(Demo)](https://codepen.io/WebCoder49/details/JjmqjZv)
+
+`code-input` has also accumulated many **features in optional [plugins](./plugins/README.md)** from open-source contributions, allowing you to choose any features you want. If a feature you want is not present, [please open an issue / contribute it!](#contributing)
 
 ## 🚀 Getting Started With `code-input` (in 4 simple steps)
 
@@ -112,8 +115,13 @@ Now that you have registered a template, you can use the custom `<code-input>` e
   ```
   *or*
   ```HTML
-  <code-input lang="HTML" placeholder="Type code here" template="syntax-highlighted" onchange="console.log('Your code is', this.value)"><a href='https://github.com/WebCoder49/code-input'>code-input</a></code-input>
+  <code-input lang="HTML" placeholder="Type code here" template="syntax-highlighted" onchange="console.log('Your code is', this.value)">&lt; href='https://github.com/WebCoder49/code-input'>code-input&lt;/a></code-input>
   ```
 
 ## Contributing
 If you have any features you would like to add to `code-input`, or have found any bugs, please [open an issue](https://github.com/WebCoder49/code-input/issues) or [fork and submit a pull request](https://github.com/WebCoder49/code-input/fork)! All contributions to this open-source project would be greatly appreciated.
+
+
+|![](https://contrib.rocks/image?repo=WebCoder49%2Fcode-input)|
+|---|
+|...have contributed pull requests so far.|
