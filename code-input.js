@@ -100,6 +100,7 @@ var codeInput = {
                 throw TypeError(`code-input: Template for "${templateName}" invalid, because the plugin provided at index ${i} is not valid; it is "${template.plugins[i]}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
             }
         });
+
         
         codeInput.usedTemplates[templateName] = template;
         // Add waiting code-input elements wanting this template from queue
@@ -107,10 +108,13 @@ var codeInput = {
             for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
                 elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.template = template;
-                codeInput.runOnceWindowLoaded(() => { elem.setup(); }, elem); // So innerHTML can be read
+                codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
+                // Bind sets elem in parameter 
+                // So innerHTML can be read
             }
             console.log(`code-input: template: Added existing elements with template ${templateName}`);
         }
+
         if (codeInput.defaultTemplate == undefined) {
             codeInput.defaultTemplate = templateName;
             // Add elements with default template from queue
@@ -118,7 +122,9 @@ var codeInput = {
                 for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
                     elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.template = template;
-                    codeInput.runOnceWindowLoaded(() => { elem.setup(); }, elem); // So innerHTML can be read
+                    codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
+                    // Bind sets elem in parameter 
+                    // So innerHTML can be read
                 }
             }
             console.log(`code-input: template: Set template ${templateName} as default`);
@@ -471,15 +477,15 @@ var codeInput = {
          * @param {boolean} originalUpdate - Whether this update originates from the textarea's content; if so, run it first so custom updates override it.
          */
         update(value) {
-            if(this.textareaElement == null) {
-                this.addEventListener("code-input_load", () => { this.update(value) }); // Only run when fully loaded
-                return;
-            }
-
             // Prevent this from running multiple times on the same input when "value" attribute is changed, 
             // by not running when value is already equal to the input of this (implying update has already
             // been run). Thank you to peterprvy for this. 
             if (this.ignoreValueUpdate) return;
+
+            if(this.textareaElement == null) {
+                this.addEventListener("code-input_load", () => { this.update(value) }); // Only run when fully loaded
+                return;
+            }
 
             this.ignoreValueUpdate = true;
             this.value = value;
@@ -563,6 +569,8 @@ var codeInput = {
          * This will be called once the template has been added.
          */
         setup() {
+            if(this.textareaElement != null) return; // Already set up
+
             this.classList.add("code-input_registered"); // Remove register message
             if (this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
 
@@ -996,13 +1004,19 @@ var codeInput = {
      * has loaded (or now if it has already loaded)
      */
     runOnceWindowLoaded(callback, codeInputElem) {
-        if(codeInputElem.textareaElement != null) {
+        if(codeInput.windowLoaded) {
             callback(); // Fully loaded
         } else {
             window.addEventListener("load", callback);
         }
     },
+    windowLoaded: false
 }
+window.addEventListener("load", function() {
+    codeInput.windowLoaded = true;
+});
+
+
 /**
  * convert wildcards into regex
  */

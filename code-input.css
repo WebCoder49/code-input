@@ -13,16 +13,17 @@ code-input {
   overflow: hidden;
 
   /* Normal inline styles */
-  padding: 8px;
-  margin: 0!important;
-  width: calc(100% - 16px);
+  margin: 8px;
+  --padding: 16px;
   height: 250px;
+
   font-size: normal;
   font-family: monospace;
   line-height: 1.5; /* Inherited to child elements */
   tab-size: 2;
   caret-color: darkgrey;
   white-space: pre;
+  padding: 0!important; /* Use --padding */
 }
 
 code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
@@ -106,7 +107,7 @@ code-input textarea {
   outline: none!important;
 }
 
-code-input:not(.code-input_registered)::before {
+code-input:not(.code-input_registered)::after {
   /* Display message to register */
   content: "Use codeInput.registerTemplate to set up.";
   display: block;
