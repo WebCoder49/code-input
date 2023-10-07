@@ -31,13 +31,28 @@ var codeInput = {
     textareaSyncAttributes: [
         "aria-*",
         "value",
-        "name",
         // Form validation - https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation
-        "required",
-        "minlength", "maxlength",
         "min", "max",
         "type",
-        "pattern"
+        "pattern",
+
+        // Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
+        "autocomplete", 
+        "autocorrect", 
+        "autofocus",
+        "cols",
+        "dirname",
+        "disabled",
+        "form",
+        "maxlength",
+        "minlength",
+        "name",
+        "placeholder",
+        "readonly",
+        "required",
+        "rows",
+        "spellcheck",
+        "wrap"
     ],
 
     /**
@@ -777,7 +792,8 @@ var codeInput = {
                         break;
                     default:
                         if (codeInput.textareaSyncAttributes.includes(name)) {
-                            if(newValue == null) {
+                            console.log("sync", name, oldValue, newValue);
+                            if(newValue == null || newValue == undefined) { // TODO: Console.Log to check reaches here with disabled attribute; Fix for disabled attr removal
                                 this.textareaElement.removeAttribute(name);
                             } else {
                                 this.textareaElement.setAttribute(name, newValue);
@@ -937,27 +953,6 @@ var codeInput = {
          */
         reportValidity() {
             return this.textareaElement.reportValidity();
-        }
-
-
-        /**
-         * @override
-         */
-        setAttribute(qualifiedName, value) {
-            super.setAttribute(qualifiedName, value); // code-input
-            if(this.textareaElement != null) {
-                this.textareaElement.setAttribute(qualifiedName, value); // textarea
-            }
-        }
-
-        /**
-         * @override
-         */
-        getAttribute(qualifiedName) {
-            if (this.textareaElement == null) {
-                return super.getAttribute(qualifiedName);
-            }
-            return this.textareaElement.getAttribute(qualifiedName); // textarea
         }
 
         /**
