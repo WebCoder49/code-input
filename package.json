@@ -1,6 +1,6 @@
 {
   "name": "@webcoder49/code-input",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Fully customisable, editable syntax-highlighted textareas.",
   "browser": "code-input.js",
   "scripts": {
@@ -20,8 +20,8 @@
   ],
   "author": {
     "name": "WebCoder49",
-    "email": "webcoder49.tutorials@gmail.com",
-    "url": "https://webcoder49.github.io/"
+    "email": "hi@webcoder49.dev",
+    "url": "https://webcoder49.dev/"
   },
   "license": "MIT",
   "bugs": {
