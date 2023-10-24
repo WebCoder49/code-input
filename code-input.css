@@ -83,12 +83,15 @@ code-input:not(.code-input_loaded)::after {
   color: #ccc;
 }
 
-/* Make textarea almost completely transparent */
+/* Make textarea almost completely transparent, except for caret and placeholder */
 
 code-input textarea {
   color: transparent;
   background: transparent;
   caret-color: inherit!important; /* Or choose your favourite color */
+}
+code-input textarea::placeholder {
+  color: lightgrey;
 }
 
 /* Can be scrolled */

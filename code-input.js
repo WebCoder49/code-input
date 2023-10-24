@@ -774,7 +774,6 @@ var codeInput = {
                         oldValue = oldValue.toLowerCase();
 
                         // Remove old language class and add new
-                        console.log("code-input: Language: REMOVE", "language-" + oldValue);
                         code.classList.remove("language-" + oldValue); // From codeElement
                         code.parentElement.classList.remove("language-" + oldValue); // From preElement
                         code.classList.remove("language-none"); // Prism
@@ -782,7 +781,6 @@ var codeInput = {
 
                         if (newValue != undefined && newValue != "") {
                             code.classList.add("language-" + newValue);
-                            console.log("code-input: Language: ADD", "language-" + newValue);
                         }
 
                         if (mainTextarea.placeholder == oldValue) mainTextarea.placeholder = newValue;
@@ -792,8 +790,7 @@ var codeInput = {
                         break;
                     default:
                         if (codeInput.textareaSyncAttributes.includes(name)) {
-                            console.log("sync", name, oldValue, newValue);
-                            if(newValue == null || newValue == undefined) { // TODO: Console.Log to check reaches here with disabled attribute; Fix for disabled attr removal
+                            if(newValue == null || newValue == undefined) {
                                 this.textareaElement.removeAttribute(name);
                             } else {
                                 this.textareaElement.setAttribute(name, newValue);
