@@ -6,6 +6,8 @@
 * The `code-input` element should be easy to use with all popular syntax-highlighting libraries.
 * Any modifications of `code-input` that would be useful for the open-source community but are not core to this functionality should be available as optional plugins in the `plugins` folder. Here's where most feature contributions will go.
 
+To keep this community productive and enjoyable, please [don't break the code of conduct here](https://github.com/WebCoder49/code-input/blob/main/CODE_OF_CONDUCT.md).
+
 ---
 # Ways you could contribute:
 ## 1. I've found a bug but don't know how / don't have time to fix it.
