@@ -1,6 +1,12 @@
 # Code-input: Plugins
 ## List Of Plugins
 
+💡 Do you just want to get a quick editor working? We suggest the [Indent](#indent) and [Prism Line Numbers](#prism-line-numbers) plugins.
+
+**Lots of plugins are very customisable - please see the JavaScript files for parameters and if you want more features let us know via GitHub Issues.**
+
+---
+
 ### Autocomplete
 Display a popup under the caret using the text in the code-input element. This works well with autocomplete suggestions.
 
@@ -23,7 +29,7 @@ Files: [debounce-update.js](./debounce-update.js)
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/GRXyxzV)
 
 ### Indent
-Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it possible to indent/unindent multiple lines using Tab/Shift+Tab
+Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it possible to indent/unindent multiple lines using Tab/Shift+Tab. **Supports tab characters and custom numbers of spaces as indentation.**
 
 Files: [indent.js](./indent.js)
 
@@ -60,7 +66,7 @@ Plugins allow you to add extra features to a template, like [automatic indentati
       hljs, 
       [
         new codeInput.plugins.Autodetect(), 
-        new codeInput.plugins.Indent()
+        new codeInput.plugins.Indent(true, 2) // 2 spaces indentation
       ]
     )
   );
