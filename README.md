@@ -99,7 +99,7 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
       hljs, 
       [
         new codeInput.plugins.Autodetect(), 
-        new codeInput.plugins.Indent()
+        new codeInput.plugins.Indent(true, 2) // 2 spaces indentation
       ]
     )
   );
@@ -119,7 +119,7 @@ Now that you have registered a template, you can use the custom `<code-input>` e
   ```
 
 ## Contributing
-If you have any features you would like to add to `code-input`, or have found any bugs, please [open an issue](https://github.com/WebCoder49/code-input/issues) or [fork and submit a pull request](https://github.com/WebCoder49/code-input/fork)! All contributions to this open-source project would be greatly appreciated.
+If you have any features you would like to add to `code-input` as plugins or core functionality, or have found any bugs, please [open an issue](https://github.com/WebCoder49/code-input/issues) or [fork and submit a pull request](https://github.com/WebCoder49/code-input/fork)! All contributions to this open-source project will be greatly appreciated. You can see [more info in our `CONTRIBUTING.md` file](CONTRIBUTING.md).
 
 
 |[![Contributors](https://contrib.rocks/image?repo=WebCoder49%2Fcode-input)](https://github.com/WebCoder49/code-input/graphs/contributors)|

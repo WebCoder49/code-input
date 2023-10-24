@@ -14,7 +14,6 @@ codeInput.plugins.DebounceUpdate = class extends codeInput.Plugin {
     }
     /* Runs before elements are added into a `code-input`; Params: codeInput element) */
     beforeElementsAdded(codeInput) {
-        console.log(codeInput, "before elements added");
         this.update = codeInput.update.bind(codeInput); // Save previous update func
         codeInput.update = this.updateDebounced.bind(this, codeInput);
     }

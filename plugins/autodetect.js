@@ -9,15 +9,15 @@ codeInput.plugins.Autodetect = class extends codeInput.Plugin {
     }
     /* Remove previous language class */
     beforeHighlight(codeInput) {
-        let result_element = codeInput.querySelector("pre code");
-        result_element.className = ""; // CODE
-        result_element.parentElement.className = ""; // PRE
+        let resultElement = codeInput.codeElement;
+        resultElement.className = ""; // CODE
+        resultElement.parentElement.className = ""; // PRE
     }
     /* Get new language class and set `lang` attribute */
     afterHighlight(codeInput) {
-        let result_element = codeInput.querySelector("pre code");
-        let lang_class = result_element.className || result_element.parentElement.className;
-        let lang = lang_class.match(/lang(\w|-)*/i)[0]; // Get word starting with lang...; Get outer bracket
+        let resultElement = codeInput.codeElement;
+        let langClass = resultElement.className || resultElement.parentElement.className;
+        let lang = langClass.match(/lang(\w|-)*/i)[0]; // Get word starting with lang...; Get outer bracket
         lang = lang.split("-")[1];
         if(lang == "undefined") {
             codeInput.removeAttribute("lang");

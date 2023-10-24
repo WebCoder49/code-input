@@ -116,7 +116,12 @@ export namespace plugins {
    * Files: indent.js
    */
   class Indent extends Plugin {
-    constructor();
+    /**
+     * Create an indentation plugin to pass into a template
+     * @param {Boolean} defaultSpaces Should the Tab key enter spaces rather than tabs? Defaults to false.
+     * @param {Number} numSpaces How many spaces is each tab character worth? Defaults to 4.
+     */
+    constructor(defaultSpaces?: boolean, numSpaces?: Number);
   }
 
   /**

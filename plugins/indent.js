@@ -4,151 +4,175 @@
  * Files: indent.js
  */
 codeInput.plugins.Indent = class extends codeInput.Plugin {
-    constructor() {
+
+    numSpaces;
+    indentation = "\t";
+    indentationNumChars = 1;
+
+    /**
+     * Create an indentation plugin to pass into a template
+     * @param {Boolean} defaultSpaces Should the Tab key enter spaces rather than tabs? Defaults to false.
+     * @param {Number} numSpaces How many spaces is each tab character worth? Defaults to 4.
+     */
+    constructor(defaultSpaces=false, numSpaces=4) {
         super([]); // No observed attributes
+
+        this.numSpaces = numSpaces;
+        if(defaultSpaces) {
+            this.indentation = "";
+            for(let i = 0; i < numSpaces; i++) {
+                this.indentation += " ";
+            }
+            this.indentationNumChars = numSpaces;
+        }
     }
 
     /* Add keystroke events */
     afterElementsAdded(codeInput) {
-        let textarea = codeInput.querySelector("textarea");
-        textarea.addEventListener('keydown', (event) => { this.check_tab(codeInput, event); this.check_enter(codeInput, event); });
+        let textarea = codeInput.textareaElement;
+        textarea.addEventListener('keydown', (event) => { this.checkTab(codeInput, event); this.checkEnter(codeInput, event); this.checkBackspace(codeInput, event); });
     }
 
     /* Event handlers */
-    check_tab(codeInput, event) {
+    checkTab(codeInput, event) {
         if(event.key != "Tab") {
             return;
         }
-        let input_element = codeInput.querySelector("textarea");
-        let code = input_element.value;
+        let inputElement = codeInput.textareaElement;
         event.preventDefault(); // stop normal
         
-        if(!event.shiftKey && input_element.selectionStart == input_element.selectionEnd) {
-            // Just place a tab here.
-            document.execCommand("insertText", false, "\t");
+        if(!event.shiftKey && inputElement.selectionStart == inputElement.selectionEnd) {
+            // Just place a tab/spaces here.
+            document.execCommand("insertText", false, this.indentation);
 
         } else {
-            let lines = input_element.value.split("\n");
-            let letter_i = 0;
+            let lines = inputElement.value.split("\n");
+            let letterI = 0;
 
-            let selection_start = input_element.selectionStart; // where cursor moves after tab - moving forward by 1 indent
-            let selection_end = input_element.selectionEnd; // where cursor moves after tab - moving forward by 1 indent
+            let selectionStartI = inputElement.selectionStart; // where cursor moves after tab - moving forward by 1 indent
+            let selectionEndI = inputElement.selectionEnd; // where cursor moves after tab - moving forward by 1 indent
 
-            let number_indents = 0;
-            let first_line_indents = 0;
-
-            for (let i = 0; i < lines.length; i++) {                
-                // console.log(lines[i], ": start", selection_start, letter_i + lines[i].length + 1, "&& end", selection_end , letter_i + 1)
-                if((selection_start <= letter_i+lines[i].length && selection_end >= letter_i + 1)
-                || (selection_start == selection_end && selection_start <= letter_i+lines[i].length+1 && selection_end >= letter_i)) { // + 1 so newlines counted
+            for (let i = 0; i < lines.length; i++) {
+                if((selectionStartI <= letterI+lines[i].length && selectionEndI >= letterI + 1)
+                || (selectionStartI == selectionEndI && selectionStartI <= letterI+lines[i].length+1 && selectionEndI >= letterI)) { // + 1 so newlines counted
                     // Starts before or at last char and ends after or at first char
                     if(event.shiftKey) {
-                        if(lines[i][0] == "\t") {
-                            // Remove first tab
-                            input_element.selectionStart = letter_i;
-                            input_element.selectionEnd = letter_i+1;
+                        if(lines[i].substring(0, this.indentationNumChars) == this.indentation) {
+                            // Remove first indent
+                            inputElement.selectionStart = letterI;
+                            inputElement.selectionEnd = letterI+this.indentationNumChars;
                             document.execCommand("delete", false, "");
 
                             // Change selection
-                            if(selection_start > letter_i) { // Indented outside selection
-                                selection_start--;
+                            if(selectionStartI > letterI) { // Indented outside selection
+                                selectionStartI = Math.max(selectionStartI - this.indentationNumChars, letterI); // Don't move to before indent
                             }
-                            selection_end--;
-                            letter_i--;
+                            selectionEndI -= this.indentationNumChars;
+                            letterI -= this.indentationNumChars;
                         }
                     } else {
                         // Add tab at start
-                        input_element.selectionStart = letter_i;
-                        input_element.selectionEnd = letter_i;
-                        document.execCommand("insertText", false, "\t");
+                        inputElement.selectionStart = letterI;
+                        inputElement.selectionEnd = letterI;
+                        document.execCommand("insertText", false, this.indentation);
 
                         // Change selection
-                        if(selection_start > letter_i) { // Indented outside selection
-                            selection_start++;
+                        if(selectionStartI > letterI) { // Indented outside selection
+                            selectionStartI += this.indentationNumChars;
                         }
-                        selection_end++;
-                        letter_i++;
+                        selectionEndI += this.indentationNumChars;
+                        letterI += this.indentationNumChars;
                     }                    
                 }
                 
-                letter_i += lines[i].length+1; // newline counted
+                letterI += lines[i].length+1; // newline counted
             }
-            // input_element.value = lines.join("\n");
 
             // move cursor
-            input_element.selectionStart = selection_start;
-            input_element.selectionEnd = selection_end;
+            inputElement.selectionStart = selectionStartI;
+            inputElement.selectionEnd = selectionEndI;
         }
 
-        codeInput.update(input_element.value);
+        codeInput.update(inputElement.value);
     }
 
-    check_enter(codeInput, event) {
+    checkEnter(codeInput, event) {
         if(event.key != "Enter") {
             return;
         }
-        event.preventDefault(); // stop normal
+        event.preventDefault(); // Stop normal \n only
 
-        let input_element = codeInput.querySelector("textarea");
-        let lines = input_element.value.split("\n");
-        let letter_i = 0;
-        let current_line = lines.length - 1;
-        let new_line = "";
-        let number_indents = 0;
+        let inputElement = codeInput.querySelector("textarea");
+        let lines = inputElement.value.split("\n");
+        let letterI = 0;
+        let currentLineI = lines.length - 1;
+        let newLine = "";
+        let numberIndents = 0;
 
         // find the index of the line our cursor is currently on
         for (let i = 0; i < lines.length; i++) {
-            letter_i += lines[i].length + 1;
-            if(input_element.selectionEnd <= letter_i) {
-                current_line = i;
+            letterI += lines[i].length + 1;
+            if(inputElement.selectionEnd <= letterI) {
+                currentLineI = i;
                 break;
             }
         }
 
         // count the number of indents the current line starts with (up to our cursor position in the line)
-        let cursor_pos_in_line = lines[current_line].length - (letter_i - input_element.selectionEnd) + 1;
-        for (let i = 0; i < cursor_pos_in_line; i++) {
-            if (lines[current_line][i] == "\t") {
-                number_indents++;
+        let cursorPosInLine = lines[currentLineI].length - (letterI - inputElement.selectionEnd) + 1;
+        for (let i = 0; i < cursorPosInLine; i += this.indentationNumChars) {
+            if (lines[currentLineI].substring(i, i+this.indentationNumChars) == this.indentation) {
+                numberIndents++;
             } else {
                 break;
             }
         }
 
         // determine the text before and after the cursor and chop the current line at the new line break
-        let text_after_cursor = "";
-        if (cursor_pos_in_line != lines[current_line].length) {
-            text_after_cursor = lines[current_line].substring(cursor_pos_in_line);
-            lines[current_line] = lines[current_line].substring(0, cursor_pos_in_line);
+        let textAfterCursor = "";
+        if (cursorPosInLine != lines[currentLineI].length) {
+            textAfterCursor = lines[currentLineI].substring(cursorPosInLine);
+            lines[currentLineI] = lines[currentLineI].substring(0, cursorPosInLine);
         }
 
         // insert our indents and any text from the previous line that might have been after the line break
-        for (let i = 0; i < number_indents; i++) {
-            new_line += "\t";
+        for (let i = 0; i < numberIndents; i++) {
+            newLine += this.indentation;
         }
 
         // save the current cursor position
-        let selection_start = input_element.selectionStart;
-        let selection_end = input_element.selectionEnd;
+        let selectionStartI = inputElement.selectionStart;
 
-        document.execCommand("insertText", false, "\n" + new_line); // Write new line, including auto-indentation
+        document.execCommand("insertText", false, "\n" + newLine); // Write new line, including auto-indentation
 
         // move cursor to new position
-        input_element.selectionStart = selection_start + number_indents + 1;  // count the indent level and the newline character
-        input_element.selectionEnd = selection_start + number_indents + 1;
+        inputElement.selectionStart = selectionStartI + numberIndents*this.indentationNumChars + 1;  // count the indent level and the newline character
+        inputElement.selectionEnd = inputElement.selectionStart;
 
-        codeInput.update(input_element.value);
+        
+        // Scroll down to cursor if necessary
+        let paddingTop = Number(getComputedStyle(inputElement).paddingTop.replace("px", "")); 
+        let lineHeight = Number(getComputedStyle(inputElement).lineHeight.replace("px", "")); 
+        let inputHeight = Number(getComputedStyle(inputElement).height.replace("px", ""));
+        if(currentLineI*lineHeight + lineHeight*2 + paddingTop >= inputElement.scrollTop + inputHeight) { // Cursor too far down
+            inputElement.scrollBy(0, Number(getComputedStyle(inputElement).lineHeight.replace("px", "")))
+        }
 
+        codeInput.update(inputElement.value);
+    }
 
-        // Update scrolls
-        input_element.scrollLeft = 0;
-        // Move down 1 line
-        let lineHeight = Number(getComputedStyle(input_element).lineHeight.split(0, -2));
-        // console.log(getComputedStyle(input_element).lineHeight);
-        if(lineHeight == NaN && getComputedStyle(input_element).lineHeight.split(-2) == "px") {
-            input_element.scrollTop += lineHeight;
-        } else {
-            input_element.scrollTop += 20; // px
+    checkBackspace(codeInput, event) {
+        if(event.key != "Backspace" || this.indentationNumChars == 1) {
+            return; // Normal backspace
+        }
+
+        let inputElement = codeInput.textareaElement;
+
+        if(inputElement.selectionStart == inputElement.selectionEnd && codeInput.value.substring(inputElement.selectionStart - this.indentationNumChars, inputElement.selectionStart) == this.indentation) {
+            // Indentation before cursor = delete it
+            inputElement.selectionStart -= this.indentationNumChars;
+            event.preventDefault();
+            document.execCommand("delete", false, "");
         }
     }
 }

@@ -13,7 +13,7 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
     }
     /* When a key is pressed, or scrolling occurs, update the autocomplete */
     updatePopup(codeInput, onlyScrolled) {
-        let textarea = codeInput.querySelector("textarea");
+        let textarea = codeInput.textareaElement;
         let caretCoords = this.getCaretCoordinates(codeInput, textarea, textarea.selectionEnd, onlyScrolled);
         let popupElem = codeInput.querySelector(".code-input_autocomplete_popup");
         popupElem.style.top = caretCoords.top + "px";
@@ -33,7 +33,7 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         testPosElem.classList.add("code-input_autocomplete_testpos");
         codeInput.appendChild(testPosElem); // Styled like first pre, but first pre found to update
 
-        let textarea = codeInput.querySelector("textarea");
+        let textarea = codeInput.textareaElement;
         textarea.addEventListener("keyup", this.updatePopup.bind(this, codeInput, false)); // Override this+args in bind - not just scrolling
         textarea.addEventListener("click", this.updatePopup.bind(this, codeInput, false)); // Override this+args in bind - not just scrolling
         textarea.addEventListener("scroll", this.updatePopup.bind(this, codeInput, true)); // Override this+args in bind - just scrolling

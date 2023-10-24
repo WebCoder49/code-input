@@ -143,8 +143,6 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
             // Calculate darkness
             text_color = color_brightness < 128 ? "white" : "black";
 
-            // console.log(background_color, color_brightness, text_color);
-
             this.cachedColors[ascii_code] = [background_color, text_color];
             return [background_color, text_color];
         } else {
@@ -172,7 +170,6 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         }
 
         // Ensure font the same
-        // console.log(font);
         this.canvasContext.font = font;
 
         // Try to get width from canvas
@@ -186,33 +183,6 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
 
         this.cachedWidths[font][char] = width;
 
-        // console.log(this.cachedWidths);
         return width;
     }
-
-    // getCharacterWidth(char) { // Doesn't work for now - from StackOverflow suggestion https://stackoverflow.com/a/76146120/21785620
-    //     let textarea = codeInput.pluginData.specialChars.textarea;
-
-    //     // Create a temporary element to measure the width of the character
-    //     const span = document.createElement('span');
-    //     span.textContent = char;
-        
-    //     // Copy the textarea's font to the temporary element
-    //     span.style.fontSize = window.getComputedStyle(textarea).fontSize;
-    //     span.style.fontFamily = window.getComputedStyle(textarea).fontFamily;
-    //     span.style.fontWeight = window.getComputedStyle(textarea).fontWeight;
-    //     span.style.visibility = 'hidden';
-    //     span.style.position = 'absolute';
-        
-    //     // Add the temporary element to the document so we can measure its width
-    //     document.body.appendChild(span);
-        
-    //     // Get the width of the character in pixels
-    //     const width = span.offsetWidth;
-        
-    //     // Remove the temporary element from the document
-    //     document.body.removeChild(span);
-        
-    //     return width;
-    // }
 }

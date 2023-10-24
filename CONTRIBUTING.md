@@ -9,7 +9,7 @@
 ---
 # Ways you could contribute:
 ## 1. I've found a bug but don't know how / don't have time to fix it.
-If you think you've found a bug, please [submit an issue](https://github.com/WebCoder49/code-input/issues) with screenshots, how you found the bug, and copies of the console's logs if an error is in them. Please also mention the template and plugins you used (your `codeInput.registerTemplate(...)` snippet). We'd be more than happy to help you fix it.
+If you think you've found a bug, please [submit an issue](https://github.com/WebCoder49/code-input/issues) with screenshots, how you found the bug, and copies of the console's logs if an error is in them. Please also mention the template and plugins you used (your `codeInput.registerTemplate(...)` snippet). We'd be more than happy to help you fix it. A demo using [CodePen](https://codepen.io/) would be incredibly useful.
 
 ## 2. I have implemented a feature / have thought of a potential feature for the library and think it could be useful for others.
 The best way to implement a feature is as a plugin like those in the `plugins` folder of `code-input`. If you do this, you could contribute it as in point 3 below.
