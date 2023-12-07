@@ -86,7 +86,7 @@ codeInput.plugins.GoTo = class extends codeInput.Plugin {
     
     /* Set the cursor on the first non-space char of textarea's nth line; and scroll it into view */
     goTo(textarea, n) {
-        var fs, lh, c, S, T, lines = textarea.value.split('\n');
+        var fs, lh, S, T, c = -1, lines = textarea.value.split('\n');
         
         if (n > 0 && n <= lines.length) {
             if (textarea.computedStyleMap) {
@@ -101,9 +101,11 @@ codeInput.plugins.GoTo = class extends codeInput.Plugin {
             S = (n > 3 ? n - 3 : 1) * lh;
             T = (lh - fs) / 2;
             
-            // cursor positon just after n - 1 full lines
-            c = lines.slice(0, n - 1).join('\n').length;
-            
+            if (n > 1) {
+                // cursor positon just after n - 1 full lines
+                c = lines.slice(0, n - 1).join('\n').length;
+            }
+                
             // scan first non-space char in nth line
             do c++; while (textarea.value[c] != '\n' && /\s/.test(textarea.value[c]));
             
