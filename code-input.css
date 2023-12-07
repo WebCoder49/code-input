@@ -116,3 +116,11 @@ code-input:not(.code-input_registered)::after {
   display: block;
   color: grey;
 }
+
+/* To prevent Ctrl+F in result element */
+code-input pre .code-input_searching-disabled::before {
+  content: attr(data-content);
+}
+code-input pre .code-input_searching-disabled {
+  font-size: 0;
+}

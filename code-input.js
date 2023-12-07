@@ -524,6 +524,16 @@ var codeInput = {
             else this.template.highlight(resultElement);
 
             this.pluginEvt("afterHighlight");
+
+            if(this.codeElement.querySelector("*") === null) {
+                // No visible syntax highlighting yet - don't override it by adding new child elements with disable searching, but make
+                // the `<code>` element the disable searching element.
+                this.codeElement.classList.add("code-input_searching-disabled");
+            } else {
+                this.codeElement.classList.remove("code-input_searching-disabled");
+                this.resultElementDisableSearching();
+            }
+            // TODO: Add flag to enable/disable in template
         }
 
         /**
@@ -553,6 +563,30 @@ var codeInput = {
          */
         unescapeHtml(text) {
             return text.replace(new RegExp("&amp;", "g"), "&").replace(new RegExp("&lt;", "g"), "<").replace(new RegExp("&gt;", "g"), ">"); /* Global RegExp */
+        }
+
+        /**
+         * Make the text contents of highlighted code in the `<pre><code>` result element invisible to Ctrl+F by moving them to a data attribute
+         * then the CSS `::before` pseudo-element on span elements with the class code-input_searching-disabled. This function is called recursively
+         * on all child elements of the <code> element.
+         * 
+         * @param {HTMLElement} element The element on which this is carried out recursively. Optional - defaults to the `<pre><code>`'s `<code>` element. 
+         */
+        resultElementDisableSearching(element=this.preElement) {
+            for (let i = 0; i < element.childNodes.length; i++) {
+                let content = element.childNodes[i].textContent;
+            
+                if (element.childNodes[i].nodeType == 3) {
+                    // Turn plain text node into span element
+                    element.replaceChild(document.createElement('span'), element.childNodes[i]);
+                    element.childNodes[i].classList.add("code-input_searching-disabled")
+                    element.childNodes[i].setAttribute("data-content", content);
+                    element.childNodes[i].innerText = '';
+                } else {
+                    // Recurse deeper
+                    this.resultElementDisableSearching(element.childNodes[i]);
+                }
+            }
         }
 
         /**
