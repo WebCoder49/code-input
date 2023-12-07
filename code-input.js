@@ -163,13 +163,20 @@ var codeInput = {
          * @param {boolean} isCode - is this for writing code? If true, the code-input's lang HTML attribute can be used, and the `<code>` element will be given the class name 'language-[lang attribute's value]'.
          * @param {boolean} includeCodeInputInHighlightFunc - Setting this to true passes the `<code-input>` element as a second argument to the highlight function.
          * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.Plugin`
-         * @returns template object
+         * @returns {codeInput.Template} template object
          */
-        constructor(highlight = function () { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
+        constructor(highlight = function () { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, autoDisableDuplicateSearching = true, plugins = []) {
+            // @deprecated to support old function signature without autoDisableDuplicateSearching
+            if(Array.isArray(autoDisableDuplicateSearching)) {
+                plugins = autoDisableDuplicateSearching;
+                autoDisableDuplicateSearching = true;
+            }
+
             this.highlight = highlight;
             this.preElementStyled = preElementStyled;
             this.isCode = isCode;
             this.includeCodeInputInHighlightFunc = includeCodeInputInHighlightFunc;
+            this.autoDisableDuplicateSearching = autoDisableDuplicateSearching;
             this.plugins = plugins;
         }
 
@@ -179,7 +186,7 @@ var codeInput = {
          * `<code-input>` element parameter if `this.includeCodeInputInHighlightFunc` is
          * `true`.
          */
-        highlight = function() {};
+        highlight = function(codeElement) {};
 
         /**
          * Is the <pre> element CSS-styled as well as the `<code>` element? 
@@ -201,6 +208,15 @@ var codeInput = {
          * second argument to the highlight function.
          */
         includeCodeInputInHighlightFunc = false;
+
+        /**
+         * Leaving this as true uses code-input's default fix for preventing duplicate results in Ctrl+F searching
+         * from the input and result elements, and setting this to true indicates your highlighting function implements
+         * its own fix.
+         * 
+         * The default fix works by moving text content from elements to CSS ::before pseudo-elements after highlighting.
+         */
+        autoDisableDuplicateSearching = true;
 
         /**
          * An array of plugin objects to add extra features - 
@@ -226,31 +242,36 @@ var codeInput = {
          * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
          * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
          * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-         * @returns template object
+         * @returns {codeInput.Template} template object
          */
         prism(prism, plugins = []) { // Dependency: Prism.js (https://prismjs.com/)
-            return {
-                includeCodeInputInHighlightFunc: false,
-                highlight: prism.highlightElement,
-                preElementStyled: true,
-                isCode: true,
-                plugins: plugins,
-            };
+            return new codeInput.Template(
+                prism.highlightElement, // highlight
+                true, // preElementStyled
+                true, // isCode
+                false, // includeCodeInputInHighlightFunc
+                true, // autoDisableDuplicateSearching
+                plugins
+            );
         },
         /**
          * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
          * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
          * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-         * @returns template object
+         * @returns {codeInput.Template} template object
          */
         hljs(hljs, plugins = []) { // Dependency: Highlight.js (https://highlightjs.org/)
-            return {
-                includeCodeInputInHighlightFunc: false,
-                highlight: hljs.highlightElement,
-                preElementStyled: false,
-                isCode: true,
-                plugins: plugins,
-            };
+            return new codeInput.Template(
+                function(codeElement) {
+                    codeElement.removeAttribute("data-highlighted");
+                    hljs.highlightElement(codeElement);
+                }, // highlight
+                false, // preElementStyled
+                true, // isCode
+                false, // includeCodeInputInHighlightFunc
+                true, // autoDisableDuplicateSearching
+                plugins
+            );
         },
 
         /**
@@ -275,6 +296,7 @@ var codeInput = {
                 includeCodeInputInHighlightFunc: true,
                 preElementStyled: true,
                 isCode: false,
+                autoDisableDuplicateSearching: true,
                 plugins: plugins,
             }
         },
@@ -299,8 +321,11 @@ var codeInput = {
                 includeCodeInputInHighlightFunc: true,
                 preElementStyled: true,
                 isCode: false,
+                autoDisableDuplicateSearching: true,
+
                 rainbowColors: rainbowColors,
                 delimiter: delimiter,
+
                 plugins: plugins,
             }
         },
@@ -507,7 +532,6 @@ var codeInput = {
             this.ignoreValueUpdate = false;
             if (this.textareaElement.value != value) this.textareaElement.value = value;
 
-
             let resultElement = this.codeElement;
 
             // Handle final newlines
@@ -525,15 +549,25 @@ var codeInput = {
 
             this.pluginEvt("afterHighlight");
 
-            if(this.codeElement.querySelector("*") === null) {
-                // No visible syntax highlighting yet - don't override it by adding new child elements with disable searching, but make
-                // the `<code>` element the disable searching element.
-                this.codeElement.classList.add("code-input_searching-disabled");
-            } else {
-                this.codeElement.classList.remove("code-input_searching-disabled");
-                this.resultElementDisableSearching();
+            if(this.template.autoDisableDuplicateSearching) {
+                if(this.codeElement.querySelector("*") === null) {
+                    // Fix for tries-to-disable-searching-before-highlighting-possible bug:
+                    // Wait until user interaction so can expect
+                    // highlight before disabling searching
+                    let listenerKeydown = window.addEventListener("keydown", () => {
+                        this.resultElementDisableSearching();
+                        window.removeEventListener("keydown", listenerKeydown);
+                        window.removeEventListener("mousemove", listenerMousemove);
+                    });
+                    let listenerMousemove = window.addEventListener("mousemove", () => {
+                        this.resultElementDisableSearching();
+                        window.removeEventListener("keydown", listenerKeydown);
+                        window.removeEventListener("mousemove", listenerMousemove);
+                    });
+                } else {
+                    this.resultElementDisableSearching();
+                }
             }
-            // TODO: Add flag to enable/disable in template
         }
 
         /**
