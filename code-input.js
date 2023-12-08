@@ -211,7 +211,7 @@ var codeInput = {
 
         /**
          * Leaving this as true uses code-input's default fix for preventing duplicate results in Ctrl+F searching
-         * from the input and result elements, and setting this to true indicates your highlighting function implements
+         * from the input and result elements, and setting this to false indicates your highlighting function implements
          * its own fix.
          * 
          * The default fix works by moving text content from elements to CSS ::before pseudo-elements after highlighting.
