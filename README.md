@@ -76,9 +76,23 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
     function(result_element) { /* Highlight function - with `pre code` code element */
       /* Highlight code in result_element - code is already escaped so it doesn't become HTML */
     },
-    true, /* Optional - Is the `pre` element styled as well as the `code` element? Changing this to false uses the code element as the scrollable one rather than the pre element */
-    true, /* Optional - This is used for editing code - setting this to true sets the `code` element's class to `language-<the code-input's lang attribute>` */
-    false /* Optional - Setting this to true passes the `<code-input>` element as a second argument to the highlight function to be used for getting data- attribute values and using the DOM for the code-input */,
+
+    true, /* Optional - Is the `pre` element styled as well as the `code` element?
+           * Changing this to false uses the code element as the scrollable one rather
+           * than the pre element */
+          
+    true, /* Optional - This is used for editing code - setting this to true sets the `code`
+           * element's class to `language-<the code-input's lang attribute>` */
+
+    false /* Optional - Setting this to true passes the `<code-input>` element as a second
+           * argument to the highlight function to be used for getting data- attribute values
+           * and using the DOM for the code-input */,
+
+    true /* Optional - Leaving this as true uses code-input's default fix for preventing duplicate
+          * results in Ctrl+F searching from the input and result elements, and setting this to false
+          * indicates your highlighting function implements its own fix. The default fix works by moving
+          * text content from elements to CSS ::before pseudo-elements after highlighting. */
+
     [] // Array of plugins (see below)
   ));
   ```
