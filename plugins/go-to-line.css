@@ -1,14 +1,14 @@
-@keyframes roll-in {
+@keyframes code-input_go-to_roll-in {
     0% {opacity: 0; transform: translateY(-34px);}
     100% {opacity: 1; transform: translateY(0px);}
 }
 
-@keyframes roll-out {
+@keyframes code-input_go-to_roll-out {
     0% {opacity: 1; transform: translateY(0px);}
     100% {opacity: 0; transform: translateY(-34px);}
 }
 
-.goto-dialog {
+.code-input_go-to_dialog {
     position: absolute;
     top: 0; right: 14px;
     height: 28px;
@@ -18,45 +18,53 @@
     background-color: white;
     border-radius: 6px;
     box-shadow: 0 .2em 1em .2em rgba(0, 0, 0, 0.16);
-    animation: roll-in .2s;
+    animation: code-input_go-to_roll-in .2s;
     z-index: 10;
 }
 
-.goto-dialog.bye {
-  animation: roll-out .2s;
+.code-input_go-to_dialog.bye {
+  animation: code-input_go-to_roll-out .2s;
 }
 
-.goto-dialog input {
+.code-input_go-to_dialog input::placeholder {
+  font-size: 80%;
+}
+
+.code-input_go-to_dialog input {
   position: relative;
-  width: 60px; height: 32px; top: -3px;
+  width: 240px; height: 32px; top: -3px;
   font-size: large;
   color: #000000aa;
   border: 0;
 }
 
-.goto-dialog input.error {
+.code-input_go-to_dialog input.error {
   color: #ff0000aa;
 }
 
-.goto-dialog input:focus {
+.code-input_go-to_dialog input:focus {
   outline: none;
 }
 
-.goto-dialog span {
+.code-input_go-to_dialog span {
   display: inline-block;
-  width: 24px; line-height: 24px;
-  font-family: system-ui; font-size: 22px; font-weight: 500;
+  width: 24px;
+  line-height: 24px;
+  font-family: system-ui;
+  font-size: 22px;
+  font-weight: 500;
   text-align: center;
   border-radius: 50%;
   color: black;
   opacity: 0.6;
+  vertical-align: top;
 }
 
-.goto-dialog span:before {
+.code-input_go-to_dialog span:before {
   content: "\00d7";
 }
 
-.goto-dialog span:hover {
+.code-input_go-to_dialog span:hover {
   opacity: .8;
   background-color: #00000018;
 }
