@@ -28,6 +28,13 @@ Files: [debounce-update.js](./debounce-update.js)
 
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/GRXyxzV)
 
+### Go To Line
+Add a feature to go to a specific line when a line number is given (or column as well, in the format line no:column no) that appears when (optionally) Ctrl+G is pressed or when JavaScript triggers it.
+
+Files: [go-to-line.js](./go-to-line.js) / [go-to-line.css](./go-to-line.css)
+
+[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/YzBMOXP)
+
 ### Indent
 Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it possible to indent/unindent multiple lines using Tab/Shift+Tab. **Supports tab characters and custom numbers of spaces as indentation.**
 
@@ -36,7 +43,7 @@ Files: [indent.js](./indent.js)
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/WNgdzar)
 
 ### Prism Line Numbers
-Allows code-input elements to be used with the Prism.js line-numbers plugin, as long as the code-input element or a parent element of it has the CSS class `line-numbers`. [Prism.js Plugin Docs](https://prismjs.com/plugins/line-numbers/)
+Allow code-input elements to be used with the Prism.js line-numbers plugin, as long as the code-input element or a parent element of it has the CSS class `line-numbers`. [Prism.js Plugin Docs](https://prismjs.com/plugins/line-numbers/)
 
 Files: [prism-line-numbers.css](./prism-line-numbers.css) (NO JS FILE)
 
