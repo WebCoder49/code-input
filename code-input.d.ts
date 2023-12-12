@@ -111,6 +111,23 @@ export namespace plugins {
   }
 
   /**
+   * Add basic Go-To-Line (ctrl-G by default) functionality to the code editor.
+   * Files: go-to-line.js / go-to-line.css
+   */
+  class GoToLine extends Plugin {
+    /**
+     * Create a go-to-line command plugin to pass into a template
+     * @param {boolean} useCtrlG Should Ctrl+G be overriden for go-to-line functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
+     */
+    constructor(useCtrlG: boolean);
+    /**
+     * Show a search-like dialog prompting line number.
+     * @param {codeInput.CodeInput} codeInput the `<code-input>` element.
+    */
+    showPrompt(codeInput: CodeInput): void;
+  }
+
+  /**
    * Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it 
    * possible to indent/unindent multiple lines using Tab/Shift+Tab
    * Files: indent.js
