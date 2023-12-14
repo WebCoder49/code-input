@@ -1,11 +1,12 @@
 /**
- * Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it 
+ * Add indentation using the `Tab` key, and auto-indents after a newline, as well as making it 
  * possible to indent/unindent multiple lines using Tab/Shift+Tab
  * Files: indent.js
  */
 codeInput.plugins.Indent = class extends codeInput.Plugin {
 
     numSpaces;
+    bracketPairs = null; // No bracket-auto-indentation used
     indentation = "\t";
     indentationNumChars = 1;
 
@@ -13,11 +14,13 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
      * Create an indentation plugin to pass into a template
      * @param {Boolean} defaultSpaces Should the Tab key enter spaces rather than tabs? Defaults to false.
      * @param {Number} numSpaces How many spaces is each tab character worth? Defaults to 4.
+     * @param {Object} bracketPairs Opening brackets mapped to closing brackets, default and example {"(": ")", "[": "]", "{": "}"}. All brackets must only be one character, and this can be left as null to remove bracket-based indentation behaviour.
      */
-    constructor(defaultSpaces=false, numSpaces=4) {
+    constructor(defaultSpaces=false, numSpaces=4, bracketPairs={"(": ")", "[": "]", "{": "}"}) {
         super([]); // No observed attributes
 
         this.numSpaces = numSpaces;
+        this.bracketPairs = bracketPairs;
         if(defaultSpaces) {
             this.indentation = "";
             for(let i = 0; i < numSpaces; i++) {
@@ -31,6 +34,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
     afterElementsAdded(codeInput) {
         let textarea = codeInput.textareaElement;
         textarea.addEventListener('keydown', (event) => { this.checkTab(codeInput, event); this.checkEnter(codeInput, event); this.checkBackspace(codeInput, event); });
+        textarea.addEventListener('beforeinput', (event) => { this.checkCloseBracket(codeInput, event); });
     }
 
     /* Event handlers */
@@ -135,6 +139,39 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
             lines[currentLineI] = lines[currentLineI].substring(0, cursorPosInLine);
         }
 
+        let bracketThreeLinesTriggered = false;
+        let furtherIndentation = "";
+        if(this.bracketPairs != null) {
+            for(let openingBracket in this.bracketPairs) {
+                if(lines[currentLineI][lines[currentLineI].length-1] == openingBracket) {
+                    let closingBracket = this.bracketPairs[openingBracket];
+                    if(textAfterCursor.length > 0 && textAfterCursor[0] == closingBracket) {
+                        // Create new line and then put textAfterCursor on yet another line: 
+                        // {
+                        //   |CARET|
+                        // }
+                        bracketThreeLinesTriggered = true;
+                        for (let i = 0; i < numberIndents+1; i++) {
+                            furtherIndentation += this.indentation;
+                        }
+                    } else {
+                        // Just create new line: 
+                        // {
+                        //   |CARET|
+                        numberIndents++;
+                    }
+                    break;
+                } else {
+                    // Check whether brackets cause unindent
+                    let closingBracket = this.bracketPairs[openingBracket];
+                    if(textAfterCursor.length > 0 && textAfterCursor[0] == closingBracket) {
+                        numberIndents--;
+                        break;
+                    }
+                }
+            }
+        }
+
         // insert our indents and any text from the previous line that might have been after the line break
         for (let i = 0; i < numberIndents; i++) {
             newLine += this.indentation;
@@ -143,6 +180,10 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         // save the current cursor position
         let selectionStartI = inputElement.selectionStart;
 
+        if(bracketThreeLinesTriggered) {
+            document.execCommand("insertText", false, "\n" + furtherIndentation); // Write indented line
+            numberIndents += 1; // Reflects the new indent
+        }
         document.execCommand("insertText", false, "\n" + newLine); // Write new line, including auto-indentation
 
         // move cursor to new position
@@ -173,6 +214,24 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
             inputElement.selectionStart -= this.indentationNumChars;
             event.preventDefault();
             document.execCommand("delete", false, "");
+        }
+    }
+
+    checkCloseBracket(codeInput, event) {
+        if(codeInput.textareaElement.selectionStart != codeInput.textareaElement.selectionEnd) {
+            return;
+        }
+
+        for(let openingBracket in this.bracketPairs) {
+            let closingBracket = this.bracketPairs[openingBracket];
+            if(event.data == closingBracket) {
+                // Closing bracket unindents line
+                if(codeInput.value.substring(codeInput.textareaElement.selectionStart - this.indentationNumChars, codeInput.textareaElement.selectionStart) == this.indentation) {
+                    // Indentation before cursor = delete it
+                    codeInput.textareaElement.selectionStart -= this.indentationNumChars;
+                    document.execCommand("delete", false, "");
+                }
+            }
         }
     }
 }

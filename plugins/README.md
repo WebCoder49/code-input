@@ -7,6 +7,14 @@
 
 ---
 
+### Auto-Close Brackets
+Automatically close pairs of brackets/quotes/other syntaxes in code, but also optionally choose the brackets this
+is activated for.
+
+Files: [auto-close-brackets.js](./auto-close-brackets.js)
+
+[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/qBgGGKR)
+
 ### Autocomplete
 Display a popup under the caret using the text in the code-input element. This works well with autocomplete suggestions.
 
@@ -36,7 +44,7 @@ Files: [go-to-line.js](./go-to-line.js) / [go-to-line.css](./go-to-line.css)
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/YzBMOXP)
 
 ### Indent
-Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it possible to indent/unindent multiple lines using Tab/Shift+Tab. **Supports tab characters and custom numbers of spaces as indentation.**
+Add indentation using the `Tab` key, and auto-indents after a newline, as well as making it possible to indent/unindent multiple lines using Tab/Shift+Tab. **Supports tab characters and custom numbers of spaces as indentation, as well as (optionally) brackets typed affecting indentation.**
 
 Files: [indent.js](./indent.js)
 
