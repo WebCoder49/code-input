@@ -533,7 +533,6 @@ var codeInput = {
 
             // Sync content
             if(this.needsHighlight) {
-                console.log("Update");
                 this.update();
                 this.needsHighlight = false;
                 // this.needsDisableDuplicateSearching = true;
