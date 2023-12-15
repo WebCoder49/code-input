@@ -514,7 +514,7 @@ var codeInput = {
         * to syntax-highlight it. */
 
         needsHighlight = false; // Just inputted
-        needsDisableDuplicateSearching = false; // Just highlighted
+        // needsDisableDuplicateSearching = false; // Just highlighted
 
         /**
          * Highlight the code ASAP
@@ -536,13 +536,13 @@ var codeInput = {
                 console.log("Update");
                 this.update();
                 this.needsHighlight = false;
-                this.needsDisableDuplicateSearching = true;
+                // this.needsDisableDuplicateSearching = true;
             }
-            if(this.needsDisableDuplicateSearching && this.codeElement.querySelector("*") != null) {
-                // Has been highlighted
-                this.resultElementDisableSearching();
-                this.needsDisableDuplicateSearching = false;
-            }
+            // if(this.needsDisableDuplicateSearching && this.codeElement.querySelector("*") != null) {
+            //     // Has been highlighted
+            //     this.resultElementDisableSearching();
+            //     this.needsDisableDuplicateSearching = false;
+            // }
 
             window.requestAnimationFrame(this.animateFrame.bind(this));
         }

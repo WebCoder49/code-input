@@ -194,7 +194,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         // Scroll down to cursor if necessary
         let paddingTop = Number(getComputedStyle(inputElement).paddingTop.replace("px", "")); 
         let lineHeight = Number(getComputedStyle(inputElement).lineHeight.replace("px", "")); 
-        let inputHeight = Number(getComputedStyle(inputElement).height.replace("px", ""));
+        let inputHeight = Number(getComputedStyle(codeInput).height.replace("px", ""));
         if(currentLineI*lineHeight + lineHeight*2 + paddingTop >= inputElement.scrollTop + inputHeight) { // Cursor too far down
             codeInput.scrollBy(0, Number(getComputedStyle(inputElement).lineHeight.replace("px", "")));
         }
