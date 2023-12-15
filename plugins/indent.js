@@ -97,7 +97,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
             inputElement.selectionEnd = selectionEndI;
         }
 
-        codeInput.update(inputElement.value);
+        codeInput.value = inputElement.value;
     }
 
     checkEnter(codeInput, event) {
@@ -196,10 +196,10 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         let lineHeight = Number(getComputedStyle(inputElement).lineHeight.replace("px", "")); 
         let inputHeight = Number(getComputedStyle(inputElement).height.replace("px", ""));
         if(currentLineI*lineHeight + lineHeight*2 + paddingTop >= inputElement.scrollTop + inputHeight) { // Cursor too far down
-            inputElement.scrollBy(0, Number(getComputedStyle(inputElement).lineHeight.replace("px", "")))
+            codeInput.scrollBy(0, Number(getComputedStyle(inputElement).lineHeight.replace("px", "")));
         }
 
-        codeInput.update(inputElement.value);
+        codeInput.value = inputElement.value;
     }
 
     checkBackspace(codeInput, event) {

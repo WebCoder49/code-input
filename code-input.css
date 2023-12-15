@@ -9,8 +9,7 @@ code-input {
   top: 0;
   left: 0;
   display: block;
-  /* Only scroll inside elems */
-  overflow: hidden;
+  overflow: auto;
 
   /* Normal inline styles */
   margin: 8px;
@@ -24,6 +23,18 @@ code-input {
   caret-color: darkgrey;
   white-space: pre;
   padding: 0!important; /* Use --padding */
+
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
+}
+
+
+code-input:not(.code-input_loaded) {
+  margin: 0px!important;
+  margin-bottom: calc(-1 * var(--padding, 16px))!important;
+  padding: var(--padding, 16px)!important;
+  border: 0;
 }
 
 code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
@@ -32,14 +43,13 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   padding: var(--padding, 16px)!important;
   border: 0;
   width: calc(100% - var(--padding, 16px) * 2);
-  height: calc(100% - var(--padding, 16px) * 2);
-}
+  min-height: calc(100% - var(--padding, 16px) * 2);
+  
+  overflow: hidden;
+  resize: none;
 
-code-input:not(.code-input_loaded) {
-  margin: 0px!important;
-  margin-bottom: calc(-1 * var(--padding, 16px))!important;
-  padding: var(--padding, 16px)!important;
-  border: 0;
+  grid-row: 1 2;
+  grid-column: 1 2;
 }
 
 code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-element-styled pre code {
@@ -96,8 +106,6 @@ code-input textarea::placeholder {
 
 /* Can be scrolled */
 code-input textarea, code-input pre {
-  overflow: auto!important;
-
   white-space: inherit;
   word-spacing: normal;
   word-break: normal;

@@ -39,7 +39,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     /* Runs after elements are added into a `code-input` (useful for adding events to the textarea); Params: codeInput element) */
     afterElementsAdded(codeInput) {
         // For some reason, special chars aren't synced the first time - TODO is there a cleaner way to do this?
-        setTimeout(() => { codeInput.update(codeInput.value); }, 100);
+        setTimeout(() => { codeInput.value = codeInput.value + ""; }, 100);
     }
 
     /* Runs after code is highlighted; Params: codeInput element) */

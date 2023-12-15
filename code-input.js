@@ -513,30 +513,49 @@ var codeInput = {
         * the result (pre code) element, then use the template object
         * to syntax-highlight it. */
 
-        /** Update the text value to the result element, after the textarea contents have changed.
-         * @param {string} value - The text value of the code-input element
-         * @param {boolean} originalUpdate - Whether this update originates from the textarea's content; if so, run it first so custom updates override it.
-         */
-        update(value) {
-            // Prevent this from running multiple times on the same input when "value" attribute is changed, 
-            // by not running when value is already equal to the input of this (implying update has already
-            // been run). Thank you to peterprvy for this. 
-            if (this.ignoreValueUpdate) return;
+        needsHighlight = false; // Just inputted
+        needsDisableDuplicateSearching = false; // Just highlighted
 
-            if(this.textareaElement == null) {
-                this.addEventListener("code-input_load", () => { this.update(value) }); // Only run when fully loaded
-                return;
+        /**
+         * Highlight the code ASAP
+         */
+        scheduleHighlight() {
+            this.needsHighlight = true;
+        }
+
+        /**
+         * Call an animation frame
+         */
+        animateFrame() {
+            // Sync size
+            this.textareaElement.style.height = getComputedStyle(this.preElement).height;
+            this.textareaElement.style.width = getComputedStyle(this.preElement).width;
+
+            // Sync content
+            if(this.needsHighlight) {
+                console.log("Update");
+                this.update();
+                this.needsHighlight = false;
+                this.needsDisableDuplicateSearching = true;
+            }
+            if(this.needsDisableDuplicateSearching && this.codeElement.querySelector("*") != null) {
+                // Has been highlighted
+                this.resultElementDisableSearching();
+                this.needsDisableDuplicateSearching = false;
             }
 
-            this.ignoreValueUpdate = true;
-            this.value = value;
-            this.ignoreValueUpdate = false;
-            if (this.textareaElement.value != value) this.textareaElement.value = value;
+            window.requestAnimationFrame(this.animateFrame.bind(this));
+        }
 
+        /**
+         * Update the text value to the result element, after the textarea contents have changed.
+         */
+        update() {
             let resultElement = this.codeElement;
+            let value = this.value;
 
             // Handle final newlines
-            if (value[value.length - 1] == "\n") {
+            if (value[value.length - 1] == "\n" || value.length == 0) {
                 value += " ";
             }
 
@@ -549,37 +568,6 @@ var codeInput = {
             else this.template.highlight(resultElement);
 
             this.pluginEvt("afterHighlight");
-
-            if(this.template.autoDisableDuplicateSearching) {
-                if(this.codeElement.querySelector("*") === null) {
-                    // Fix for tries-to-disable-searching-before-highlighting-possible bug:
-                    // Wait until user interaction so can expect
-                    // highlight before disabling searching
-                    let listenerKeydown = window.addEventListener("keydown", () => {
-                        this.resultElementDisableSearching();
-                        window.removeEventListener("keydown", listenerKeydown);
-                        window.removeEventListener("mousemove", listenerMousemove);
-                    });
-                    let listenerMousemove = window.addEventListener("mousemove", () => {
-                        this.resultElementDisableSearching();
-                        window.removeEventListener("keydown", listenerKeydown);
-                        window.removeEventListener("mousemove", listenerMousemove);
-                    });
-                } else {
-                    this.resultElementDisableSearching();
-                }
-            }
-        }
-
-        /**
-         * Synchronise the scrolling of the textarea to the result element.
-         */
-        syncScroll() {
-            let inputElement = this.textareaElement;
-            let resultElement = this.template.preElementStyled ? this.preElement : this.codeElement;
-
-            resultElement.scrollTop = inputElement.scrollTop;
-            resultElement.scrollLeft = inputElement.scrollLeft;
         }
 
         /**
@@ -694,8 +682,7 @@ var codeInput = {
                 }
             });
 
-            textarea.addEventListener('input', (evt) => { textarea.parentElement.update(textarea.value); textarea.parentElement.sync_scroll(); });
-            textarea.addEventListener('scroll', (evt) => textarea.parentElement.sync_scroll());
+            textarea.addEventListener('input', (evt) => { this.value = this.textareaElement.value; });
 
             // Save element internally
             this.textareaElement = textarea;
@@ -720,16 +707,10 @@ var codeInput = {
 
             this.pluginEvt("afterElementsAdded");
 
-            this.update(value);
-
             this.dispatchEvent(new CustomEvent("code-input_load"));
-        }
 
-        /**
-         * @deprecated Please use `codeInput.CodeInput.syncScroll`
-         */
-        sync_scroll() {
-            this.syncScroll();
+            this.value = value;
+            this.animateFrame();
         }
 
         /**
@@ -822,7 +803,7 @@ var codeInput = {
                         if (this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
                         else this.classList.remove("code-input_pre-element-styled");
                         // Syntax Highlight
-                        this.update(this.value);
+                        this.needsHighlight = true;
 
                         break;
 
@@ -854,7 +835,7 @@ var codeInput = {
 
                         if (mainTextarea.placeholder == oldValue) mainTextarea.placeholder = newValue;
 
-                        this.update(this.value);
+                        this.needsHighlight = true;
 
                         break;
                     default:
@@ -954,7 +935,7 @@ var codeInput = {
                 val = "";
             }
             this._value = val;
-            this.update(val);
+            this.needsHighlight = true;
             return val;
         }
 
@@ -1032,7 +1013,7 @@ var codeInput = {
         * Update value on form reset
         */
         formResetCallback() {
-            this.update(this.initialValue);
+            this.value = this.initialValue;
         };
     },
 

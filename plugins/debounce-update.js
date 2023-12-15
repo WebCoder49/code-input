@@ -29,7 +29,7 @@ codeInput.plugins.DebounceUpdate = class extends codeInput.Plugin {
 
         this.debounceTimeout = window.setTimeout(() => {
             // Closure arrow function can take in variables like `text`
-            this.update(text);
+            codeInput.value = text;
         }, this.delayMs);
     }
 
