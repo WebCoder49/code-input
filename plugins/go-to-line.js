@@ -3,19 +3,23 @@
  * Files: go-to-line.js / go-to-line.css
  */
 codeInput.plugins.GoToLine = class extends codeInput.Plugin {
+    useCtrlG = false;
 
     /**
      * Create a go-to-line command plugin to pass into a template
      * @param {boolean} useCtrlG Should Ctrl+G be overriden for go-to-line functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
      */
-    constructor(useCtrlG) {
+    constructor(useCtrlG = true) {
         super([]); // No observed attributes
+        this.useCtrlG = useCtrlG;
     }
 
     /* Add keystroke events */
     afterElementsAdded(codeInput) {
         const textarea = codeInput.textareaElement;
-        textarea.addEventListener('keydown', (event) => { this.checkCtrlG(codeInput, event); });
+        if(this.useCtrlG) {
+            textarea.addEventListener('keydown', (event) => { this.checkCtrlG(codeInput, event); });
+        }
     }
 
     blockSearch(dialog, event) {

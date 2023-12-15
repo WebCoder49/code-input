@@ -77,6 +77,19 @@ export namespace plugins {
   }
 
   /**
+   * Automatically closes pairs of brackets/quotes/other syntaxes in code, but also lets you choose the brackets this
+   * is activated for.
+   * Files: auto-close-brackets.js
+   */
+  class AutoCloseBrackets extends Plugin {
+    /**
+     * Create an auto-close brackets plugin to pass into a template
+     * @param {Object} bracketPairs Opening brackets mapped to closing brackets, default and example {"(": ")", "[": "]", "{": "}", '"': '"'}. All brackets must only be one character.
+     */
+    constructor(bracketPairs: Object);
+  }
+
+  /**
    * Display a popup under the caret using the text in the code-input element. This works well with autocomplete suggestions.
    * Files: autocomplete.js / autocomplete.css
    */
@@ -137,8 +150,9 @@ export namespace plugins {
      * Create an indentation plugin to pass into a template
      * @param {Boolean} defaultSpaces Should the Tab key enter spaces rather than tabs? Defaults to false.
      * @param {Number} numSpaces How many spaces is each tab character worth? Defaults to 4.
+     * @param {Object} bracketPairs Opening brackets mapped to closing brackets, default and example {"(": ")", "[": "]", "{": "}"}. All brackets must only be one character, and this can be left as null to remove bracket-based indentation behaviour.
      */
-    constructor(defaultSpaces?: boolean, numSpaces?: Number);
+    constructor(defaultSpaces?: boolean, numSpaces?: Number, bracketPairs?: Object);
   }
 
   /**
