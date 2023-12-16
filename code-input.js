@@ -533,7 +533,8 @@ var codeInput = {
 
             // Sync content
             if(this.needsHighlight) {
-                this.update();
+                // this.update();
+                this.updateNeededTokensOnly();
                 this.needsHighlight = false;
                 // this.needsDisableDuplicateSearching = true;
             }
@@ -567,6 +568,103 @@ var codeInput = {
             else this.template.highlight(resultElement);
 
             this.pluginEvt("afterHighlight");
+
+            this.lastNumChars = this.textareaElement.value.length;
+        }
+
+        lastNumChars = 0;
+        lastSelectionStart = 0;
+        lastSelectionEnd = 0;
+
+        prepareLastSelection() {
+            this.lastSelectionStart = this.textareaElement.selectionStart;
+            this.lastSelectionEnd = this.textareaElement.selectionEnd;
+        }
+
+        updateNeededTokensOnly() {
+            // TODO: Clean up, prevent 1-line-off bug for large pieces of code like this file, currently Ctrl+A,Ctrl+C,Ctrl+V fixes; do some caching of elements for quick 1-elem editing
+            let charsLeftStart = Math.min(this.lastSelectionStart, this.textareaElement.selectionStart);
+            let charsLeftEnd = Math.max(this.lastSelectionEnd, this.textareaElement.selectionEnd);
+            let charsSoFar = 0;
+            let childNodes = Array.from(this.codeElement.childNodes);
+
+            // Process and save the number of characters and selection range for when the function is next called.
+            let numCharsAdded = this.textareaElement.value.length - this.lastNumChars;
+            this.lastNumChars = this.textareaElement.value.length;
+
+            // Get the token(s) that surround this line
+            let thisLineNodeI = 0;
+            let chosenNodesStartCharI = 0;
+            let nextLineNodeI = 0;
+            let chosenNodesEndCharI = 0;
+            let nextLineNode = childNodes[0];
+
+            let lineUntilEnd = true;
+            for(let i = 0; i < childNodes.length; i++) {
+                let node = childNodes[i];
+                if(charsLeftStart > 0) {
+                    charsLeftStart -= node.textContent.length;
+                    if(node.textContent.includes("\n")) {
+                        thisLineNodeI = i;
+                        chosenNodesStartCharI = charsSoFar;
+                    }
+                }
+                if(charsLeftEnd > 0) {
+                    charsLeftEnd -= node.textContent.length;
+                } else if(node.textContent.includes("\n")) {
+                    nextLineNodeI = i;
+                    if(node.nodeType == 3) {
+                        let span = document.createElement("span");
+                        span.textContent = node.textContent;
+                        this.codeElement.replaceChild(span, node);
+                        node = span;
+                    }
+                    nextLineNode = node;
+                    chosenNodesEndCharI = charsSoFar;
+
+                    lineUntilEnd = false;
+                    break;
+                }
+                charsSoFar += node.textContent.length;
+            }
+            if(lineUntilEnd) {
+                nextLineNodeI = childNodes.length;
+                chosenNodesEndCharI = charsSoFar;
+            }
+            
+            let oldText = "";
+            // Remove the old copies of these token(s)
+            for(let i = thisLineNodeI; i < nextLineNodeI; i++) {
+                let node = childNodes[i];
+                oldText += node.innerHTML;
+                this.codeElement.removeChild(node);
+            }
+
+            // Get the new text to replace these tokens with
+            let lineText = this.escapeHtml(this.textareaElement.value.substring(chosenNodesStartCharI, chosenNodesEndCharI+numCharsAdded));
+
+            // Highlight this text
+            let node = document.createElement("code");
+            node.innerHTML = lineText;
+            let pre = document.createElement("pre");
+            pre.appendChild(node);
+            node.className = this.codeElement.className;
+            Prism.highlightElement(node);
+            let nodesToInsert = Array.from(node.childNodes);
+
+            // Place these highlighted token(s) back into the result element
+            // document.querySelector("#demo").innerHTML = "";
+            for(let i = 0; i < nodesToInsert.length; i++) {
+                // if(nodesToInsert[i].nodeType != 3) {
+                //     // nodesToInsert[i].style.backgroundColor = "#" + "0123456789abcdef"[Math.floor(Math.random() * 16)] + "0123456789abcdef"[Math.floor(Math.random() * 16)] + "0123456789abcdef"[Math.floor(Math.random() * 16)];
+                // }
+                // document.querySelector("#demo").appendChild(nodesToInsert[i].cloneNode(true));
+                if(lineUntilEnd) {
+                    this.codeElement.appendChild(nodesToInsert[i]);
+                } else {
+                    this.codeElement.insertBefore(nodesToInsert[i], nextLineNode);
+                }
+            }
         }
 
         /**
@@ -682,6 +780,7 @@ var codeInput = {
             });
 
             textarea.addEventListener('input', (evt) => { this.value = this.textareaElement.value; });
+            textarea.addEventListener('beforeinput', (evt) => { this.prepareLastSelection(); });
 
             // Save element internally
             this.textareaElement = textarea;
@@ -709,6 +808,7 @@ var codeInput = {
             this.dispatchEvent(new CustomEvent("code-input_load"));
 
             this.value = value;
+            this.update();
             this.animateFrame();
         }
 
