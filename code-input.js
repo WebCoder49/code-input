@@ -576,7 +576,6 @@ var codeInput = {
         lastNumChars = 0;
         lastSelectionStart = 0;
         lastSelectionEnd = 0;
-        cachedChosenNodes = null
 
         prepareLastSelection() {
             this.lastSelectionStart = this.textareaElement.selectionStart;
@@ -601,69 +600,38 @@ var codeInput = {
             let chosenNodesStartCharI = 0;
             let chosenNodesEndCharI = 0;
 
-            let cached = false;
-            let useCache = false;
-            let numEnters = 0;
-            if(this.cachedChosenNodes != null && // Cache exists
-                charsLeftEnd <= this.cachedChosenNodes.chosenNodesEndCharI + numCharsAdded &&
-                charsLeftStart >= this.cachedChosenNodes.chosenNodesStartCharI) { // Cursor in realms of cache
-                useCache = true;
-                for(let i = this.cachedChosenNodes.chosenNodesStartCharI; i < this.cachedChosenNodes.chosenNodesEndCharI + numCharsAdded; i++) {
-                    if(this.textareaElement.value[i] == "\n") {
-                        // Newline so redo caching
-                        numEnters++;
+            // Get the token(s) that surround this line
+
+            for(let i = 0; i < childNodes.length; i++) {
+                let node = childNodes[i];
+                if(charsLeftStart > 0) {
+                    charsLeftStart -= node.textContent.length;
+                    if(node.textContent.includes("\n")) {
+                        thisLineNodeI = i;
+                        chosenNodesStartCharI = charsSoFar;
                     }
                 }
-                if(numEnters != this.cachedChosenNodes.numEnters) {
-                    useCache = false;
-                }
-            }
-
-            if(useCache) {
-                // Get tokens from cache
-                nextLineNode = this.cachedChosenNodes.nextLineNode;
-                thisLineNodeI = this.cachedChosenNodes.thisLineNodeI;
-                nextLineNodeI = this.cachedChosenNodes.nextLineNodeI;
-                lineUntilEnd = this.cachedChosenNodes.lineUntilEnd;
-                chosenNodesStartCharI = this.cachedChosenNodes.chosenNodesStartCharI;
-                chosenNodesEndCharI = this.cachedChosenNodes.chosenNodesEndCharI + numCharsAdded;
-                cached = true;
-            } else {
-                this.cachedChosenNodes = null; // Cache now out of date
-
-                // Get the token(s) that surround this line
-
-                for(let i = 0; i < childNodes.length; i++) {
-                    let node = childNodes[i];
-                    if(charsLeftStart > 0) {
-                        charsLeftStart -= node.textContent.length;
-                        if(node.textContent.includes("\n")) {
-                            thisLineNodeI = i;
-                            chosenNodesStartCharI = charsSoFar;
-                        }
+                if(charsLeftEnd > 0) {
+                    charsLeftEnd -= node.textContent.length;
+                } else if(node.textContent.includes("\n")) {
+                    nextLineNodeI = i;
+                    if(node.nodeType == 3) {
+                        let span = document.createElement("span");
+                        span.textContent = node.textContent;
+                        this.codeElement.replaceChild(span, node);
+                        node = span;
                     }
-                    if(charsLeftEnd > 0) {
-                        charsLeftEnd -= node.textContent.length;
-                    } else if(node.textContent.includes("\n")) {
-                        nextLineNodeI = i;
-                        if(node.nodeType == 3) {
-                            let span = document.createElement("span");
-                            span.textContent = node.textContent;
-                            this.codeElement.replaceChild(span, node);
-                            node = span;
-                        }
-                        nextLineNode = node;
-                        chosenNodesEndCharI = charsSoFar;
-
-                        lineUntilEnd = false;
-                        break;
-                    }
-                    charsSoFar += node.textContent.length;
-                }
-                if(lineUntilEnd) {
-                    nextLineNodeI = childNodes.length;
+                    nextLineNode = node;
                     chosenNodesEndCharI = charsSoFar;
+
+                    lineUntilEnd = false;
+                    break;
                 }
+                charsSoFar += node.textContent.length;
+            }
+            if(lineUntilEnd) {
+                nextLineNodeI = childNodes.length;
+                chosenNodesEndCharI = charsSoFar;
             }
             
             let oldText = "";
@@ -689,9 +657,6 @@ var codeInput = {
 
             // Place these highlighted token(s) back into the result element
             document.querySelector("#demo").innerHTML = "";
-            if(cached) {
-                document.querySelector("#demo").innerHTML = "cached\n";
-            }
             for(let i = 0; i < nodesToInsert.length; i++) {
                 // if(nodesToInsert[i].nodeType != 3) {
                 //     // nodesToInsert[i].style.backgroundColor = "#" + "0123456789abcdef"[Math.floor(Math.random() * 16)] + "0123456789abcdef"[Math.floor(Math.random() * 16)] + "0123456789abcdef"[Math.floor(Math.random() * 16)];
@@ -702,11 +667,6 @@ var codeInput = {
                 } else {
                     this.codeElement.insertBefore(nodesToInsert[i], nextLineNode);
                 }
-            }
-
-            // Prepare cache for next, but don't cache massive pieces of text as they mean a lot of highlighting will need to be done and take up space in RAM.
-            if(numCharsAdded <= 5) {
-                this.cachedChosenNodes = {charsLeftStart: charsLeftStart, chosenNodesStartCharI, chosenNodesEndCharI, nextLineNode, lineUntilEnd, thisLineNodeI, nextLineNodeI: thisLineNodeI + numNewNodes, numEnters};
             }
         }
 
