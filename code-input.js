@@ -656,12 +656,7 @@ var codeInput = {
             let numNewNodes = nodesToInsert.length;
 
             // Place these highlighted token(s) back into the result element
-            document.querySelector("#demo").innerHTML = "";
             for(let i = 0; i < nodesToInsert.length; i++) {
-                // if(nodesToInsert[i].nodeType != 3) {
-                //     // nodesToInsert[i].style.backgroundColor = "#" + "0123456789abcdef"[Math.floor(Math.random() * 16)] + "0123456789abcdef"[Math.floor(Math.random() * 16)] + "0123456789abcdef"[Math.floor(Math.random() * 16)];
-                // }
-                document.querySelector("#demo").appendChild(nodesToInsert[i].cloneNode(true));
                 if(lineUntilEnd) {
                     this.codeElement.appendChild(nodesToInsert[i]);
                 } else {
