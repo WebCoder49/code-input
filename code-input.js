@@ -530,6 +530,7 @@ var codeInput = {
             // Sync size
             this.textareaElement.style.height = getComputedStyle(this.preElement).height;
             this.textareaElement.style.width = getComputedStyle(this.preElement).width;
+            this.textareaElement.scrollTo(0,0);
 
             // Sync content
             if(this.needsHighlight) {
@@ -575,6 +576,7 @@ var codeInput = {
         lastNumChars = 0;
         lastSelectionStart = 0;
         lastSelectionEnd = 0;
+        cachedChosenNodes = null
 
         prepareLastSelection() {
             this.lastSelectionStart = this.textareaElement.selectionStart;
@@ -592,44 +594,76 @@ var codeInput = {
             let numCharsAdded = this.textareaElement.value.length - this.lastNumChars;
             this.lastNumChars = this.textareaElement.value.length;
 
-            // Get the token(s) that surround this line
-            let thisLineNodeI = 0;
-            let chosenNodesStartCharI = 0;
-            let nextLineNodeI = 0;
-            let chosenNodesEndCharI = 0;
-            let nextLineNode = childNodes[0];
-
             let lineUntilEnd = true;
-            for(let i = 0; i < childNodes.length; i++) {
-                let node = childNodes[i];
-                if(charsLeftStart > 0) {
-                    charsLeftStart -= node.textContent.length;
-                    if(node.textContent.includes("\n")) {
-                        thisLineNodeI = i;
-                        chosenNodesStartCharI = charsSoFar;
-                    }
-                }
-                if(charsLeftEnd > 0) {
-                    charsLeftEnd -= node.textContent.length;
-                } else if(node.textContent.includes("\n")) {
-                    nextLineNodeI = i;
-                    if(node.nodeType == 3) {
-                        let span = document.createElement("span");
-                        span.textContent = node.textContent;
-                        this.codeElement.replaceChild(span, node);
-                        node = span;
-                    }
-                    nextLineNode = node;
-                    chosenNodesEndCharI = charsSoFar;
+            let nextLineNode = childNodes[0];
+            let thisLineNodeI = 0;
+            let nextLineNodeI = 0;
+            let chosenNodesStartCharI = 0;
+            let chosenNodesEndCharI = 0;
 
-                    lineUntilEnd = false;
-                    break;
+            let cached = false;
+            let useCache = false;
+            let numEnters = 0;
+            if(this.cachedChosenNodes != null && // Cache exists
+                charsLeftEnd <= this.cachedChosenNodes.chosenNodesEndCharI + numCharsAdded &&
+                charsLeftStart >= this.cachedChosenNodes.chosenNodesStartCharI) { // Cursor in realms of cache
+                useCache = true;
+                for(let i = this.cachedChosenNodes.chosenNodesStartCharI; i < this.cachedChosenNodes.chosenNodesEndCharI + numCharsAdded; i++) {
+                    if(this.textareaElement.value[i] == "\n") {
+                        // Newline so redo caching
+                        numEnters++;
+                    }
                 }
-                charsSoFar += node.textContent.length;
+                if(numEnters != this.cachedChosenNodes.numEnters) {
+                    useCache = false;
+                }
             }
-            if(lineUntilEnd) {
-                nextLineNodeI = childNodes.length;
-                chosenNodesEndCharI = charsSoFar;
+
+            if(useCache) {
+                // Get tokens from cache
+                nextLineNode = this.cachedChosenNodes.nextLineNode;
+                thisLineNodeI = this.cachedChosenNodes.thisLineNodeI;
+                nextLineNodeI = this.cachedChosenNodes.nextLineNodeI;
+                lineUntilEnd = this.cachedChosenNodes.lineUntilEnd;
+                chosenNodesStartCharI = this.cachedChosenNodes.chosenNodesStartCharI;
+                chosenNodesEndCharI = this.cachedChosenNodes.chosenNodesEndCharI + numCharsAdded;
+                cached = true;
+            } else {
+                this.cachedChosenNodes = null; // Cache now out of date
+
+                // Get the token(s) that surround this line
+
+                for(let i = 0; i < childNodes.length; i++) {
+                    let node = childNodes[i];
+                    if(charsLeftStart > 0) {
+                        charsLeftStart -= node.textContent.length;
+                        if(node.textContent.includes("\n")) {
+                            thisLineNodeI = i;
+                            chosenNodesStartCharI = charsSoFar;
+                        }
+                    }
+                    if(charsLeftEnd > 0) {
+                        charsLeftEnd -= node.textContent.length;
+                    } else if(node.textContent.includes("\n")) {
+                        nextLineNodeI = i;
+                        if(node.nodeType == 3) {
+                            let span = document.createElement("span");
+                            span.textContent = node.textContent;
+                            this.codeElement.replaceChild(span, node);
+                            node = span;
+                        }
+                        nextLineNode = node;
+                        chosenNodesEndCharI = charsSoFar;
+
+                        lineUntilEnd = false;
+                        break;
+                    }
+                    charsSoFar += node.textContent.length;
+                }
+                if(lineUntilEnd) {
+                    nextLineNodeI = childNodes.length;
+                    chosenNodesEndCharI = charsSoFar;
+                }
             }
             
             let oldText = "";
@@ -651,19 +685,28 @@ var codeInput = {
             node.className = this.codeElement.className;
             Prism.highlightElement(node);
             let nodesToInsert = Array.from(node.childNodes);
+            let numNewNodes = nodesToInsert.length;
 
             // Place these highlighted token(s) back into the result element
-            // document.querySelector("#demo").innerHTML = "";
+            document.querySelector("#demo").innerHTML = "";
+            if(cached) {
+                document.querySelector("#demo").innerHTML = "cached\n";
+            }
             for(let i = 0; i < nodesToInsert.length; i++) {
                 // if(nodesToInsert[i].nodeType != 3) {
                 //     // nodesToInsert[i].style.backgroundColor = "#" + "0123456789abcdef"[Math.floor(Math.random() * 16)] + "0123456789abcdef"[Math.floor(Math.random() * 16)] + "0123456789abcdef"[Math.floor(Math.random() * 16)];
                 // }
-                // document.querySelector("#demo").appendChild(nodesToInsert[i].cloneNode(true));
+                document.querySelector("#demo").appendChild(nodesToInsert[i].cloneNode(true));
                 if(lineUntilEnd) {
                     this.codeElement.appendChild(nodesToInsert[i]);
                 } else {
                     this.codeElement.insertBefore(nodesToInsert[i], nextLineNode);
                 }
+            }
+
+            // Prepare cache for next, but don't cache massive pieces of text as they mean a lot of highlighting will need to be done and take up space in RAM.
+            if(numCharsAdded <= 5) {
+                this.cachedChosenNodes = {charsLeftStart: charsLeftStart, chosenNodesStartCharI, chosenNodesEndCharI, nextLineNode, lineUntilEnd, thisLineNodeI, nextLineNodeI: thisLineNodeI + numNewNodes, numEnters};
             }
         }
 
