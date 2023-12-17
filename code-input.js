@@ -528,8 +528,13 @@ var codeInput = {
          */
         animateFrame() {
             // Sync size
-            this.textareaElement.style.height = getComputedStyle(this.preElement).height;
-            this.textareaElement.style.width = getComputedStyle(this.preElement).width;
+            if(this.template.preElementStyled) {
+                this.textareaElement.style.height = getComputedStyle(this.preElement).height;
+                this.textareaElement.style.width = getComputedStyle(this.preElement).width;
+            } else {
+                this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
+                this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
+            }
             this.textareaElement.scrollTo(0,0);
 
             // Sync content
