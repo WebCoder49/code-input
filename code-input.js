@@ -588,7 +588,6 @@ var codeInput = {
         }
 
         updateNeededTokensOnly() {
-            // TODO: Clean up, prevent 1-line-off bug for large pieces of code like this file, currently Ctrl+A,Ctrl+C,Ctrl+V fixes; do some caching of elements for quick 1-elem editing
             let charsLeftStart = Math.min(this.lastSelectionStart, this.textareaElement.selectionStart);
             let charsLeftEnd = Math.max(this.lastSelectionEnd, this.textareaElement.selectionEnd);
             let charsSoFar = 0;
