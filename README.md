@@ -88,11 +88,6 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
            * argument to the highlight function to be used for getting data- attribute values
            * and using the DOM for the code-input */,
 
-    true /* Optional - Leaving this as true uses code-input's default fix for preventing duplicate
-          * results in Ctrl+F searching from the input and result elements, and setting this to false
-          * indicates your highlighting function implements its own fix. The default fix works by moving
-          * text content from elements to CSS ::before pseudo-elements after highlighting. */
-
     [] // Array of plugins (see below)
   ));
   ```
