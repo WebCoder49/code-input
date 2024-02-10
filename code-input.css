@@ -4,19 +4,19 @@
 
 
 code-input {
-  /* Allow other elems to be inside */
-  position: relative;
-  top: 0;
-  left: 0;
+  /* Allow other elements to be inside */
   display: block;
   overflow-y: auto;
   overflow-x: auto;
+
+  position: relative;
+  top: 0;
+  left: 0;
 
   /* Normal inline styles */
   margin: 8px;
   --padding: 16px;
   height: 250px;
-
   font-size: normal;
   font-family: monospace;
   line-height: 1.5; /* Inherited to child elements */
@@ -24,10 +24,9 @@ code-input {
   caret-color: darkgrey;
   white-space: pre;
   padding: 0!important; /* Use --padding */
-
   display: grid;
-  grid-template-columns: auto;
-  grid-template-rows: auto;
+  grid-template-columns: 100%;
+  grid-template-rows: 100%;
 }
 
 
@@ -52,7 +51,7 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
 }
 code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
   height: max-content;
-  width: max-content;  
+  width: max-content;
 }
 
 code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-element-styled pre code {
@@ -71,14 +70,11 @@ code-input textarea, code-input pre, code-input pre * {
   tab-size: inherit!important;
 }
 
-
 code-input textarea, code-input pre {
   /* In the same place */
-  position: absolute;
-  top: 0;
-  left: 0;
+  grid-column: 1;
+  grid-row: 1;
 }
-
 
 /* Move the textarea in front of the result */
 
@@ -92,7 +88,7 @@ code-input pre {
 code-input:not(.code-input_loaded) pre, code-input:not(.code-input_loaded) textarea {
   opacity: 0;
 }
-code-input:not(.code-input_loaded)::after {
+code-input:not(.code-input_loaded)::before {
   color: #ccc;
 }
 
@@ -121,17 +117,9 @@ code-input textarea {
   outline: none!important;
 }
 
-code-input:not(.code-input_registered)::after {
+code-input:not(.code-input_registered)::before {
   /* Display message to register */
   content: "Use codeInput.registerTemplate to set up.";
   display: block;
   color: grey;
-}
-
-/* To prevent Ctrl+F in result element */
-code-input pre .code-input_searching-disabled::before {
-  content: attr(data-content);
-}
-code-input pre .code-input_searching-disabled {
-  font-size: 0;
 }

@@ -29,7 +29,6 @@ var codeInput = {
      * code-input element.
      */
     textareaSyncAttributes: [
-        "aria-*",
         "value",
         // Form validation - https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation
         "min", "max",
@@ -124,7 +123,7 @@ var codeInput = {
                 elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.template = template;
                 codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
-                // Bind sets elem in parameter 
+                // Bind sets elem as first parameter of function 
                 // So innerHTML can be read
             }
             console.log(`code-input: template: Added existing elements with template ${templateName}`);
@@ -138,7 +137,7 @@ var codeInput = {
                     elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.template = template;
                     codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
-                    // Bind sets elem in parameter 
+                    // Bind sets elem as first parameter of function
                     // So innerHTML can be read
                 }
             }
@@ -257,9 +256,7 @@ var codeInput = {
         },
 
         /**
-         * Constructor to create a proof-of-concept template that gives a message if too many characters are typed.
-         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-         * @returns template object
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
          */
         characterLimit(plugins) {
             return {
@@ -283,11 +280,7 @@ var codeInput = {
         },
 
         /**
-         * Constructor to create a proof-of-concept template that shows text in a repeating series of colors.
-         * @param {string[]} rainbowColors - An array of CSS colors, in the order each color will be shown
-         * @param {string} delimiter - The character used to split up parts of text where each part is a different colour (e.g. "" = characters, " " = words)
-         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-         * @returns template object
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
          */
         rainbowText(rainbowColors = ["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue", "magenta"], delimiter = "", plugins = []) {
             return {
@@ -311,13 +304,13 @@ var codeInput = {
         },
 
         /**
-         * @deprecated Please use `codeInput.characterLimit(plugins)`
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
          */
         character_limit() {
             return this.characterLimit([]);
         },
         /**
-         * @deprecated Please use `codeInput.rainbowText`
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
          */
         rainbow_text(rainbowColors = ["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue", "magenta"], delimiter = "", plugins = []) {
             return this.rainbowText(rainbowColors, delimiter, plugins);
@@ -379,14 +372,7 @@ var codeInput = {
             console.log("code-input: plugin: Created plugin");
 
             observedAttributes.forEach((attribute) => {
-                // Move plugin attribute to codeInput observed attributes
-                let regexFromWildcard = codeInput.wildcard2regex(attribute);
-                if(regexFromWildcard == null) {
-                    // Not a wildcard
-                    codeInput.observedAttributes.push(attribute);
-                } else {
-                    codeInput.observedAttributes.regexp.push(regexFromWildcard);
-                }
+                codeInput.observedAttributes.push(attribute);
             });
         }
 
@@ -495,7 +481,7 @@ var codeInput = {
         needsHighlight = false; // Just inputted
 
         /**
-         * Highlight the code ASAP
+         * Highlight the code as soon as possible
          */
         scheduleHighlight() {
             this.needsHighlight = true;
@@ -505,16 +491,18 @@ var codeInput = {
          * Call an animation frame
          */
         animateFrame() {
-            // Sync size
+            // Synchronise the size of the pre/code and textarea elements
             if(this.template.preElementStyled) {
+                this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
                 this.textareaElement.style.height = getComputedStyle(this.preElement).height;
                 this.textareaElement.style.width = getComputedStyle(this.preElement).width;
             } else {
+                this.style.backgroundColor = getComputedStyle(this.codeElement).backgroundColor;
                 this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
                 this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
             }
 
-            // Sync content
+            // Synchronise the contents of the pre/code and textarea elements
             if(this.needsHighlight) {
                 this.update();
                 this.needsHighlight = false;
@@ -600,7 +588,7 @@ var codeInput = {
             this.pluginEvt("beforeElementsAdded");
 
             // First-time attribute sync
-            let lang = this.getAttribute("lang");
+            let lang = this.getAttribute("language") || this.getAttribute("lang");
             let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
             let value = this.unescapeHtml(this.innerHTML) || this.getAttribute("value") || "";
             // Value attribute deprecated, but included for compatibility
@@ -619,19 +607,12 @@ var codeInput = {
             this.innerHTML = ""; // Clear Content
 
             // Synchronise attributes to textarea
-            codeInput.textareaSyncAttributes.forEach((attribute) => {
-                if (this.hasAttribute(attribute)) {
+            for(let i = 0; i < this.attributes.length; i++) {
+                let attribute = this.attributes[i].name;
+                if (codeInput.textareaSyncAttributes.includes(attribute) || attribute.substring(0, 5) == "aria-") {
                     textarea.setAttribute(attribute, this.getAttribute(attribute));
                 }
-            });
-            codeInput.textareaSyncAttributes.regexp.forEach((reg) =>
-            {
-                for(const attr of this.attributes) {
-                    if (attr.nodeName.match(reg)) {
-                        textarea.setAttribute(attr.nodeName, attr.nodeValue);
-                    }
-                }
-            });
+            }
 
             textarea.addEventListener('input', (evt) => { this.value = this.textareaElement.value; });
 
@@ -672,7 +653,7 @@ var codeInput = {
         }
 
         /**
-         * @deprecated Please use `codeInput.CodeInput.escapeHtml`
+         * @deprecated Please use `codeInput.CodeInput.getTemplate`
          */
         get_template() {
             return this.getTemplate();
@@ -716,13 +697,8 @@ var codeInput = {
                         return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                     }
                 }
-
-                /* Check wildcard attributes */
-                for(let i = 0; i < codeInput.observedAttributes.regexp.length; i++) {
-                    const reg = codeInput.observedAttributes.regexp[i];
-                    if (mutation.attributeName.match(reg)) {
-                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
-                    }
+                if (mutation.attributeName.substring(0, 5) == "aria-") {
+                    return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                 }
             }
         }
@@ -746,9 +722,6 @@ var codeInput = {
                     case "value":
                         this.value = newValue;
                         break;
-                    case "placeholder":
-                        this.textareaElement.placeholder = newValue;
-                        break;
                     case "template":
                         this.template = codeInput.usedTemplates[newValue || codeInput.defaultTemplate];
                         if (this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
@@ -759,6 +732,7 @@ var codeInput = {
                         break;
 
                     case "lang":
+                    case "language":
 
                         let code = this.codeElement;
                         let mainTextarea = this.textareaElement;
@@ -790,7 +764,7 @@ var codeInput = {
 
                         break;
                     default:
-                        if (codeInput.textareaSyncAttributes.includes(name)) {
+                        if (codeInput.textareaSyncAttributes.includes(name) || name.substring(0, 5) == "aria-") {
                             if(newValue == null || newValue == undefined) {
                                 this.textareaElement.removeAttribute(name);
                             } else {
@@ -968,30 +942,6 @@ var codeInput = {
         };
     },
 
-    arrayWildcards2regex(list) {
-        for(let i = 0; i < list.length; i++) {
-            const name = list[i];
-            if (name.indexOf("*") < 0)
-                continue;
-
-            list.regexp.push(new RegExp("^" +
-                                name.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&')
-                                    .replace("*", ".*")
-                                + "$", "i"));
-            list.splice(i--, 1);
-        };
-    },
-
-    wildcard2regex(wildcard) {
-        if (wildcard.indexOf("*") < 0)
-            return null;
-
-        return new RegExp("^" +
-                wildcard.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&')
-                    .replace("*", ".*")
-                + "$", "i");
-    },
-
     /** 
      * To ensure the DOM is ready, run this callback after the window 
      * has loaded (or now if it has already loaded)
@@ -1008,30 +958,5 @@ var codeInput = {
 window.addEventListener("load", function() {
     codeInput.windowLoaded = true;
 });
-
-
-/**
- * convert wildcards into regex
- */
-
-{
-    Object.defineProperty(codeInput.textareaSyncAttributes, 'regexp', {
-        value: [],
-        writable: false,
-        enumerable: false,
-        configurable: false
-    });
-    codeInput.observedAttributes = codeInput.observedAttributes.concat(codeInput.textareaSyncAttributes);
-
-    Object.defineProperty(codeInput.observedAttributes, 'regexp', {
-        value: [],
-        writable: false,
-        enumerable: false,
-        configurable: false
-    });
-
-    codeInput.arrayWildcards2regex(codeInput.textareaSyncAttributes);
-    codeInput.arrayWildcards2regex(codeInput.observedAttributes);
-}
 
 customElements.define("code-input", codeInput.CodeInput);

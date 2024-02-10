@@ -20,9 +20,10 @@ codeInput.plugins.Autodetect = class extends codeInput.Plugin {
         let lang = langClass.match(/lang(\w|-)*/i)[0]; // Get word starting with lang...; Get outer bracket
         lang = lang.split("-")[1];
         if(lang == "undefined") {
+            codeInput.removeAttribute("language");
             codeInput.removeAttribute("lang");
         } else {
-            codeInput.setAttribute("lang", lang);
+            codeInput.setAttribute("language", lang);
         }
     }
 }

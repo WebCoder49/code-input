@@ -29,12 +29,19 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         popupElem.classList.add("code-input_autocomplete_popup");
         codeInput.appendChild(popupElem);
 
-        let testPosElem = document.createElement("pre");
-        testPosElem.classList.add("code-input_autocomplete_testpos");
-        codeInput.appendChild(testPosElem); // Styled like first pre, but first pre found to update
-
+        let testPosPre = document.createElement("pre");
+        if(codeInput.template.preElementStyled) {
+            testPosPre.classList.add("code-input_autocomplete_testpos");
+            codeInput.appendChild(testPosPre); // Styled like first pre, but first pre found to update    
+        } else {
+            let testPosCode = document.createElement("code");
+            testPosCode.classList.add("code-input_autocomplete_testpos");
+            testPosPre.appendChild(testPosCode);
+            codeInput.appendChild(testPosPre); // Styled like first pre, but first pre found to update
+        }
+        
         let textarea = codeInput.textareaElement;
-        textarea.addEventListener("keyup", this.updatePopup.bind(this, codeInput, false)); // Override this+args in bind - not just scrolling
+        textarea.addEventListener("input", this.updatePopup.bind(this, codeInput, false)); // Override this+args in bind - not just scrolling
         textarea.addEventListener("click", this.updatePopup.bind(this, codeInput, false)); // Override this+args in bind - not just scrolling
         textarea.addEventListener("scroll", this.updatePopup.bind(this, codeInput, true)); // Override this+args in bind - just scrolling
     }

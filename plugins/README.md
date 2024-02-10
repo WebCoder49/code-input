@@ -29,13 +29,6 @@ Files: [autodetect.js](./autodetect.js)
 
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/eYLyMae)
 
-### Debounce Update
-Debounce the update and highlighting function ([What is Debouncing?](https://medium.com/@jamischarles/what-is-debouncing-2505c0648ff1))
-
-Files: [debounce-update.js](./debounce-update.js)
-
-[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/GRXyxzV)
-
 ### Go To Line
 Add a feature to go to a specific line when a line number is given (or column as well, in the format line no:column no) that appears when (optionally) Ctrl+G is pressed or when JavaScript triggers it.
 

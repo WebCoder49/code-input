@@ -24,10 +24,6 @@
     --code-input_special-chars_F: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAAXNSR0IArs4c6QAAAB5JREFUGFdj/P///38GKGAEcRgZGRlBfDAHtwxMGQDZZhP+BnB1kwAAAABJRU5ErkJggg==');
 }
 
-.code-input_special-char_container { /* pre element */
-    font-size: 20px;
-}
-
 .code-input_special-char {
     display: inline-block;
     position: relative;

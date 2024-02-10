@@ -106,7 +106,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         }
         event.preventDefault(); // Stop normal \n only
 
-        let inputElement = codeInput.querySelector("textarea");
+        let inputElement = codeInput.textareaElement;
         let lines = inputElement.value.split("\n");
         let letterI = 0;
         let currentLineI = lines.length - 1;
@@ -204,7 +204,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
 
     checkBackspace(codeInput, event) {
         if(event.key != "Backspace" || this.indentationNumChars == 1) {
-            return; // Normal backspace
+            return; // Normal backspace when indentation of 1
         }
 
         let inputElement = codeInput.textareaElement;

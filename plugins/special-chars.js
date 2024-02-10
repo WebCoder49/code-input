@@ -7,7 +7,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     specialCharRegExp;
 
     cachedColors; // ascii number > [background color, text color]
-    cachedWidths; // font > {character > character width}
+    cachedWidths; // character > character width
     canvasContext;
 
     /**
@@ -31,11 +31,6 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         this.canvasContext = canvas.getContext("2d");
     }
 
-    /* Runs before elements are added into a `code-input`; Params: codeInput element) */
-    beforeElementsAdded(codeInput) {
-        codeInput.classList.add("code-input_special-char_container");
-    }
-
     /* Runs after elements are added into a `code-input` (useful for adding events to the textarea); Params: codeInput element) */
     afterElementsAdded(codeInput) {
         // For some reason, special chars aren't synced the first time - TODO is there a cleaner way to do this?
@@ -44,16 +39,15 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
 
     /* Runs after code is highlighted; Params: codeInput element) */
     afterHighlight(codeInput) {      
-        let result_element = codeInput.querySelector("pre code");
+        let resultElement = codeInput.codeElement;
 
         // Reset data each highlight so can change if font size, etc. changes
         codeInput.pluginData.specialChars = {};
-        codeInput.pluginData.specialChars.textarea = codeInput.getElementsByTagName("textarea")[0];
-        codeInput.pluginData.specialChars.contrastColor = window.getComputedStyle(result_element).color;
+        codeInput.pluginData.specialChars.contrastColor = window.getComputedStyle(resultElement).color;
 
-        this.recursivelyReplaceText(codeInput, result_element);
+        this.recursivelyReplaceText(codeInput, resultElement);
 
-        this.lastFont = window.getComputedStyle(codeInput.pluginData.specialChars.textarea).font;
+        this.lastFont = window.getComputedStyle(codeInput.textareaElement).font;
     }
 
     recursivelyReplaceText(codeInput, element) {
@@ -90,29 +84,29 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         }
     }
 
-    specialCharReplacer(codeInput, match_char) {
-        let hex_code = match_char.codePointAt(0);
+    specialCharReplacer(codeInput, matchChar) {
+        let hexCode = matchChar.codePointAt(0);
 
         let colors;
-        if(this.colorInSpecialChars) colors = this.getCharacterColor(hex_code);
+        if(this.colorInSpecialChars) colors = this.getCharacterColors(hexCode);
 
-        hex_code = hex_code.toString(16);
-        hex_code = ("0000" + hex_code).substring(hex_code.length); // So 2 chars with leading 0
-        hex_code = hex_code.toUpperCase();
+        hexCode = hexCode.toString(16);
+        hexCode = ("0000" + hexCode).substring(hexCode.length); // So 2 chars with leading 0
+        hexCode = hexCode.toUpperCase();
 
-        let char_width = this.getCharacterWidth(codeInput, match_char);
+        let charWidth = this.getCharacterWidthEm(codeInput, matchChar);
 
         // Create element with hex code
         let result = document.createElement("span");
         result.classList.add("code-input_special-char");
-        result.style.setProperty("--hex-0",  "var(--code-input_special-chars_" + hex_code[0] + ")");
-        result.style.setProperty("--hex-1",  "var(--code-input_special-chars_" + hex_code[1] + ")");
-        result.style.setProperty("--hex-2",  "var(--code-input_special-chars_" + hex_code[2] + ")");
-        result.style.setProperty("--hex-3",  "var(--code-input_special-chars_" + hex_code[3] + ")");
+        result.style.setProperty("--hex-0",  "var(--code-input_special-chars_" + hexCode[0] + ")");
+        result.style.setProperty("--hex-1",  "var(--code-input_special-chars_" + hexCode[1] + ")");
+        result.style.setProperty("--hex-2",  "var(--code-input_special-chars_" + hexCode[2] + ")");
+        result.style.setProperty("--hex-3",  "var(--code-input_special-chars_" + hexCode[3] + ")");
         
         // Handle zero-width chars
-        if(char_width == 0) result.classList.add("code-input_special-char_zero-width");
-        else result.style.width = char_width + "px";
+        if(charWidth == 0) result.classList.add("code-input_special-char_zero-width");
+        else result.style.width = charWidth + "em";
 
         if(this.colorInSpecialChars) {
             result.style.backgroundColor = "#" + colors[0];
@@ -123,62 +117,68 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         return result;
     }
     
-    getCharacterColor(ascii_code) {
+    getCharacterColors(asciiCode) {
         // Choose colors based on character code - lazy load and return [background color, text color]
-        let background_color;
-        let text_color;
-        if(!(ascii_code in this.cachedColors)) {
+        let backgroundColor;
+        let textColor;
+        if(!(asciiCode in this.cachedColors)) {
             // Get background color - arbitrary bit manipulation to get a good range of colours
-            background_color = ascii_code^(ascii_code << 3)^(ascii_code << 7)^(ascii_code << 14)^(ascii_code << 16); // Arbitrary
-            background_color = background_color^0x1fc627; // Arbitrary
-            background_color = background_color.toString(16);
-            background_color = ("000000" + background_color).substring(background_color.length); // So 6 chars with leading 0
+            backgroundColor = asciiCode^(asciiCode << 3)^(asciiCode << 7)^(asciiCode << 14)^(asciiCode << 16); // Arbitrary
+            backgroundColor = backgroundColor^0x1fc627; // Arbitrary
+            backgroundColor = backgroundColor.toString(16);
+            backgroundColor = ("000000" + backgroundColor).substring(backgroundColor.length); // So 6 chars with leading 0
 
             // Get most suitable text color - white or black depending on background brightness
-            let color_brightness = 0;
-            let luminance_coefficients = [0.299, 0.587, 0.114];
+            let colorBrightness = 0;
+            const luminanceCoefficients = [0.299, 0.587, 0.114];
             for(let i = 0; i < 6; i += 2) {
-                color_brightness += parseInt(background_color.substring(i, i+2), 16) * luminance_coefficients[i/2];
+                colorBrightness += parseInt(backgroundColor.substring(i, i+2), 16) * luminanceCoefficients[i/2];
             }
             // Calculate darkness
-            text_color = color_brightness < 128 ? "white" : "black";
+            textColor = colorBrightness < 128 ? "white" : "black";
 
-            this.cachedColors[ascii_code] = [background_color, text_color];
-            return [background_color, text_color];
+            this.cachedColors[asciiCode] = [backgroundColor, textColor];
+            return [backgroundColor, textColor];
         } else {
-            return this.cachedColors[ascii_code];
+            return this.cachedColors[asciiCode];
         }
     }
 
-    getCharacterWidth(codeInput, char) {
+    getCharacterWidthEm(codeInput, char) {
         // Force zero-width characters
         if(new RegExp("\u00AD|\u02de|[\u0300-\u036F]|[\u0483-\u0489]|\u200b").test(char) ) { return 0 }
         // Non-renderable ASCII characters should all be rendered at same size
         if(char != "\u0096" && new RegExp("[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]", "g").test(char)) {
-            let fallbackWidth = this.getCharacterWidth("\u0096");
+            let fallbackWidth = this.getCharacterWidthEm(codeInput, "\u0096");
             return fallbackWidth;
         }
 
-        let font = window.getComputedStyle(codeInput.pluginData.specialChars.textarea).font;
+        let font = getComputedStyle(codeInput.textareaElement).fontFamily + " " + getComputedStyle(codeInput.textareaElement).fontStretch + " " + getComputedStyle(codeInput.textareaElement).fontStyle + " " + getComputedStyle(codeInput.textareaElement).fontVariant + " " + getComputedStyle(codeInput.textareaElement).fontWeight + " " + getComputedStyle(codeInput.textareaElement).lineHeight; // Font without size
 
-        // Lazy-load - TODO: Get a cleaner way of doing this
+        // Lazy-load width of each character
         if(this.cachedWidths[font] == undefined) {
-            this.cachedWidths[font] = {}; // Create new cached widths for this font
+            this.cachedWidths[font] = {};
         }
         if(this.cachedWidths[font][char] != undefined) { // Use cached width
             return this.cachedWidths[font][char];
         }
 
-        // Ensure font the same
-        this.canvasContext.font = font;
+        // Ensure font the same - 20px font size is where this algorithm works
+        this.canvasContext.font = getComputedStyle(codeInput.textareaElement).font.replace(getComputedStyle(codeInput.textareaElement).fontSize, "20px");
 
         // Try to get width from canvas
-        let width = this.canvasContext.measureText(char).width;
-        if(width > Number(font.split("px")[0])) {
+        let width = this.canvasContext.measureText(char).width/20; // From px to em (=proportion of font-size)
+        if(width > 1) {
             width /= 2; // Fix double-width-in-canvas Firefox bug
         } else if(width == 0 && char != "\u0096") {
-            let fallbackWidth = this.getCharacterWidth("\u0096");
+            let fallbackWidth = this.getCharacterWidthEm(codeInput, "\u0096");
             return fallbackWidth; // In Firefox some control chars don't render, but all control chars are the same width
+        }
+
+        // Firefox will never make smaller than size at 20px
+        if(navigator.userAgent.includes("Mozilla") && !navigator.userAgent.includes("Chrome") && !navigator.userAgent.includes("Safari")) {
+            let fontSize = Number(getComputedStyle(codeInput.textareaElement).fontSize.substring(0, getComputedStyle(codeInput.textareaElement).fontSize.length-2)); // Remove 20, make px
+            if(fontSize < 20) width *= 20 / fontSize;
         }
 
         this.cachedWidths[font][char] = width;

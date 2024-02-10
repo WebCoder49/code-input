@@ -36,20 +36,25 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         let columnNo = 0; // Means go to start of indented line
         let maxColumnNo = 1;
         const querySplitByColons = dialog.input.value.split(':');
-        if(querySplitByColons.length > 2) return dialog.input.classList.add('error');
+        if(querySplitByColons.length > 2) return dialog.input.classList.add('code-input_go-to_error');
 
-        if(querySplitByColons.length >= 2) {
-            columnNo = Number(querySplitByColons[1]);
-            maxColumnNo = lines[lineNo-1].length;
-        }
 
         if (event.key == 'Escape') return this.cancelPrompt(dialog, event);
 
         if (dialog.input.value) {
-            if (!/^[0-9:]*$/.test(dialog.input.value) || lineNo < 1 || columnNo < 0 || lineNo > maxLineNo || columnNo > maxColumnNo) {
-                return dialog.input.classList.add('error');
+            if (!/^[0-9:]*$/.test(dialog.input.value) || lineNo < 1 || lineNo > maxLineNo) {
+                return dialog.input.classList.add('code-input_go-to_error');
             } else {
-                dialog.input.classList.remove('error');
+                // Check if line:column
+                if(querySplitByColons.length >= 2) {
+                    columnNo = Number(querySplitByColons[1]);
+                    maxColumnNo = lines[lineNo-1].length;
+                }
+                if(columnNo < 0 || columnNo > maxColumnNo) {
+                    return dialog.input.classList.add('code-input_go-to_error');
+                } else {
+                    dialog.input.classList.remove('code-input_go-to_error');
+                }
             }
         }
 
@@ -65,15 +70,14 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         dialog.textarea.focus();
 
         // Remove dialog after animation
-        dialog.classList.add('bye');
+        dialog.classList.add('code-input_go-to_hidden-dialog');
+        dialog.input.value = "";
 
         if (dialog.computedStyleMap) {
             delay = 1000 * dialog.computedStyleMap().get('animation').toString().split('s')[0];
         } else {
             delay = 1000 * document.defaultView.getComputedStyle(dialog, null).getPropertyValue('animation').split('s')[0];
         }
-
-        setTimeout(() => { dialog.codeInput.removeChild(dialog); }, .9 * delay);
     }
 
     /**
@@ -81,29 +85,34 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
      * @param {codeInput.CodeInput} codeInput the `<code-input>` element.
     */
     showPrompt(codeInput) {
-        const textarea = codeInput.textareaElement;
+        if(codeInput.pluginData.goToLine == undefined || codeInput.pluginData.goToLine.dialog == undefined) {
+            const textarea = codeInput.textareaElement;
 
-        const dialog = document.createElement('div');
-        const input = document.createElement('input');
-        const cancel = document.createElement('span');
+            const dialog = document.createElement('div');
+            const input = document.createElement('input');
+            const cancel = document.createElement('span');
 
-        dialog.appendChild(input);
-        dialog.appendChild(cancel);
+            dialog.appendChild(input);
+            dialog.appendChild(cancel);
 
-        dialog.className = 'code-input_go-to_dialog';
-        input.spellcheck = false;
-        input.placeholder = "Line:Column / Line no. then Enter";
-        dialog.codeInput = codeInput;
-        dialog.textarea = textarea;
-        dialog.input = input;
+            dialog.className = 'code-input_go-to_dialog';
+            input.spellcheck = false;
+            input.placeholder = "Line:Column / Line no. then Enter";
+            dialog.codeInput = codeInput;
+            dialog.textarea = textarea;
+            dialog.input = input;
 
-        input.addEventListener('keydown', (event) => { this.blockSearch(dialog, event); });
-        input.addEventListener('keyup', (event) => { this.checkPrompt(dialog, event); });
-        cancel.addEventListener('click', (event) => { this.cancelPrompt(dialog, event); });
+            input.addEventListener('keydown', (event) => { this.blockSearch(dialog, event); });
+            input.addEventListener('keyup', (event) => { this.checkPrompt(dialog, event); });
+            cancel.addEventListener('click', (event) => { this.cancelPrompt(dialog, event); });
 
-        codeInput.appendChild(dialog);
-
-        input.focus();
+            codeInput.appendChild(dialog);
+            codeInput.pluginData.goToLine = {dialog: dialog};
+            input.focus();
+        } else {
+            codeInput.pluginData.goToLine.dialog.classList.remove("code-input_go-to_hidden-dialog");
+            codeInput.pluginData.goToLine.dialog.querySelector("input").focus();
+        }
     }
 
     /* Set the cursor on the first non-space char of textarea's nth line; and scroll it into view */

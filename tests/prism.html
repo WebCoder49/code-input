@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>code-input Tester</title>
+
+    <!--Import Prism-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <!--Import code-input-->
+    <link rel="stylesheet" href="../code-input.css">
+    <script src="../code-input.js"></script>
+
+    <!--Import code-input plugins-->
+    <script src="../plugins/auto-close-brackets.js"></script>
+    <script src="../plugins/autocomplete.js"></script>
+    <link rel="stylesheet" href="../plugins/autocomplete.css">
+    <script src="../plugins/go-to-line.js"></script>
+    <link rel="stylesheet" href="../plugins/go-to-line.css">
+    <script src="../plugins/indent.js"></script>
+    <script src="../plugins/special-chars.js"></script>
+    <link rel="stylesheet" href="../plugins/special-chars.css">
+
+    <script src="tester.js"></script>
+</head>
+<body>
+    <h1>code-input Tester (Prism.js)</h1>
+    <h4><a href="hljs.html">Test for highlight.js</a></h4>
+    <p>This page carries out automated tests for the code-input library to check that both the core components and the plugins work in some ways. It doesn't fully cover every scenario so you should test any code you change by hand, but it's good for quickly checking a wide range of functionality works.</p>
+
+    <details id="collapse-results"><summary>Test Results</summary><pre id="test-results"></pre></details>
+    <code-input language="JavaScript">console.log("Hello, World!");</code-input>
+
+    <script>
+        // TODO: Delete this testing code
+        var Prism = {
+            highlightElement: function(elem) {
+                elem.innerHTML = elem.innerHTML.replace(/\./g, "<span style='color: grey;'>.</span>").replace(/\,/g, "<span style='color: grey;'>,</span>").replace(/\(/g, "<span style='color: crimson;'>(</span>").replace(/\)/g, "<span style='color: crimson;'>)</span>");
+            }
+        }
+
+        // codeInput.registerTemplate("code-editor", codeInput.templates.prism(Prism, [
+        //     new codeInput.plugins.AutoCloseBrackets(), // Cause
+        //     // new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+        //     //     if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+        //     //         // Show popup
+        //     //         popupElem.style.display = "block";
+        //     //         popupElem.innerHTML = "Here's your popup!";
+        //     //     } else {
+        //     //         popupElem.style.display = "none";
+        //     //     }
+        //     // }),
+        //     // new codeInput.plugins.GoToLine(),
+        //     // new codeInput.plugins.Indent(true, 2), // Fine
+        //     // new codeInput.plugins.SpecialChars(true),
+        // ]));
+
+        beginTest(false);
+    </script>
+</body>
+</html>
