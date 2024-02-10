@@ -35,13 +35,18 @@
     <!--TODO: Fix for hljs popup &
         (optional) In new branch, make Ctrl+F/H functionality like gotoline (finds in value, "string combinatorics" in pre code, Regex/case-insensitive accepted); Add tests for Ctrl+F/H
         (optional) In new branch, add one-line (input) option
-        Add tests for form/value/language functionality-->
+        Make tester async function using await?-->
     <h1>code-input Tester (highlight.js)</h1>
     <h4><a href="prism.html">Test for Prism.js</a></h4>
     <p>This page carries out automated tests for the code-input library to check that both the core components and the plugins work in some ways. It doesn't fully cover every scenario so you should test any code you change by hand, but it's good for quickly checking a wide range of functionality works.</p>
 
     <details id="collapse-results"><summary>Test Results</summary><pre id="test-results"></pre></details>
-    <code-input language="JavaScript">console.log("Hello, World!");</code-input>
+    <form method="GET" action="https://google.com/search" target="_blank">
+        <code-input language="JavaScript" name="q">console.log("Hello, World!");
+// A second line
+// A third line with &lt;html> tags</code-input>
+        <input type="submit" value="Search Google For Code"/>
+    </form>
 
     <script>
         beginTest(true);

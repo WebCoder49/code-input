@@ -19,6 +19,7 @@ var codeInput = {
     observedAttributes: [
         "value",
         "placeholder",
+        "language",
         "lang",
         "template"
     ],
@@ -417,10 +418,6 @@ var codeInput = {
         constructor() {
             super(); // Element
         }
-        /**
-        * Store value internally
-        */
-        _value = '';
 
         /**
         * Exposed child textarea element for user to input code in
@@ -633,7 +630,7 @@ var codeInput = {
 
             if (this.template.isCode) {
                 if (lang != undefined && lang != "") {
-                    code.classList.add("language-" + lang);
+                    code.classList.add("language-" + lang.toLowerCase());
                 }
             }
 
@@ -733,7 +730,6 @@ var codeInput = {
 
                     case "lang":
                     case "language":
-
                         let code = this.codeElement;
                         let mainTextarea = this.textareaElement;
 
@@ -849,7 +845,8 @@ var codeInput = {
          * Get the text contents of the code-input element.
          */
         get value() {
-            return this._value;
+            // Get from editable textarea element
+            return this.textareaElement.value;
         }
         /**
          * Set the text contents of the code-input element.
@@ -859,7 +856,9 @@ var codeInput = {
             if (val === null || val === undefined) {
                 val = "";
             }
-            this._value = val;
+            // Save in editable textarea element
+            this.textareaElement.value = val;
+            // Trigger highlight
             this.needsHighlight = true;
             return val;
         }

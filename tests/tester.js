@@ -76,7 +76,10 @@ function testAddingText(group, textarea, action, correctOutput, correctLengthToS
     let origValueBefore = textarea.value.substring(0, textarea.selectionStart);
     let origValueAfter = textarea.value.substring(textarea.selectionEnd);
     action(textarea);
-    assertEqual(group, "Text Output", textarea.value, origValueBefore+correctOutput+origValueAfter)
+
+    let correctOutputValue = origValueBefore+correctOutput+origValueAfter;
+    assertEqual(group, "Text Output", textarea.value, correctOutputValue)
+    assertEqual(group, "Code-Input Value JS Property Output", textarea.parentElement.value, correctOutputValue)
     assertEqual(group, "Selection Start", textarea.selectionStart, origSelectionStart+correctLengthToSelectionStart)
     assertEqual(group, "Selection End", textarea.selectionEnd, origSelectionStart+correctLengthToSelectionEnd)
 }
@@ -137,169 +140,236 @@ function startTests(textarea, isHLJS) {
 
     textarea.focus();
 
-    /*--- Tests for plugins ---*/
-    // AutoCloseBrackets
-    testAddingText("AutoCloseBrackets", textarea, function(textarea) {
-        addText(textarea, `\nconsole.log("A test message`);
-        move(textarea, 2);
-        addText(textarea, `;\nconsole.log("Another test message");\n{[{[]}(([[`);
-        backspace(textarea);
-        backspace(textarea);
-        backspace(textarea);
-        addText(textarea, `)`);
-    }, '\nconsole.log("A test message");\nconsole.log("Another test message");\n{[{[]}()]}', 77, 77);
-    
-    // Autocomplete
-    addText(textarea, "popup");
-    window.setTimeout(() => {
-        testAssertion("Autocomplete", "Popup Shows", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
-        backspace(textarea);
-        window.setTimeout(() => {
-            testAssertion("Autocomplete", "Popup Disappears", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
-            backspace(textarea);
-            backspace(textarea);
-            backspace(textarea);
-            backspace(textarea);
+    codeInputElement = textarea.parentElement;
 
-            // Autodetect
-            if(isHLJS) {
-                // Replace all code
-                textarea.selectionStart = 0;
-                textarea.selectionEnd = textarea.value.length;
-                backspace(textarea);
-                addText(textarea, "<!DOCTYPE html>\n<html>\n<body>\n<h1>Hello, World!</h1>\n</body>\n</html>");
-                assertEqual("Autodetect", "Detects HTML", textarea.parentElement.getAttribute("language"), "html");
+    /*--- Tests for core functionality ---*/
+    // Textarea's initial value should be correct.
+    assertEqual("Core", "Initial Textarea Value", textarea.value, `console.log("Hello, World!");
+// A second line
+// A third line with <html> tags`);
+    // Code element's displayed value, ignoring appearance with HTML tags, should be the initial value but HTML-escaped
+    let renderedValue = codeInputElement.codeElement.innerHTML.replace(/<[^>]+>/g, "");
+    assertEqual("Core", "Initial Rendered Value", renderedValue, `console.log("Hello, World!");
+// A second line
+// A third line with &lt;html&gt; tags`);
 
-                
-                // Replace all code
-                textarea.selectionStart = 0;
-                textarea.selectionEnd = textarea.value.length;
-                backspace(textarea);
-                addText(textarea, "for i in range(100):\n  print(i)");
-                assertEqual("Autodetect", "Detects Python", textarea.parentElement.getAttribute("language"), "python");
 
-                // Replace all code
-                textarea.selectionStart = 0;
-                textarea.selectionEnd = textarea.value.length;
-                backspace(textarea);
-                addText(textarea, "body, html {\n  height: 100%;\n  background-color: blue;\n  color: red;\n}");
-                assertEqual("Autodetect", "Detects CSS", textarea.parentElement.getAttribute("language"), "css");
-            }
+    // Update code-input value with JavaScript, new value should be correct.
+    codeInputElement.value += `
+console.log("I've got another line!", 2 < 3, "should be true.");`;
+    window.setTimeout(() => { // Wait for rendered value to update
+        // Textarea's value once updated with JavaScript should be correct.
+        assertEqual("Core", "JS-updated Textarea Value", textarea.value, `console.log("Hello, World!");
+// A second line
+// A third line with <html> tags
+console.log("I've got another line!", 2 < 3, "should be true.");`);
+        // Code element's displayed value, ignoring appearance with HTML tags, should be the initial value but HTML-escaped
+        renderedValue = codeInputElement.codeElement.innerHTML.replace(/<[^>]+>/g, "");
+        assertEqual("Core", "JS-updated Rendered Value", renderedValue, `console.log("Hello, World!");
+// A second line
+// A third line with &lt;html&gt; tags
+console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
+        
+        // Changing language should be correct
+        testAssertion("Core", "Language attribute Initial value", 
+            codeInputElement.codeElement.classList.contains("language-javascript")
+            && !codeInputElement.codeElement.classList.contains("language-html"), 
+            `Language set to JavaScript but code element's class name is ${codeInputElement.codeElement.className}.`);
 
-            // GoToLine
-            // Replace all code
-            textarea.selectionStart = 0;
-            textarea.selectionEnd = textarea.value.length;
-            backspace(textarea);
-            addText(textarea, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line");
+        codeInputElement.setAttribute("language", "HTML");
+        window.setTimeout(() => { // Wait for UI to update
+            testAssertion("Core", "Language attribute Changed value 1", 
+                codeInputElement.codeElement.classList.contains("language-html")
+                && !codeInputElement.codeElement.classList.contains("language-javascript"), 
+                `Language set to HTML but code element's class name is ${codeInputElement.codeElement.className}.`);
             
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-            let dialog = textarea.parentElement.querySelector(".code-input_go-to_dialog input");
-            dialog.value = "1";
-            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
-            assertEqual("GoToLine", "Line Only", textarea.selectionStart, 0);
+            codeInputElement.setAttribute("language", "JavaScript");
+            window.setTimeout(() => { // Wait for UI to update
+                testAssertion("Core", "Language attribute Changed value 2", 
+                    codeInputElement.codeElement.classList.contains("language-javascript")
+                    && !codeInputElement.codeElement.classList.contains("language-html"), 
+                    `Language set to JavaScript but code element's class name is ${codeInputElement.codeElement.className}.`);
 
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-            dialog = textarea.parentElement.querySelector(".code-input_go-to_dialog input");
-            dialog.value = "3:18";
-            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
-            assertEqual("GoToLine", "Line and Column", textarea.selectionStart, 45);
-            
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-            dialog = textarea.parentElement.querySelector(".code-input_go-to_dialog input");
-            dialog.value = "10";
-            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
-            assertEqual("GoToLine", "Rejects Out-of-range Line", dialog.classList.contains("code-input_go-to_error"), true);
-
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-            dialog = textarea.parentElement.querySelector(".code-input_go-to_dialog input");
-            dialog.value = "2:12";
-            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
-            assertEqual("GoToLine", "Rejects Out-of-range Column", dialog.classList.contains("code-input_go-to_error"), true);
-
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-            dialog = textarea.parentElement.querySelector(".code-input_go-to_dialog input");
-            dialog.value = "sausages";
-            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
-            assertEqual("GoToLine", "Rejects Invalid Input", dialog.classList.contains("code-input_go-to_error"), true);
-            assertEqual("GoToLine", "Stays open when Rejects Input", dialog.parentElement.classList.contains("code-input_go-to_hidden-dialog"), false);
-
-            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Escape" }));
-            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Escape" }));
-            assertEqual("GoToLine", "Exits when Esc pressed", dialog.parentElement.classList.contains("code-input_go-to_hidden-dialog"), true);
-
-            // Indent
-            textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
-            addText(textarea, "\nfor(let i = 0; i < 100; i++) {\n  for(let j = i; j < 100; j++) {\n    // Here's some code\n    console.log(i,j);\n  }\n}\n{\n  // This is indented\n}")
-            textarea.selectionStart = 0;
-            textarea.selectionEnd = textarea.value.length;
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": false }));
-            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Tab", "shiftKey": false }));
-            assertEqual("Indent", "Indents Lines", textarea.value, "  // 7 times table\n  let i = 1;\n  while(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n  // That's my code.\n  // This is another comment\n  // Another\n  // Line\n  for(let i = 0; i < 100; i++) {\n    for(let j = i; j < 100; j++) {\n      // Here's some code\n      console.log(i,j);\n    }\n  }\n  {\n    // This is indented\n  }");
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": true }));
-            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Tab", "shiftKey": true }));
-            assertEqual("Indent", "Unindents Lines", textarea.value, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line\nfor(let i = 0; i < 100; i++) {\n  for(let j = i; j < 100; j++) {\n    // Here's some code\n    console.log(i,j);\n  }\n}\n{\n  // This is indented\n}");
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": true }));
-            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Tab", "shiftKey": true }));
-            assertEqual("Indent", "Unindents Lines where some are already fully unindented", textarea.value, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line\nfor(let i = 0; i < 100; i++) {\nfor(let j = i; j < 100; j++) {\n  // Here's some code\n  console.log(i,j);\n}\n}\n{\n// This is indented\n}");
-            
-            textarea.selectionStart = 255;
-            textarea.selectionEnd = 274;
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": false }));
-            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Tab", "shiftKey": false }));
-            assertEqual("Indent", "Indents Lines by Selection", textarea.value, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line\nfor(let i = 0; i < 100; i++) {\nfor(let j = i; j < 100; j++) {\n  // Here's some code\n  console.log(i,j);\n}\n}\n{\n  // This is indented\n}");
-
-            textarea.selectionStart = 265;
-            textarea.selectionEnd = 265;
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": true }));
-            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Tab", "shiftKey": true }));
-            assertEqual("Indent", "Unindents Lines by Selection", textarea.value, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line\nfor(let i = 0; i < 100; i++) {\nfor(let j = i; j < 100; j++) {\n  // Here's some code\n  console.log(i,j);\n}\n}\n{\n// This is indented\n}");
-
-            // Indent+AutoCloseBrackets
-            // Clear all code
-            textarea.selectionStart = 0;
-            textarea.selectionEnd = textarea.value.length;
-            backspace(textarea);
-
-            testAddingText("Indent-AutoCloseBrackets", textarea, function(textarea) {
-                addText(textarea, `function printTriples(max) {\nfor(let i = 0; i < max-2; i++) {\nfor(let j = 0; j < max-1; j++) {\nfor(let k = 0; k < max; k++) {\nconsole.log(i,j,k);\n}\n//Hmmm...`, true)
-            }, 'function printTriples(max) {\n  for(let i = 0; i < max-2; i++) {\n    for(let j = 0; j < max-1; j++) {\n      for(let k = 0; k < max; k++) {\n        console.log(i,j,k);\n      }\n      //Hmmm...\n      }\n    }\n  }\n}', 189, 189);
-
-            // Special Chars
-            // Clear all code
-            textarea.selectionStart = 0;
-            textarea.selectionEnd = textarea.value.length;
-            backspace(textarea);
-
-            addText(textarea, '"Some special characters: \u0096,\u0001\u0003,\u0002..."');
-            textarea.selectionStart = textarea.value.length-4;
-            textarea.selectionEnd = textarea.value.length;
-
-            window.setTimeout(() => {
-                testAssertion("SpecialChars", "Displays Correctly", confirm("Do the special characters read (0096),(0001)(0003),(0002) and align with the ellipsis? (OK=Yes)"), "user-judged");
-
-                // Large amounts of code
-                // Clear all code
-                textarea.selectionStart = 0;
-                textarea.selectionEnd = textarea.value.length;
-                backspace(textarea);
-                fetch(new Request("https://cdn.jsdelivr.net/gh/webcoder49/code-input@2.1/code-input.js"))
-                .then((response) => response.text())
-                .then((code) => {
-                    textarea.value = "// code-input v2.1: A large code file (not the latest version!)\n// Editing this here should give little latency.\n\n"+code;
+                let formElement = codeInputElement.parentElement;
+                formElement.reset();
+                window.setTimeout(() => { // Wait for rendered value to update
+                    assertEqual("Core", "Form Reset resets Code-Input Value", codeInputElement.value, `console.log("Hello, World!");
+// A second line
+// A third line with <html> tags`);
+                    assertEqual("Core", "Form Reset resets Textarea Value", textarea.value, `console.log("Hello, World!");
+// A second line
+// A third line with <html> tags`);
+                    renderedValue = codeInputElement.codeElement.innerHTML.replace(/<[^>]+>/g, "");
+                    assertEqual("Core", "Form Reset resets Rendered Value", renderedValue, `console.log("Hello, World!");
+// A second line
+// A third line with &lt;html&gt; tags`);
+                    /*--- Tests for plugins ---*/
+                    // AutoCloseBrackets
+                    testAddingText("AutoCloseBrackets", textarea, function(textarea) {
+                        addText(textarea, `\nconsole.log("A test message`);
+                        move(textarea, 2);
+                        addText(textarea, `;\nconsole.log("Another test message");\n{[{[]}(([[`);
+                        backspace(textarea);
+                        backspace(textarea);
+                        backspace(textarea);
+                        addText(textarea, `)`);
+                    }, '\nconsole.log("A test message");\nconsole.log("Another test message");\n{[{[]}()]}', 77, 77);
                     
-                    textarea.selectionStart = 112;
-                    textarea.selectionEnd = 112;
-                    addText(textarea, "\n", true);
-
-                    document.getElementById("collapse-results").setAttribute("open", true);
-                });
+                    // Autocomplete
+                    addText(textarea, "popup");
+                    window.setTimeout(() => { // Wait for popup to be rendered
+                        testAssertion("Autocomplete", "Popup Shows", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
+                        backspace(textarea);
+                        window.setTimeout(() => { // Wait for popup disappearance to be rendered
+                            testAssertion("Autocomplete", "Popup Disappears", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
+                            backspace(textarea);
+                            backspace(textarea);
+                            backspace(textarea);
+                            backspace(textarea);
+                
+                            // Autodetect
+                            if(isHLJS) {
+                                // Replace all code
+                                textarea.selectionStart = 0;
+                                textarea.selectionEnd = textarea.value.length;
+                                backspace(textarea);
+                                addText(textarea, "<!DOCTYPE html>\n<html>\n<body>\n<h1>Hello, World!</h1>\n</body>\n</html>");
+                                assertEqual("Autodetect", "Detects HTML", codeInputElement.getAttribute("language"), "html");
+                
+                                
+                                // Replace all code
+                                textarea.selectionStart = 0;
+                                textarea.selectionEnd = textarea.value.length;
+                                backspace(textarea);
+                                addText(textarea, "for i in range(100):\n  print(i)");
+                                assertEqual("Autodetect", "Detects Python", codeInputElement.getAttribute("language"), "python");
+                
+                                // Replace all code
+                                textarea.selectionStart = 0;
+                                textarea.selectionEnd = textarea.value.length;
+                                backspace(textarea);
+                                addText(textarea, "body, html {\n  height: 100%;\n  background-color: blue;\n  color: red;\n}");
+                                assertEqual("Autodetect", "Detects CSS", codeInputElement.getAttribute("language"), "css");
+                            }
+                
+                            // GoToLine
+                            // Replace all code
+                            textarea.selectionStart = 0;
+                            textarea.selectionEnd = textarea.value.length;
+                            backspace(textarea);
+                            addText(textarea, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line");
+                            
+                            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
+                            let dialog = codeInputElement.querySelector(".code-input_go-to_dialog input");
+                            dialog.value = "1";
+                            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+                            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+                            assertEqual("GoToLine", "Line Only", textarea.selectionStart, 0);
+                
+                            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
+                            dialog = codeInputElement.querySelector(".code-input_go-to_dialog input");
+                            dialog.value = "3:18";
+                            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+                            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+                            assertEqual("GoToLine", "Line and Column", textarea.selectionStart, 45);
+                            
+                            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
+                            dialog = codeInputElement.querySelector(".code-input_go-to_dialog input");
+                            dialog.value = "10";
+                            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+                            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+                            assertEqual("GoToLine", "Rejects Out-of-range Line", dialog.classList.contains("code-input_go-to_error"), true);
+                
+                            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
+                            dialog = codeInputElement.querySelector(".code-input_go-to_dialog input");
+                            dialog.value = "2:12";
+                            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+                            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+                            assertEqual("GoToLine", "Rejects Out-of-range Column", dialog.classList.contains("code-input_go-to_error"), true);
+                
+                            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
+                            dialog = codeInputElement.querySelector(".code-input_go-to_dialog input");
+                            dialog.value = "sausages";
+                            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+                            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+                            assertEqual("GoToLine", "Rejects Invalid Input", dialog.classList.contains("code-input_go-to_error"), true);
+                            assertEqual("GoToLine", "Stays open when Rejects Input", dialog.parentElement.classList.contains("code-input_go-to_hidden-dialog"), false);
+                
+                            dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Escape" }));
+                            dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Escape" }));
+                            assertEqual("GoToLine", "Exits when Esc pressed", dialog.parentElement.classList.contains("code-input_go-to_hidden-dialog"), true);
+                
+                            // Indent
+                            textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+                            addText(textarea, "\nfor(let i = 0; i < 100; i++) {\n  for(let j = i; j < 100; j++) {\n    // Here's some code\n    console.log(i,j);\n  }\n}\n{\n  // This is indented\n}")
+                            textarea.selectionStart = 0;
+                            textarea.selectionEnd = textarea.value.length;
+                            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": false }));
+                            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Tab", "shiftKey": false }));
+                            assertEqual("Indent", "Indents Lines", textarea.value, "  // 7 times table\n  let i = 1;\n  while(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n  // That's my code.\n  // This is another comment\n  // Another\n  // Line\n  for(let i = 0; i < 100; i++) {\n    for(let j = i; j < 100; j++) {\n      // Here's some code\n      console.log(i,j);\n    }\n  }\n  {\n    // This is indented\n  }");
+                            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": true }));
+                            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Tab", "shiftKey": true }));
+                            assertEqual("Indent", "Unindents Lines", textarea.value, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line\nfor(let i = 0; i < 100; i++) {\n  for(let j = i; j < 100; j++) {\n    // Here's some code\n    console.log(i,j);\n  }\n}\n{\n  // This is indented\n}");
+                            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": true }));
+                            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Tab", "shiftKey": true }));
+                            assertEqual("Indent", "Unindents Lines where some are already fully unindented", textarea.value, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line\nfor(let i = 0; i < 100; i++) {\nfor(let j = i; j < 100; j++) {\n  // Here's some code\n  console.log(i,j);\n}\n}\n{\n// This is indented\n}");
+                            
+                            textarea.selectionStart = 255;
+                            textarea.selectionEnd = 274;
+                            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": false }));
+                            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Tab", "shiftKey": false }));
+                            assertEqual("Indent", "Indents Lines by Selection", textarea.value, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line\nfor(let i = 0; i < 100; i++) {\nfor(let j = i; j < 100; j++) {\n  // Here's some code\n  console.log(i,j);\n}\n}\n{\n  // This is indented\n}");
+                
+                            textarea.selectionStart = 265;
+                            textarea.selectionEnd = 265;
+                            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": true }));
+                            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Tab", "shiftKey": true }));
+                            assertEqual("Indent", "Unindents Lines by Selection", textarea.value, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line\nfor(let i = 0; i < 100; i++) {\nfor(let j = i; j < 100; j++) {\n  // Here's some code\n  console.log(i,j);\n}\n}\n{\n// This is indented\n}");
+                
+                            // Indent+AutoCloseBrackets
+                            // Clear all code
+                            textarea.selectionStart = 0;
+                            textarea.selectionEnd = textarea.value.length;
+                            backspace(textarea);
+                
+                            testAddingText("Indent-AutoCloseBrackets", textarea, function(textarea) {
+                                addText(textarea, `function printTriples(max) {\nfor(let i = 0; i < max-2; i++) {\nfor(let j = 0; j < max-1; j++) {\nfor(let k = 0; k < max; k++) {\nconsole.log(i,j,k);\n}\n//Hmmm...`, true)
+                            }, 'function printTriples(max) {\n  for(let i = 0; i < max-2; i++) {\n    for(let j = 0; j < max-1; j++) {\n      for(let k = 0; k < max; k++) {\n        console.log(i,j,k);\n      }\n      //Hmmm...\n      }\n    }\n  }\n}', 189, 189);
+                
+                            // Special Chars
+                            // Clear all code
+                            textarea.selectionStart = 0;
+                            textarea.selectionEnd = textarea.value.length;
+                            backspace(textarea);
+                
+                            addText(textarea, '"Some special characters: \u0096,\u0001\u0003,\u0002..."');
+                            textarea.selectionStart = textarea.value.length-4;
+                            textarea.selectionEnd = textarea.value.length;
+                
+                            window.setTimeout(() => { // Wait for special characters to be rendered
+                                testAssertion("SpecialChars", "Displays Correctly", confirm("Do the special characters read (0096),(0001)(0003),(0002) and align with the ellipsis? (OK=Yes)"), "user-judged");
+                
+                                // Large amounts of code
+                                // Clear all code
+                                textarea.selectionStart = 0;
+                                textarea.selectionEnd = textarea.value.length;
+                                backspace(textarea);
+                                fetch(new Request("https://cdn.jsdelivr.net/gh/webcoder49/code-input@2.1/code-input.js"))
+                                .then((response) => response.text())
+                                .then((code) => {
+                                    textarea.value = "// code-input v2.1: A large code file (not the latest version!)\n// Editing this here should give little latency.\n\n"+code;
+                                    
+                                    textarea.selectionStart = 112;
+                                    textarea.selectionEnd = 112;
+                                    addText(textarea, "\n", true);
+                
+                                    document.getElementById("collapse-results").setAttribute("open", true);
+                                });
+                            }, 50);
+                        }, 100);
+                    }, 100);
+                }, 50);
             }, 50);
-        }, 100);
+        }, 50);
     }, 100);
 }
