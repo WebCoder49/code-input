@@ -98,7 +98,6 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             dialog.textarea = textarea;
             dialog.input = input;
 
-            input.addEventListener('keydown', (event) => { this.blockSearch(dialog, event); });
             input.addEventListener('keyup', (event) => { this.checkPrompt(dialog, event); });
             cancel.addEventListener('click', (event) => { this.cancelPrompt(dialog, event); });
 
