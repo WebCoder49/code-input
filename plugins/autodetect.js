@@ -13,10 +13,9 @@ codeInput.plugins.Autodetect = class extends codeInput.Plugin {
         resultElement.className = ""; // CODE
         resultElement.parentElement.className = ""; // PRE
     }
-    /* Get new language class and set `lang` attribute */
+    /* Get new language class and set `language` attribute */
     afterHighlight(codeInput) {
-        let resultElement = codeInput.codeElement;
-        let langClass = resultElement.className || resultElement.parentElement.className;
+        let langClass = codeInput.codeElement.className || codeInput.preElement.className;
         let lang = langClass.match(/lang(\w|-)*/i)[0]; // Get word starting with lang...; Get outer bracket
         lang = lang.split("-")[1];
         if(lang == "undefined") {

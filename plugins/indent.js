@@ -5,8 +5,7 @@
  */
 codeInput.plugins.Indent = class extends codeInput.Plugin {
 
-    numSpaces;
-    bracketPairs = null; // No bracket-auto-indentation used
+    bracketPairs = {}; // No bracket-auto-indentation used when {}
     indentation = "\t";
     indentationNumChars = 1;
 
@@ -19,7 +18,6 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
     constructor(defaultSpaces=false, numSpaces=4, bracketPairs={"(": ")", "[": "]", "{": "}"}) {
         super([]); // No observed attributes
 
-        this.numSpaces = numSpaces;
         this.bracketPairs = bracketPairs;
         if(defaultSpaces) {
             this.indentation = "";
@@ -37,7 +35,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         textarea.addEventListener('beforeinput', (event) => { this.checkCloseBracket(codeInput, event); });
     }
 
-    /* Event handlers */
+    /* Deal with the Tab key causing indentation, and Tab+Selection indenting / Shift+Tab+Selection unindenting lines */
     checkTab(codeInput, event) {
         if(event.key != "Tab") {
             return;
@@ -100,6 +98,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         codeInput.value = inputElement.value;
     }
 
+    /* Deal with new lines retaining indentation */
     checkEnter(codeInput, event) {
         if(event.key != "Enter") {
             return;
@@ -202,6 +201,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         codeInput.value = inputElement.value;
     }
 
+    /* Deal with one 'tab' of spaces-based-indentation being deleted by each backspace, rather than one space */
     checkBackspace(codeInput, event) {
         if(event.key != "Backspace" || this.indentationNumChars == 1) {
             return; // Normal backspace when indentation of 1
@@ -217,6 +217,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         }
     }
 
+    /* Deal with the typing of closing brackets causing a decrease in indentation */
     checkCloseBracket(codeInput, event) {
         if(codeInput.textareaElement.selectionStart != codeInput.textareaElement.selectionEnd) {
             return;

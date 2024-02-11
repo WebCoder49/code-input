@@ -4,14 +4,14 @@
  */
 codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
     /**
-     * Pass in a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
+     * Pass in a function to create a plugin that displays the popup that takes in (popup element, textarea, textarea.selectionEnd).
      * @param {function} updatePopupCallback  a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
      */
     constructor(updatePopupCallback) {
         super([]); // No observed attributes
         this.updatePopupCallback = updatePopupCallback;
     }
-    /* When a key is pressed, or scrolling occurs, update the autocomplete */
+    /* When a key is pressed, or scrolling occurs, update the popup position */
     updatePopup(codeInput, onlyScrolled) {
         let textarea = codeInput.textareaElement;
         let caretCoords = this.getCaretCoordinates(codeInput, textarea, textarea.selectionEnd, onlyScrolled);
@@ -23,13 +23,14 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
             this.updatePopupCallback(popupElem, textarea, textarea.selectionEnd);
         }
     }
-    /* Runs after elements are added into a `code-input` (useful for adding events to the textarea); Params: codeInput element) */
+    /* Create the popup element */
     afterElementsAdded(codeInput) {
         let popupElem = document.createElement("div");
         popupElem.classList.add("code-input_autocomplete_popup");
         codeInput.appendChild(popupElem);
 
         let testPosPre = document.createElement("pre");
+        testPosPre.setAttribute("aria-hidden", "true"); // Hide for screen readers
         if(codeInput.template.preElementStyled) {
             testPosPre.classList.add("code-input_autocomplete_testpos");
             codeInput.appendChild(testPosPre); // Styled like first pre, but first pre found to update    
@@ -51,7 +52,7 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
      * @param {HTMLElement} textarea 
      * @param {Number} charIndex 
      * @param {boolean} onlyScrolled True if no edits have been made to the text and the caret hasn't been repositioned 
-     * @returns 
+     * @returns {Object} {"top": CSS top value in pixels, "left": CSS left value in pixels}
      */
     getCaretCoordinates(codeInput, textarea, charIndex, onlyScrolled) {
         let afterSpan;

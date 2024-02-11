@@ -31,13 +31,12 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         this.canvasContext = canvas.getContext("2d");
     }
 
-    /* Runs after elements are added into a `code-input` (useful for adding events to the textarea); Params: codeInput element) */
+    /* Initially render special characters as the highlighting algorithm may automatically highlight and remove them */
     afterElementsAdded(codeInput) {
-        // For some reason, special chars aren't synced the first time - TODO is there a cleaner way to do this?
-        setTimeout(() => { codeInput.value = codeInput.value + ""; }, 100);
+        setTimeout(() => { codeInput.value = codeInput.value; }, 100);
     }
 
-    /* Runs after code is highlighted; Params: codeInput element) */
+    /* After highlighting, render special characters as their stylised hexadecimal equivalents */
     afterHighlight(codeInput) {      
         let resultElement = codeInput.codeElement;
 
@@ -50,12 +49,13 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         this.lastFont = window.getComputedStyle(codeInput.textareaElement).font;
     }
 
+    /* Search for special characters in an element and replace them with their stylised hexadecimal equivalents */
     recursivelyReplaceText(codeInput, element) {
         for(let i = 0; i < element.childNodes.length; i++) {
 
             let nextNode = element.childNodes[i];
-            if(nextNode.nodeName == "#text" && nextNode.nodeValue != "") {
-                // Replace in here
+            if(nextNode.nodeType == 3) {
+                // Text node - Replace in here
                 let oldValue = nextNode.nodeValue;
 
                 this.specialCharRegExp.lastIndex = 0;
@@ -70,7 +70,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
                     }
 
                     if(nextNode.textContent != "") {
-                        let replacementElement = this.specialCharReplacer(codeInput, nextNode.textContent);
+                        let replacementElement = this.getStylisedSpecialChar(codeInput, nextNode.textContent);
                         nextNode.parentNode.insertBefore(replacementElement, nextNode);
                         nextNode.textContent = "";
                     }
@@ -84,7 +84,8 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         }
     }
 
-    specialCharReplacer(codeInput, matchChar) {
+    /* Get the stylised hexadecimal representation HTML element for a given special character */
+    getStylisedSpecialChar(codeInput, matchChar) {
         let hexCode = matchChar.codePointAt(0);
 
         let colors;
@@ -117,8 +118,8 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         return result;
     }
     
+    /* Get the colors a stylised representation of a given character must be shown in; lazy load and return [background color, text color] */
     getCharacterColors(asciiCode) {
-        // Choose colors based on character code - lazy load and return [background color, text color]
         let backgroundColor;
         let textColor;
         if(!(asciiCode in this.cachedColors)) {
@@ -144,6 +145,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         }
     }
 
+    /* Get the width of a character in em (relative to font size), for use in creation of the stylised hexadecimal representation with the same width */
     getCharacterWidthEm(codeInput, char) {
         // Force zero-width characters
         if(new RegExp("\u00AD|\u02de|[\u0300-\u036F]|[\u0483-\u0489]|\u200b").test(char) ) { return 0 }

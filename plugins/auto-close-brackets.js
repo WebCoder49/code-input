@@ -19,12 +19,12 @@ codeInput.plugins.AutoCloseBrackets = class extends codeInput.Plugin {
 
     /* Add keystroke events */
     afterElementsAdded(codeInput) {
-        let textarea = codeInput.textareaElement;
-        textarea.addEventListener('keydown', (event) => { this.checkBackspace(codeInput, event) });
-        textarea.addEventListener('beforeinput', (event) => { this.checkBrackets(codeInput, event); });
+        codeInput.textareaElement.addEventListener('keydown', (event) => { this.checkBackspace(codeInput, event) });
+        codeInput.textareaElement.addEventListener('beforeinput', (event) => { this.checkBrackets(codeInput, event); });
     }
 
-    /* Event handlers */
+    /* Deal with the automatic creation of closing bracket when opening brackets are typed, and the ability to "retype" a closing
+    bracket where one has already been placed. */
     checkBrackets(codeInput, event) {
         if(event.data == codeInput.textareaElement.value[codeInput.textareaElement.selectionStart]) {
             // Check if a closing bracket is typed
@@ -38,13 +38,16 @@ codeInput.plugins.AutoCloseBrackets = class extends codeInput.Plugin {
                 }
             }
         } else if(event.data in this.bracketPairs) {
-            // Create bracket pair
+            // Opening bracket typed; Create bracket pair
             let closingBracket = this.bracketPairs[event.data];
+            // Insert the closing bracket
             document.execCommand("insertText", false, closingBracket);
+            // Move caret before the inserted closing bracket
             codeInput.textareaElement.selectionStart = codeInput.textareaElement.selectionEnd -= 1;
         }
     }
 
+    /* Deal with cases where a backspace deleting an opening bracket deletes the closing bracket straight after it as well */
     checkBackspace(codeInput, event) {
         if(event.key == "Backspace" && codeInput.textareaElement.selectionStart == codeInput.textareaElement.selectionEnd) {
             let closingBracket = this.bracketPairs[codeInput.textareaElement.value[codeInput.textareaElement.selectionStart-1]];

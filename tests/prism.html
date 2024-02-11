@@ -31,7 +31,7 @@
     <h4><a href="hljs.html">Test for highlight.js</a></h4>
     <p>This page carries out automated tests for the code-input library to check that both the core components and the plugins work in some ways. It doesn't fully cover every scenario so you should test any code you change by hand, but it's good for quickly checking a wide range of functionality works.</p>
 
-    <details id="collapse-results"><summary>Test Results</summary><pre id="test-results"></pre></details>
+    <details id="collapse-results"><summary>Test Results (Click to Open)</summary><pre id="test-results"></pre></details>
     <form method="GET" action="https://google.com/search" target="_blank">
         <code-input language="JavaScript" name="q">console.log("Hello, World!");
 // A second line
@@ -39,29 +39,21 @@
         <input type="submit" value="Search Google For Code"/>
     </form>
     <script>
-        // TODO: Delete this testing code
-        var Prism = {
-            highlightElement: function(elem) {
-                elem.innerHTML = elem.innerHTML.replace(/\./g, "<span style='color: grey;'>.</span>").replace(/\,/g, "<span style='color: grey;'>,</span>").replace(/\(/g, "<span style='color: crimson;'>(</span>").replace(/\)/g, "<span style='color: crimson;'>)</span>");
-            }
-        }
-
         // codeInput.registerTemplate("code-editor", codeInput.templates.prism(Prism, [
-        //     new codeInput.plugins.AutoCloseBrackets(), // Cause
-        //     // new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
-        //     //     if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
-        //     //         // Show popup
-        //     //         popupElem.style.display = "block";
-        //     //         popupElem.innerHTML = "Here's your popup!";
-        //     //     } else {
-        //     //         popupElem.style.display = "none";
-        //     //     }
-        //     // }),
-        //     // new codeInput.plugins.GoToLine(),
-        //     // new codeInput.plugins.Indent(true, 2), // Fine
-        //     // new codeInput.plugins.SpecialChars(true),
+        //     new codeInput.plugins.AutoCloseBrackets(), 
+        //     new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+        //         if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+        //             // Show popup
+        //             popupElem.style.display = "block";
+        //             popupElem.innerHTML = "Here's your popup!";
+        //         } else {
+        //             popupElem.style.display = "none";
+        //         }
+        //     }),
+        //     new codeInput.plugins.GoToLine(),
+        //     new codeInput.plugins.Indent(true, 2),
+        //     new codeInput.plugins.SpecialChars(true),
         // ]));
-
         beginTest(false);
     </script>
 </body>

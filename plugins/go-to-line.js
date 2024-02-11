@@ -22,12 +22,7 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         }
     }
 
-    blockSearch(dialog, event) {
-        if (event.ctrlKey && event.key == 'g') {
-            return event.preventDefault();
-        }
-    }
-
+    /* Called with a dialog box keyup event to check the validity of the line number entered and submit the dialog if Enter is pressed */
     checkPrompt(dialog, event) {
         // Line number(:column number)
         const lines = dialog.textarea.value.split('\n');
@@ -64,6 +59,7 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         }
     }
 
+    /* Called with a dialog box keyup event to close and clear the dialog box */    
     cancelPrompt(dialog, event) {
         let delay;
         event.preventDefault();
@@ -115,7 +111,7 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         }
     }
 
-    /* Set the cursor on the first non-space char of textarea's nth line; and scroll it into view */
+    /* Set the cursor on the first non-space char of textarea's nth line, or to the columnNo-numbered character in the line if it's not 0; and scroll it into view */
     goTo(textarea, lineNo, columnNo = 0) {
         let fontSize;
         let lineHeight;
@@ -155,12 +151,11 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         }
     }
 
-    /* Event handlers */
+    /* Event handler for keydown event that makes Ctrl+G open go to line dialog */
     checkCtrlG(codeInput, event) {
         const textarea = codeInput.textareaElement;
         if (event.ctrlKey && event.key == 'g') {
             event.preventDefault();
-
             this.showPrompt(codeInput);
         }
     }
