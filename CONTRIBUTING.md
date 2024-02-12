@@ -30,4 +30,6 @@ Firstly, thank you for doing this! This is probably the most time consuming way 
 
 Please first open an issue if one doesn't already exist, and assign yourself to it. Then, [make a fork of the repo and submit a pull request](https://docs.github.com/en/get-started/quickstart/contributing-to-projects).
 
+In the pull request, include the code updates for your feature / bug, and if you're adding a new feature make sure you comment your code so it's understandable to future contributors, and if you can, add unit tests for it in tests/tester.js. If you have any questions, just let me (@WebCoder49) know! 
+
 If an issue is open but already assigned to someone, it is probably already being worked on - you could still suggest a method of fixing it in the comments but shouldn't open a pull request as it would waste your time.
