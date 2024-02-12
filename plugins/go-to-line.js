@@ -33,7 +33,6 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         const querySplitByColons = dialog.input.value.split(':');
         if(querySplitByColons.length > 2) return dialog.input.classList.add('code-input_go-to_error');
 
-
         if (event.key == 'Escape') return this.cancelPrompt(dialog, event);
 
         if (dialog.input.value) {
@@ -62,6 +61,7 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
     /* Called with a dialog box keyup event to close and clear the dialog box */    
     cancelPrompt(dialog, event) {
         let delay;
+        console.log("Cancel", event);
         event.preventDefault();
         dialog.textarea.focus();
 
@@ -98,7 +98,12 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             dialog.textarea = textarea;
             dialog.input = input;
 
-            input.addEventListener('keyup', (event) => { this.checkPrompt(dialog, event); });
+            input.addEventListener('keypress', (event) => {
+                /* Stop enter from submitting form */
+                if (event.key == 'Enter') event.preventDefault();
+            });
+            
+            input.addEventListener('keyup', (event) => { return this.checkPrompt(dialog, event); });
             cancel.addEventListener('click', (event) => { this.cancelPrompt(dialog, event); });
 
             codeInput.appendChild(dialog);

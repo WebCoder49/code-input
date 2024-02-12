@@ -8,7 +8,6 @@ code-input {
   display: block;
   overflow-y: auto;
   overflow-x: auto;
-
   position: relative;
   top: 0;
   left: 0;
@@ -17,13 +16,13 @@ code-input {
   margin: 8px;
   --padding: 16px;
   height: 250px;
-  font-size: normal;
+  font-size: inherit;
   font-family: monospace;
   line-height: 1.5; /* Inherited to child elements */
   tab-size: 2;
   caret-color: darkgrey;
   white-space: pre;
-  padding: 0!important; /* Use --padding */
+  padding: 0!important; /* Use --padding to set the code-input element's padding */
   display: grid;
   grid-template-columns: 100%;
   grid-template-rows: 100%;
@@ -48,6 +47,7 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   resize: none;
   grid-row: 1;
   grid-column: 1;
+  display: block;
 }
 code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
   height: max-content;

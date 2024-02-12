@@ -42,9 +42,8 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         }
         
         let textarea = codeInput.textareaElement;
-        textarea.addEventListener("input", this.updatePopup.bind(this, codeInput, false)); // Override this+args in bind - not just scrolling
-        textarea.addEventListener("click", this.updatePopup.bind(this, codeInput, false)); // Override this+args in bind - not just scrolling
-        textarea.addEventListener("scroll", this.updatePopup.bind(this, codeInput, true)); // Override this+args in bind - just scrolling
+        textarea.addEventListener("input", () => { this.updatePopup(codeInput, false)});
+        textarea.addEventListener("click", () => { this.updatePopup(codeInput, false)});
     }
     /**
      * Return the coordinates of the caret in a code-input
