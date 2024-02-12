@@ -19,35 +19,42 @@ codeInput.plugins.AutoCloseBrackets = class extends codeInput.Plugin {
 
     /* Add keystroke events */
     afterElementsAdded(codeInput) {
-        let textarea = codeInput.textareaElement;
-        textarea.addEventListener('keydown', (event) => { this.checkBackspace(codeInput, event) });
-        textarea.addEventListener('beforeinput', (event) => { this.checkBrackets(codeInput, event); });
-
+        codeInput.textareaElement.addEventListener('keydown', (event) => { this.checkBackspace(codeInput, event) });
+        codeInput.textareaElement.addEventListener('beforeinput', (event) => { this.checkBrackets(codeInput, event); });
     }
 
-    /* Event handlers */
+    /* Deal with the automatic creation of closing bracket when opening brackets are typed, and the ability to "retype" a closing
+    bracket where one has already been placed. */
     checkBrackets(codeInput, event) {
-        if(this.bracketsOpenedStack.length > 0 && event.data == this.bracketsOpenedStack[this.bracketsOpenedStack.length-1][0] && event.data == codeInput.textareaElement.value[codeInput.textareaElement.selectionStart]) {
-            // "Retype" bracket, i.e. just move caret
-            codeInput.textareaElement.selectionStart = codeInput.textareaElement.selectionEnd += 1;
-            this.bracketsOpenedStack.pop();
-            event.preventDefault();
+        if(event.data == codeInput.textareaElement.value[codeInput.textareaElement.selectionStart]) {
+            // Check if a closing bracket is typed
+            for(let openingBracket in this.bracketPairs) {
+                let closingBracket = this.bracketPairs[openingBracket];
+                if(event.data == closingBracket) {
+                    // "Retype" a closing bracket, i.e. just move caret
+                    codeInput.textareaElement.selectionStart = codeInput.textareaElement.selectionEnd += 1;
+                    event.preventDefault();
+                    break;
+                }
+            }
         } else if(event.data in this.bracketPairs) {
-            // Create bracket pair
+            // Opening bracket typed; Create bracket pair
             let closingBracket = this.bracketPairs[event.data];
-            this.bracketsOpenedStack.push([closingBracket, codeInput.textareaElement.selectionStart]);
+            // Insert the closing bracket
             document.execCommand("insertText", false, closingBracket);
+            // Move caret before the inserted closing bracket
             codeInput.textareaElement.selectionStart = codeInput.textareaElement.selectionEnd -= 1;
         }
     }
 
+    /* Deal with cases where a backspace deleting an opening bracket deletes the closing bracket straight after it as well */
     checkBackspace(codeInput, event) {
         if(event.key == "Backspace" && codeInput.textareaElement.selectionStart == codeInput.textareaElement.selectionEnd) {
-            if(this.bracketsOpenedStack.length > 0 && this.bracketsOpenedStack[this.bracketsOpenedStack.length-1][1]+1 == codeInput.textareaElement.selectionStart && codeInput.textareaElement.value[codeInput.textareaElement.selectionStart] == this.bracketsOpenedStack[this.bracketsOpenedStack.length-1][0]) {
-                // Delete closing bracket as well
+            let closingBracket = this.bracketPairs[codeInput.textareaElement.value[codeInput.textareaElement.selectionStart-1]];
+            if(closingBracket != undefined && codeInput.textareaElement.value[codeInput.textareaElement.selectionStart] == closingBracket) {
+                // Opening bracket being deleted so delete closing bracket as well
                 codeInput.textareaElement.selectionEnd = codeInput.textareaElement.selectionStart + 1;
                 codeInput.textareaElement.selectionStart -= 1;
-                this.bracketsOpenedStack.pop();
             }
         }
     }

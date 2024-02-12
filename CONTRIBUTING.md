@@ -6,7 +6,15 @@
 * The `code-input` element should be easy to use with all popular syntax-highlighting libraries.
 * Any modifications of `code-input` that would be useful for the open-source community but are not core to this functionality should be available as optional plugins in the `plugins` folder. Here's where most feature contributions will go.
 
-To keep this community productive and enjoyable, please [don't break the code of conduct here](https://github.com/WebCoder49/code-input/blob/main/CODE_OF_CONDUCT.md).
+We will generally *not* consider the following contributions:
+* Excess functionality and/or complexity in the main code-input files - these types of contributions should go in the plugin folder instead.
+* Issues that have been closed as not planned in the past (you can search the issue list to check), unless you bring a change that overcomes the reason they were not planned.
+
+This said, if you're not sure whether your change will be accepted, please ask in an issue.
+
+---
+
+To keep this community productive and enjoyable, please [don't break our code of conduct](https://github.com/WebCoder49/code-input/blob/main/CODE_OF_CONDUCT.md).
 
 ---
 # Ways you could contribute:
@@ -21,5 +29,7 @@ Otherwise, if you do not have the time needed / do not want to implement it, any
 Firstly, thank you for doing this! This is probably the most time consuming way of contributing but is also the most rewarding for both you and me as a maintainer.
 
 Please first open an issue if one doesn't already exist, and assign yourself to it. Then, [make a fork of the repo and submit a pull request](https://docs.github.com/en/get-started/quickstart/contributing-to-projects).
+
+In the pull request, include the code updates for your feature / bug, and if you're adding a new feature make sure you comment your code so it's understandable to future contributors, and if you can, add unit tests for it in tests/tester.js. If you have any questions, just let me (@WebCoder49) know! 
 
 If an issue is open but already assigned to someone, it is probably already being worked on - you could still suggest a method of fixing it in the comments but shouldn't open a pull request as it would waste your time.

@@ -95,7 +95,7 @@ export namespace plugins {
    */
   class Autocomplete extends Plugin {
     /**
-     * Pass in a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
+     * Pass in a function to create a plugin that displays the popup that takes in (popup element, textarea, textarea.selectionEnd).
      * @param {function} updatePopupCallback  a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
      */
     constructor(updatePopupCallback: (popupElem: HTMLElement, textarea: HTMLTextAreaElement, selectionEnd: number) => void);

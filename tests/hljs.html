@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>code-input Tester</title>
+
+    <!--Import Highlight.JS-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    
+
+    <!--Import code-input-->
+    <link rel="stylesheet" href="../code-input.css">
+    <script src="../code-input.js"></script>
+
+    <!--Import code-input plugins-->
+    <script src="../plugins/auto-close-brackets.js"></script>
+    <script src="../plugins/autocomplete.js"></script>
+    <link rel="stylesheet" href="../plugins/autocomplete.css">
+    <script src="../plugins/autodetect.js"></script>
+    <script src="../plugins/go-to-line.js"></script>
+    <link rel="stylesheet" href="../plugins/go-to-line.css">
+    <script src="../plugins/indent.js"></script>
+    <script src="../plugins/special-chars.js"></script>
+    <link rel="stylesheet" href="../plugins/special-chars.css">
+
+    <script src="tester.js"></script>
+</head>
+<body>
+    <h1>code-input Tester (highlight.js)</h1>
+    <h4><a href="prism.html">Test for Prism.js</a></h4>
+    <p>This page carries out automated tests for the code-input library to check that both the core components and the plugins work in some ways. It doesn't fully cover every scenario so you should test any code you change by hand, but it's good for quickly checking a wide range of functionality works.</p>
+
+    <details id="collapse-results"><summary>Test Results (Click to Open)</summary><pre id="test-results"></pre></details>
+    <form method="GET" action="https://google.com/search" target="_blank">
+        <code-input language="JavaScript" name="q">console.log("Hello, World!");
+// A second line
+// A third line with &lt;html> tags</code-input>
+        <input type="submit" value="Search Google For Code"/>
+    </form>
+
+    <script>
+        beginTest(true);
+    </script>
+</body>
+</html>

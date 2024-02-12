@@ -5,8 +5,7 @@
  */
 codeInput.plugins.Indent = class extends codeInput.Plugin {
 
-    numSpaces;
-    bracketPairs = null; // No bracket-auto-indentation used
+    bracketPairs = {}; // No bracket-auto-indentation used when {}
     indentation = "\t";
     indentationNumChars = 1;
 
@@ -19,7 +18,6 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
     constructor(defaultSpaces=false, numSpaces=4, bracketPairs={"(": ")", "[": "]", "{": "}"}) {
         super([]); // No observed attributes
 
-        this.numSpaces = numSpaces;
         this.bracketPairs = bracketPairs;
         if(defaultSpaces) {
             this.indentation = "";
@@ -37,7 +35,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         textarea.addEventListener('beforeinput', (event) => { this.checkCloseBracket(codeInput, event); });
     }
 
-    /* Event handlers */
+    /* Deal with the Tab key causing indentation, and Tab+Selection indenting / Shift+Tab+Selection unindenting lines */
     checkTab(codeInput, event) {
         if(event.key != "Tab") {
             return;
@@ -97,16 +95,17 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
             inputElement.selectionEnd = selectionEndI;
         }
 
-        codeInput.update(inputElement.value);
+        codeInput.value = inputElement.value;
     }
 
+    /* Deal with new lines retaining indentation */
     checkEnter(codeInput, event) {
         if(event.key != "Enter") {
             return;
         }
         event.preventDefault(); // Stop normal \n only
 
-        let inputElement = codeInput.querySelector("textarea");
+        let inputElement = codeInput.textareaElement;
         let lines = inputElement.value.split("\n");
         let letterI = 0;
         let currentLineI = lines.length - 1;
@@ -194,17 +193,18 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         // Scroll down to cursor if necessary
         let paddingTop = Number(getComputedStyle(inputElement).paddingTop.replace("px", "")); 
         let lineHeight = Number(getComputedStyle(inputElement).lineHeight.replace("px", "")); 
-        let inputHeight = Number(getComputedStyle(inputElement).height.replace("px", ""));
+        let inputHeight = Number(getComputedStyle(codeInput).height.replace("px", ""));
         if(currentLineI*lineHeight + lineHeight*2 + paddingTop >= inputElement.scrollTop + inputHeight) { // Cursor too far down
-            inputElement.scrollBy(0, Number(getComputedStyle(inputElement).lineHeight.replace("px", "")))
+            codeInput.scrollBy(0, Number(getComputedStyle(inputElement).lineHeight.replace("px", "")));
         }
 
-        codeInput.update(inputElement.value);
+        codeInput.value = inputElement.value;
     }
 
+    /* Deal with one 'tab' of spaces-based-indentation being deleted by each backspace, rather than one space */
     checkBackspace(codeInput, event) {
         if(event.key != "Backspace" || this.indentationNumChars == 1) {
-            return; // Normal backspace
+            return; // Normal backspace when indentation of 1
         }
 
         let inputElement = codeInput.textareaElement;
@@ -217,6 +217,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         }
     }
 
+    /* Deal with the typing of closing brackets causing a decrease in indentation */
     checkCloseBracket(codeInput, event) {
         if(codeInput.textareaElement.selectionStart != codeInput.textareaElement.selectionEnd) {
             return;

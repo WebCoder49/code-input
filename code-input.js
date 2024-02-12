@@ -19,6 +19,7 @@ var codeInput = {
     observedAttributes: [
         "value",
         "placeholder",
+        "language",
         "lang",
         "template"
     ],
@@ -29,7 +30,6 @@ var codeInput = {
      * code-input element.
      */
     textareaSyncAttributes: [
-        "aria-*",
         "value",
         // Form validation - https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation
         "min", "max",
@@ -108,7 +108,6 @@ var codeInput = {
         if(!(typeof template.includeCodeInputInHighlightFunc == "boolean" || template.includeCodeInputInHighlightFunc instanceof Boolean)) throw TypeError(`code-input: Template for "${templateName}" invalid, because the includeCodeInputInHighlightFunc value provided is not a true or false; it is "${template.includeCodeInputInHighlightFunc}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
         if(!(typeof template.preElementStyled == "boolean" || template.preElementStyled instanceof Boolean)) throw TypeError(`code-input: Template for "${templateName}" invalid, because the preElementStyled value provided is not a true or false; it is "${template.preElementStyled}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
         if(!(typeof template.isCode == "boolean" || template.isCode instanceof Boolean)) throw TypeError(`code-input: Template for "${templateName}" invalid, because the isCode value provided is not a true or false; it is "${template.isCode}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
-        if(!(typeof template.autoDisableDuplicateSearching == "boolean" || template.autoDisableDuplicateSearching instanceof Boolean)) throw TypeError(`code-input: Template for "${templateName}" invalid, because the autoDisableDuplicateSearching value provided is not a true or false; it is "${template.autoDisableDuplicateSearching}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
         if(!Array.isArray(template.plugins)) throw TypeError(`code-input: Template for "${templateName}" invalid, because the plugin array provided is not an array; it is "${template.plugins}". Please make sure you use one of the constructors in codeInput.templates, and that you provide the correct arguments.`);
         
         template.plugins.forEach((plugin, i) => {
@@ -125,7 +124,7 @@ var codeInput = {
                 elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.template = template;
                 codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
-                // Bind sets elem in parameter 
+                // Bind sets elem as first parameter of function 
                 // So innerHTML can be read
             }
             console.log(`code-input: template: Added existing elements with template ${templateName}`);
@@ -139,7 +138,7 @@ var codeInput = {
                     elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.template = template;
                     codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
-                    // Bind sets elem in parameter 
+                    // Bind sets elem as first parameter of function
                     // So innerHTML can be read
                 }
             }
@@ -166,18 +165,11 @@ var codeInput = {
          * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.Plugin`
          * @returns {codeInput.Template} template object
          */
-        constructor(highlight = function () { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, autoDisableDuplicateSearching = true, plugins = []) {
-            // @deprecated to support old function signature without autoDisableDuplicateSearching
-            if(Array.isArray(autoDisableDuplicateSearching)) {
-                plugins = autoDisableDuplicateSearching;
-                autoDisableDuplicateSearching = true;
-            }
-
+        constructor(highlight = function () { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
             this.highlight = highlight;
             this.preElementStyled = preElementStyled;
             this.isCode = isCode;
             this.includeCodeInputInHighlightFunc = includeCodeInputInHighlightFunc;
-            this.autoDisableDuplicateSearching = autoDisableDuplicateSearching;
             this.plugins = plugins;
         }
 
@@ -211,15 +203,6 @@ var codeInput = {
         includeCodeInputInHighlightFunc = false;
 
         /**
-         * Leaving this as true uses code-input's default fix for preventing duplicate results in Ctrl+F searching
-         * from the input and result elements, and setting this to false indicates your highlighting function implements
-         * its own fix.
-         * 
-         * The default fix works by moving text content from elements to CSS ::before pseudo-elements after highlighting.
-         */
-        autoDisableDuplicateSearching = true;
-
-        /**
          * An array of plugin objects to add extra features - 
          * see `codeInput.Plugin`.
          */
@@ -251,7 +234,6 @@ var codeInput = {
                 true, // preElementStyled
                 true, // isCode
                 false, // includeCodeInputInHighlightFunc
-                true, // autoDisableDuplicateSearching
                 plugins
             );
         },
@@ -270,15 +252,12 @@ var codeInput = {
                 false, // preElementStyled
                 true, // isCode
                 false, // includeCodeInputInHighlightFunc
-                true, // autoDisableDuplicateSearching
                 plugins
             );
         },
 
         /**
-         * Constructor to create a proof-of-concept template that gives a message if too many characters are typed.
-         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-         * @returns template object
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
          */
         characterLimit(plugins) {
             return {
@@ -297,17 +276,12 @@ var codeInput = {
                 includeCodeInputInHighlightFunc: true,
                 preElementStyled: true,
                 isCode: false,
-                autoDisableDuplicateSearching: true,
                 plugins: plugins,
             }
         },
 
         /**
-         * Constructor to create a proof-of-concept template that shows text in a repeating series of colors.
-         * @param {string[]} rainbowColors - An array of CSS colors, in the order each color will be shown
-         * @param {string} delimiter - The character used to split up parts of text where each part is a different colour (e.g. "" = characters, " " = words)
-         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-         * @returns template object
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
          */
         rainbowText(rainbowColors = ["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue", "magenta"], delimiter = "", plugins = []) {
             return {
@@ -322,7 +296,6 @@ var codeInput = {
                 includeCodeInputInHighlightFunc: true,
                 preElementStyled: true,
                 isCode: false,
-                autoDisableDuplicateSearching: true,
 
                 rainbowColors: rainbowColors,
                 delimiter: delimiter,
@@ -332,13 +305,13 @@ var codeInput = {
         },
 
         /**
-         * @deprecated Please use `codeInput.characterLimit(plugins)`
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
          */
         character_limit() {
             return this.characterLimit([]);
         },
         /**
-         * @deprecated Please use `codeInput.rainbowText`
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
          */
         rainbow_text(rainbowColors = ["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue", "magenta"], delimiter = "", plugins = []) {
             return this.rainbowText(rainbowColors, delimiter, plugins);
@@ -400,14 +373,7 @@ var codeInput = {
             console.log("code-input: plugin: Created plugin");
 
             observedAttributes.forEach((attribute) => {
-                // Move plugin attribute to codeInput observed attributes
-                let regexFromWildcard = codeInput.wildcard2regex(attribute);
-                if(regexFromWildcard == null) {
-                    // Not a wildcard
-                    codeInput.observedAttributes.push(attribute);
-                } else {
-                    codeInput.observedAttributes.regexp.push(regexFromWildcard);
-                }
+                codeInput.observedAttributes.push(attribute);
             });
         }
 
@@ -452,10 +418,6 @@ var codeInput = {
         constructor() {
             super(); // Element
         }
-        /**
-        * Store value internally
-        */
-        _value = '';
 
         /**
         * Exposed child textarea element for user to input code in
@@ -513,30 +475,47 @@ var codeInput = {
         * the result (pre code) element, then use the template object
         * to syntax-highlight it. */
 
-        /** Update the text value to the result element, after the textarea contents have changed.
-         * @param {string} value - The text value of the code-input element
-         * @param {boolean} originalUpdate - Whether this update originates from the textarea's content; if so, run it first so custom updates override it.
-         */
-        update(value) {
-            // Prevent this from running multiple times on the same input when "value" attribute is changed, 
-            // by not running when value is already equal to the input of this (implying update has already
-            // been run). Thank you to peterprvy for this. 
-            if (this.ignoreValueUpdate) return;
+        needsHighlight = false; // Just inputted
 
-            if(this.textareaElement == null) {
-                this.addEventListener("code-input_load", () => { this.update(value) }); // Only run when fully loaded
-                return;
+        /**
+         * Highlight the code as soon as possible
+         */
+        scheduleHighlight() {
+            this.needsHighlight = true;
+        }
+
+        /**
+         * Call an animation frame
+         */
+        animateFrame() {
+            // Synchronise the size of the pre/code and textarea elements
+            if(this.template.preElementStyled) {
+                this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
+                this.textareaElement.style.height = getComputedStyle(this.preElement).height;
+                this.textareaElement.style.width = getComputedStyle(this.preElement).width;
+            } else {
+                this.style.backgroundColor = getComputedStyle(this.codeElement).backgroundColor;
+                this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
+                this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
             }
 
-            this.ignoreValueUpdate = true;
-            this.value = value;
-            this.ignoreValueUpdate = false;
-            if (this.textareaElement.value != value) this.textareaElement.value = value;
+            // Synchronise the contents of the pre/code and textarea elements
+            if(this.needsHighlight) {
+                this.update();
+                this.needsHighlight = false;
+            }
+            window.requestAnimationFrame(this.animateFrame.bind(this));
+        }
 
+        /**
+         * Update the text value to the result element, after the textarea contents have changed.
+         */
+        update() {
             let resultElement = this.codeElement;
+            let value = this.value;
 
             // Handle final newlines
-            if (value[value.length - 1] == "\n") {
+            if (value[value.length - 1] == "\n" || value.length == 0) {
                 value += " ";
             }
 
@@ -549,37 +528,6 @@ var codeInput = {
             else this.template.highlight(resultElement);
 
             this.pluginEvt("afterHighlight");
-
-            if(this.template.autoDisableDuplicateSearching) {
-                if(this.codeElement.querySelector("*") === null) {
-                    // Fix for tries-to-disable-searching-before-highlighting-possible bug:
-                    // Wait until user interaction so can expect
-                    // highlight before disabling searching
-                    let listenerKeydown = window.addEventListener("keydown", () => {
-                        this.resultElementDisableSearching();
-                        window.removeEventListener("keydown", listenerKeydown);
-                        window.removeEventListener("mousemove", listenerMousemove);
-                    });
-                    let listenerMousemove = window.addEventListener("mousemove", () => {
-                        this.resultElementDisableSearching();
-                        window.removeEventListener("keydown", listenerKeydown);
-                        window.removeEventListener("mousemove", listenerMousemove);
-                    });
-                } else {
-                    this.resultElementDisableSearching();
-                }
-            }
-        }
-
-        /**
-         * Synchronise the scrolling of the textarea to the result element.
-         */
-        syncScroll() {
-            let inputElement = this.textareaElement;
-            let resultElement = this.template.preElementStyled ? this.preElement : this.codeElement;
-
-            resultElement.scrollTop = inputElement.scrollTop;
-            resultElement.scrollLeft = inputElement.scrollLeft;
         }
 
         /**
@@ -598,30 +546,6 @@ var codeInput = {
          */
         unescapeHtml(text) {
             return text.replace(new RegExp("&amp;", "g"), "&").replace(new RegExp("&lt;", "g"), "<").replace(new RegExp("&gt;", "g"), ">"); /* Global RegExp */
-        }
-
-        /**
-         * Make the text contents of highlighted code in the `<pre><code>` result element invisible to Ctrl+F by moving them to a data attribute
-         * then the CSS `::before` pseudo-element on span elements with the class code-input_searching-disabled. This function is called recursively
-         * on all child elements of the <code> element.
-         * 
-         * @param {HTMLElement} element The element on which this is carried out recursively. Optional - defaults to the `<pre><code>`'s `<code>` element. 
-         */
-        resultElementDisableSearching(element=this.preElement) {
-            for (let i = 0; i < element.childNodes.length; i++) {
-                let content = element.childNodes[i].textContent;
-            
-                if (element.childNodes[i].nodeType == 3) {
-                    // Turn plain text node into span element
-                    element.replaceChild(document.createElement('span'), element.childNodes[i]);
-                    element.childNodes[i].classList.add("code-input_searching-disabled")
-                    element.childNodes[i].setAttribute("data-content", content);
-                    element.childNodes[i].innerText = '';
-                } else {
-                    // Recurse deeper
-                    this.resultElementDisableSearching(element.childNodes[i]);
-                }
-            }
         }
 
         /**
@@ -661,7 +585,7 @@ var codeInput = {
             this.pluginEvt("beforeElementsAdded");
 
             // First-time attribute sync
-            let lang = this.getAttribute("lang");
+            let lang = this.getAttribute("language") || this.getAttribute("lang");
             let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
             let value = this.unescapeHtml(this.innerHTML) || this.getAttribute("value") || "";
             // Value attribute deprecated, but included for compatibility
@@ -680,22 +604,14 @@ var codeInput = {
             this.innerHTML = ""; // Clear Content
 
             // Synchronise attributes to textarea
-            codeInput.textareaSyncAttributes.forEach((attribute) => {
-                if (this.hasAttribute(attribute)) {
+            for(let i = 0; i < this.attributes.length; i++) {
+                let attribute = this.attributes[i].name;
+                if (codeInput.textareaSyncAttributes.includes(attribute) || attribute.substring(0, 5) == "aria-") {
                     textarea.setAttribute(attribute, this.getAttribute(attribute));
                 }
-            });
-            codeInput.textareaSyncAttributes.regexp.forEach((reg) =>
-            {
-                for(const attr of this.attributes) {
-                    if (attr.nodeName.match(reg)) {
-                        textarea.setAttribute(attr.nodeName, attr.nodeValue);
-                    }
-                }
-            });
+            }
 
-            textarea.addEventListener('input', (evt) => { textarea.parentElement.update(textarea.value); textarea.parentElement.sync_scroll(); });
-            textarea.addEventListener('scroll', (evt) => textarea.parentElement.sync_scroll());
+            textarea.addEventListener('input', (evt) => { this.value = this.textareaElement.value; });
 
             // Save element internally
             this.textareaElement = textarea;
@@ -714,22 +630,16 @@ var codeInput = {
 
             if (this.template.isCode) {
                 if (lang != undefined && lang != "") {
-                    code.classList.add("language-" + lang);
+                    code.classList.add("language-" + lang.toLowerCase());
                 }
             }
 
             this.pluginEvt("afterElementsAdded");
 
-            this.update(value);
-
             this.dispatchEvent(new CustomEvent("code-input_load"));
-        }
 
-        /**
-         * @deprecated Please use `codeInput.CodeInput.syncScroll`
-         */
-        sync_scroll() {
-            this.syncScroll();
+            this.value = value;
+            this.animateFrame();
         }
 
         /**
@@ -740,7 +650,7 @@ var codeInput = {
         }
 
         /**
-         * @deprecated Please use `codeInput.CodeInput.escapeHtml`
+         * @deprecated Please use `codeInput.CodeInput.getTemplate`
          */
         get_template() {
             return this.getTemplate();
@@ -784,13 +694,8 @@ var codeInput = {
                         return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                     }
                 }
-
-                /* Check wildcard attributes */
-                for(let i = 0; i < codeInput.observedAttributes.regexp.length; i++) {
-                    const reg = codeInput.observedAttributes.regexp[i];
-                    if (mutation.attributeName.match(reg)) {
-                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
-                    }
+                if (mutation.attributeName.substring(0, 5) == "aria-") {
+                    return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                 }
             }
         }
@@ -814,20 +719,17 @@ var codeInput = {
                     case "value":
                         this.value = newValue;
                         break;
-                    case "placeholder":
-                        this.textareaElement.placeholder = newValue;
-                        break;
                     case "template":
                         this.template = codeInput.usedTemplates[newValue || codeInput.defaultTemplate];
                         if (this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
                         else this.classList.remove("code-input_pre-element-styled");
                         // Syntax Highlight
-                        this.update(this.value);
+                        this.needsHighlight = true;
 
                         break;
 
                     case "lang":
-
+                    case "language":
                         let code = this.codeElement;
                         let mainTextarea = this.textareaElement;
 
@@ -854,11 +756,11 @@ var codeInput = {
 
                         if (mainTextarea.placeholder == oldValue) mainTextarea.placeholder = newValue;
 
-                        this.update(this.value);
+                        this.needsHighlight = true;
 
                         break;
                     default:
-                        if (codeInput.textareaSyncAttributes.includes(name)) {
+                        if (codeInput.textareaSyncAttributes.includes(name) || name.substring(0, 5) == "aria-") {
                             if(newValue == null || newValue == undefined) {
                                 this.textareaElement.removeAttribute(name);
                             } else {
@@ -943,7 +845,8 @@ var codeInput = {
          * Get the text contents of the code-input element.
          */
         get value() {
-            return this._value;
+            // Get from editable textarea element
+            return this.textareaElement.value;
         }
         /**
          * Set the text contents of the code-input element.
@@ -953,8 +856,10 @@ var codeInput = {
             if (val === null || val === undefined) {
                 val = "";
             }
-            this._value = val;
-            this.update(val);
+            // Save in editable textarea element
+            this.textareaElement.value = val;
+            // Trigger highlight
+            this.needsHighlight = true;
             return val;
         }
 
@@ -1032,32 +937,8 @@ var codeInput = {
         * Update value on form reset
         */
         formResetCallback() {
-            this.update(this.initialValue);
+            this.value = this.initialValue;
         };
-    },
-
-    arrayWildcards2regex(list) {
-        for(let i = 0; i < list.length; i++) {
-            const name = list[i];
-            if (name.indexOf("*") < 0)
-                continue;
-
-            list.regexp.push(new RegExp("^" +
-                                name.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&')
-                                    .replace("*", ".*")
-                                + "$", "i"));
-            list.splice(i--, 1);
-        };
-    },
-
-    wildcard2regex(wildcard) {
-        if (wildcard.indexOf("*") < 0)
-            return null;
-
-        return new RegExp("^" +
-                wildcard.replace(/[/\-\\^$+?.()|[\]{}]/g, '\\$&')
-                    .replace("*", ".*")
-                + "$", "i");
     },
 
     /** 
@@ -1076,30 +957,5 @@ var codeInput = {
 window.addEventListener("load", function() {
     codeInput.windowLoaded = true;
 });
-
-
-/**
- * convert wildcards into regex
- */
-
-{
-    Object.defineProperty(codeInput.textareaSyncAttributes, 'regexp', {
-        value: [],
-        writable: false,
-        enumerable: false,
-        configurable: false
-    });
-    codeInput.observedAttributes = codeInput.observedAttributes.concat(codeInput.textareaSyncAttributes);
-
-    Object.defineProperty(codeInput.observedAttributes, 'regexp', {
-        value: [],
-        writable: false,
-        enumerable: false,
-        configurable: false
-    });
-
-    codeInput.arrayWildcards2regex(codeInput.textareaSyncAttributes);
-    codeInput.arrayWildcards2regex(codeInput.observedAttributes);
-}
 
 customElements.define("code-input", codeInput.CodeInput);

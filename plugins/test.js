@@ -10,9 +10,8 @@
  */
 codeInput.plugins.Test = class extends codeInput.Plugin {
     constructor() {
-        super(["testattr", "test-*"]); 
+        super(["testattr"]); 
         // Array of observed attributes as parameter
-        // Wildcard "*" matches any text
     }
     /* Runs before code is highlighted; Params: codeInput element) */
     beforeHighlight(codeInput) {
