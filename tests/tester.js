@@ -1,5 +1,110 @@
-/* Main testing code */
+/* This file contains the main code to test the code-input library with Prism.js and highlight.js. */
 
+/* --- Test running functions --- */
+var testsFailed = false;
+
+/* Add data to the tests list under a specific group and test description (usually the plugin name then the functionality description) */
+function testData(group, test, data) {
+    let resultElem = document.getElementById("test-results");
+    let groupElem = resultElem.querySelector("#test-"+group);
+    if(groupElem == undefined) {
+        groupElem = document.createElement("span");
+        groupElem.innerHTML = `Group <b>${group}</b>:\n`
+        groupElem.id = "test-" + group;
+        resultElem.append(groupElem);
+    }
+    groupElem.innerHTML += `\t${test}: ${data}\n`;
+}
+
+/* Add a test to the tests list, saying if it has passed (passed parameter), and if it has failed giving a message (messageIfFailed parameter) */
+function testAssertion(group, test, passed, messageIfFailed) {
+    let resultElem = document.getElementById("test-results");
+    let groupElem = resultElem.querySelector("#test-"+group);
+    if(groupElem == undefined) {
+        groupElem = document.createElement("span");
+        groupElem.innerHTML = `Group <b>${group}</b>:\n`
+        groupElem.id = "test-" + group;
+        resultElem.append(groupElem);
+    }
+    groupElem.innerHTML += `\t${test}: ${passed ? '<b style="color: darkgreen;">passed</b>' : '<b style="color: red;">failed</b> ('+messageIfFailed+')' }\n`;
+
+    if(!passed) testsFailed = true;
+}
+
+/* Run a test that passes if the givenOutput == correctOutput */
+function assertEqual(group, test, givenOutput, correctOutput) {
+    let equal = givenOutput == correctOutput;
+    testAssertion(group, test, equal, "see console output");
+    if(!equal) {
+        console.error(group, test, givenOutput, "should be", correctOutput);
+    }
+}
+
+/* Test whether adding text to the textarea (with keyboard events emitted, therefore interacting with plugins) gives the correct output and selection start/end. */
+function testAddingText(group, textarea, action, correctOutput, correctLengthToSelectionStart, correctLengthToSelectionEnd) {
+    let origSelectionStart = textarea.selectionStart;
+    let origValueBefore = textarea.value.substring(0, textarea.selectionStart);
+    let origValueAfter = textarea.value.substring(textarea.selectionEnd);
+    action(textarea);
+
+    let correctOutputValue = origValueBefore+correctOutput+origValueAfter;
+    assertEqual(group, "Text Output", textarea.value, correctOutputValue);
+    assertEqual(group, "Code-Input Value JS Property Output", textarea.parentElement.value, correctOutputValue);
+    assertEqual(group, "Selection Start", textarea.selectionStart, origSelectionStart+correctLengthToSelectionStart);
+    assertEqual(group, "Selection End", textarea.selectionEnd, origSelectionStart+correctLengthToSelectionEnd);
+}
+
+/* --- Test helper functions --- */
+
+/* Assuming the textarea is focused, add the given text to it, emitting 'input' and 'beforeinput' keyboard events (and 'keydown'/'keyup' Enter on newlines, if enterEvents is true) which plugins can handle */
+function addText(textarea, text, enterEvents=false) {
+    for(let i = 0; i < text.length; i++) {
+        if(enterEvents && text[i] == "\n") {
+            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+        } else {
+            let beforeInputEvt = new InputEvent("beforeinput", { "cancelable": true, "data": text[i] });
+            textarea.dispatchEvent(beforeInputEvt);
+            if(!beforeInputEvt.defaultPrevented) {
+                textarea.dispatchEvent(new InputEvent("input", { "data": text[i] }));
+            }
+        }
+    }
+}
+
+/* Emit the necessary events to simulate a backspace keypress in the textarea. */
+function backspace(textarea) {
+    let keydownEvt = new KeyboardEvent("keydown", { "cancelable": true, "key": "Backspace" });
+    textarea.dispatchEvent(keydownEvt);
+    let keyupEvt = new KeyboardEvent("keyup", { "cancelable": true, "key": "Backspace" });
+    textarea.dispatchEvent(keyupEvt);
+    if(!keydownEvt.defaultPrevented) {
+        if(textarea.selectionEnd == textarea.selectionStart) {
+            textarea.selectionEnd = textarea.selectionStart;
+            textarea.selectionStart--;
+        }
+        document.execCommand("delete", false, null);
+    }
+}
+
+/* Move the caret numMovesRight characters to the right, in the textarea. */
+function move(textarea, numMovesRight) {
+    textarea.selectionStart += numMovesRight;
+    textarea.selectionEnd = textarea.selectionStart;
+}
+
+/* Wait in an asynchronous function for a specified number of milliseconds by using `await waitAsync(milliseconds)`. */
+function waitAsync(milliseconds) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, milliseconds);
+    });
+}
+
+/* --- Running the tests --- */
+
+/* Start the test, for Prism.js if isHLJS is false, or for highlight.js if isHLJS is true. */
 function beginTest(isHLJS) {
     let codeInputElem = document.querySelector("code-input");
     if(isHLJS) {
@@ -15,6 +120,7 @@ function beginTest(isHLJS) {
                 }
             }),
             new codeInput.plugins.Autodetect(),
+            new codeInput.plugins.FindAndReplace(),
             new codeInput.plugins.GoToLine(),
             new codeInput.plugins.Indent(true, 2),
             new codeInput.plugins.SpecialChars(true),
@@ -31,6 +137,7 @@ function beginTest(isHLJS) {
                     popupElem.style.display = "none";
                 }
             }),
+            new codeInput.plugins.FindAndReplace(),
             new codeInput.plugins.GoToLine(),
             new codeInput.plugins.Indent(true, 2),
             new codeInput.plugins.SpecialChars(true),
@@ -39,51 +146,7 @@ function beginTest(isHLJS) {
     startLoad(codeInputElem, isHLJS);
 }
 
-function testData(group, test, data) {
-    let resultElem = document.getElementById("test-results");
-    let groupElem = resultElem.querySelector("#test-"+group);
-    if(groupElem == undefined) {
-        groupElem = document.createElement("span");
-        groupElem.innerHTML = `Group <b>${group}</b>:\n`
-        groupElem.id = "test-" + group;
-        resultElem.append(groupElem);
-    }
-    groupElem.innerHTML += `\t${test}: ${data}\n`;
-}
-
-function testAssertion(group, test, passed, messageIfFailed) {
-    let resultElem = document.getElementById("test-results");
-    let groupElem = resultElem.querySelector("#test-"+group);
-    if(groupElem == undefined) {
-        groupElem = document.createElement("span");
-        groupElem.innerHTML = `Group <b>${group}</b>:\n`
-        groupElem.id = "test-" + group;
-        resultElem.append(groupElem);
-    }
-    groupElem.innerHTML += `\t${test}: ${passed ? '<b style="color: darkgreen;">passed</b>' : '<b style="color: red;">failed</b> ('+messageIfFailed+')' }\n`;
-}
-
-function assertEqual(group, test, givenOutput, correctOutput) {
-    let equal = givenOutput == correctOutput;
-    testAssertion(group, test, equal, "see console output");
-    if(!equal) {
-        console.error(group, test, givenOutput, "should be", correctOutput)
-    }
-}
-
-function testAddingText(group, textarea, action, correctOutput, correctLengthToSelectionStart, correctLengthToSelectionEnd) {
-    let origSelectionStart = textarea.selectionStart;
-    let origValueBefore = textarea.value.substring(0, textarea.selectionStart);
-    let origValueAfter = textarea.value.substring(textarea.selectionEnd);
-    action(textarea);
-
-    let correctOutputValue = origValueBefore+correctOutput+origValueAfter;
-    assertEqual(group, "Text Output", textarea.value, correctOutputValue)
-    assertEqual(group, "Code-Input Value JS Property Output", textarea.parentElement.value, correctOutputValue)
-    assertEqual(group, "Selection Start", textarea.selectionStart, origSelectionStart+correctLengthToSelectionStart)
-    assertEqual(group, "Selection End", textarea.selectionEnd, origSelectionStart+correctLengthToSelectionEnd)
-}
-
+/* Start loading the tests, using the codeInput load time as one of the tests. */
 function startLoad(codeInputElem, isHLJS) {
     let textarea;
     let timeToLoad = 0;
@@ -96,61 +159,26 @@ function startLoad(codeInputElem, isHLJS) {
     }, 10);
 }
 
-function addText(textarea, text, enterEvents=false) {
-    for(let i = 0; i < text.length; i++) {
-        if(enterEvents && text[i] == "\n") {
-            textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-            textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
-        } else {
-            let beforeInputEvt = new InputEvent("beforeinput", { "cancelable": true, "data": text[i] });
-            textarea.dispatchEvent(beforeInputEvt);
-            if(!beforeInputEvt.defaultPrevented) {
-                textarea.dispatchEvent(new InputEvent("input", { "data": text[i] }));
-            }
-        }
-    }
-}
-function backspace(textarea) {
-    let keydownEvt = new KeyboardEvent("keydown", { "cancelable": true, "key": "Backspace" });
-    textarea.dispatchEvent(keydownEvt);
-    let keyupEvt = new KeyboardEvent("keyup", { "cancelable": true, "key": "Backspace" });
-    textarea.dispatchEvent(keyupEvt);
-    if(!keydownEvt.defaultPrevented) {
-        if(textarea.selectionEnd == textarea.selectionStart) {
-            textarea.selectionEnd = textarea.selectionStart;
-            textarea.selectionStart--;
-        }
-        document.execCommand("delete", false, null);
-    }
-}
-
-function move(textarea, numMovesRight) {
-    textarea.selectionStart += numMovesRight;
-    textarea.selectionEnd = textarea.selectionStart;
-}
-
-function waitAsync(milliseconds) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve();
-        }, milliseconds);
-    });
-}
-
-async function startTests(textarea, isHLJS) {
-    // Make input events trusted - thanks for this SO answer: https://stackoverflow.com/a/49519772/21785620
-    textarea.addEventListener('input', function(e){
+/* Make input events work and be trusted in the inputElement - thanks for this SO answer: https://stackoverflow.com/a/49519772/21785620 */
+function allowInputEvents(inputElement) {
+    inputElement.addEventListener('input', function(e){
         if(!e.isTrusted){
-            //Manually triggered
+            e.preventDefault();
+            // Manually trigger
             document.execCommand("insertText", false, e.data);
         }
     }, false);
+}
 
+/* Start the tests using the textarea inside the code-input element and whether highlight.js is being used (as the Autodetect plugin only works with highlight.js, for example) */
+async function startTests(textarea, isHLJS) {
     textarea.focus();
+    allowInputEvents(textarea);
 
     codeInputElement = textarea.parentElement;
 
     /*--- Tests for core functionality ---*/
+
     // Textarea's initial value should be correct.
     assertEqual("Core", "Initial Textarea Value", textarea.value, `console.log("Hello, World!");
 // A second line
@@ -162,7 +190,7 @@ async function startTests(textarea, isHLJS) {
 // A third line with &lt;html&gt; tags`);
 
 
-    // Update code-input value with JavaScript, new value should be correct.
+    // Update code-input value with JavaScript, new value and num events should be correct.
     codeInputElement.value += `
 console.log("I've got another line!", 2 < 3, "should be true.");`;
 
@@ -179,10 +207,39 @@ console.log("I've got another line!", 2 < 3, "should be true.");`);
 // A second line
 // A third line with &lt;html&gt; tags
 console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
+
+    // Event Tests
+    let numTimesInputCalled = 0;
+    let numTimesChangeCalled = 0;
+    codeInputElement.addEventListener("input", (evt) => {
+        if(!evt.isTrusted) { // To prevent duplicate calling due to allowInputEvents hack
+            numTimesInputCalled++;
+        }
+    });
+    codeInputElement.addEventListener("change", () => {
+        numTimesChangeCalled++;
+    });
+
+    let inputDeletedListenerCalled = false;
+    let deletedListener = () => {
+        inputDeletedListenerCalled = true;
+    };
+    codeInputElement.addEventListener("input", deletedListener);
+    codeInputElement.removeEventListener("input", deletedListener);
+
+    // Make listeners be called
+    textarea.focus(); // Focus textarea
+    addText(textarea, " // Hi");
+    textarea.blur(); // Unfocus textarea - calls change event
+    textarea.focus();
+
+    assertEqual("Core", "Input Event Listener Called Right Number of Times", numTimesInputCalled, 6);
+    assertEqual("Core", "Change Event Listener Called Right Number of Times", numTimesChangeCalled, 1);
+    testAssertion("Core", "Input Event Removed Listener Not Called", !inputDeletedListenerCalled, "(code-input element).removeEventListener did not work.");
     
     // Changing language should be correct
     if(!isHLJS) {
-        // Highlight.js has autodetect plugin that should make this fail, so don't run this test.
+        // Highlight.js has autodetect plugin that should make this fail, so don't run these tests with it.
         testAssertion("Core", "Language attribute Initial value", 
             codeInputElement.codeElement.classList.contains("language-javascript")
             && !codeInputElement.codeElement.classList.contains("language-html"), 
@@ -192,7 +249,6 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
     
         await waitAsync(50); // Wait for attribute change to be handled
 
-        // Highlight.js has autodetect plugin that should make this fail, so don't run this test.
         testAssertion("Core", "Language attribute Changed value 1", 
             codeInputElement.codeElement.classList.contains("language-html")
             && !codeInputElement.codeElement.classList.contains("language-javascript"), 
@@ -202,7 +258,6 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
 
         await waitAsync(50); // Wait for attribute change to be handled
 
-        // Highlight.js has autodetect plugin that should make this fail, so don't run this test.
         testAssertion("Core", "Language attribute Changed value 2", 
             codeInputElement.codeElement.classList.contains("language-javascript")
             && !codeInputElement.codeElement.classList.contains("language-html"), 
@@ -281,6 +336,77 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
         assertEqual("Autodetect", "Detects CSS", codeInputElement.getAttribute("language"), "css");
     }
 
+    // FindAndReplace
+    // Replace all code
+    textarea.selectionStart = 0;
+    textarea.selectionEnd = textarea.value.length;
+    backspace(textarea);
+    addText(textarea, "// hello /\\S/g\nhe('llo', /\\s/g);\nhello");
+    textarea.selectionStart = textarea.selectionEnd = 0; // So focuses on first match
+
+    await waitAsync(50); // Wait for highlighting so text updates
+
+    // Open dialog and get interactive elements
+    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "ctrlKey": true }));
+    let inputBoxes = codeInputElement.querySelectorAll(".code-input_find-and-replace_dialog input");
+    let findInput = inputBoxes[0];
+    let regExpCheckbox = inputBoxes[1];
+    let caseSensitiveCheckbox = inputBoxes[2];
+    let replaceInput = inputBoxes[3];
+
+    let buttons = codeInputElement.querySelectorAll(".code-input_find-and-replace_dialog button");
+    let nextMatchButton = buttons[0];
+    let previousMatchButton = buttons[1];
+    let replaceButton = buttons[2];
+    let replaceAllButton = buttons[3];
+
+    let replaceDropdown = codeInputElement.querySelector(".code-input_find-and-replace_dialog details summary");
+
+    // Run find/replace tests
+    findInput.value = "/\\s/g";
+    caseSensitiveCheckbox.click(); // Now case-sensitive
+    await waitAsync(150); // Wait for highlighting so matches update
+    testAssertion("FindAndReplace", "Finds Case-Sensitive Matches Correctly", confirm("Is there a match on only the lowercase '/\\s/g'?"), "user-judged");
+
+    findInput.value = "he[^l]*llo";
+    regExpCheckbox.click(); // Now regex
+    caseSensitiveCheckbox.click(); // Now not case-sensitive
+    await waitAsync(150); // Wait for highlighting so matches update
+    // Focuses on next match after /\s/g, therefore third he...llo
+    testAssertion("FindAndReplace", "Finds RegExp Matches Correctly", confirm("Are there matches on all 'he...llo's?"), "user-judged");
+
+    replaceDropdown.click();
+    previousMatchButton.click();
+    replaceInput.value = "do('hello";
+    replaceButton.click();
+    await waitAsync(50); // Wait for buttons to work
+    assertEqual("FindAndReplace", "Replaces Once Correctly", textarea.value, "// hello /\\S/g\ndo('hello', /\\s/g);\nhello");
+    nextMatchButton.click(); // Back to first match
+
+    // Exit find input box
+    codeInputElement.querySelector(".code-input_find-and-replace_dialog").dispatchEvent(new KeyboardEvent("keydown", { "key": "Escape" }));
+    codeInputElement.querySelector(".code-input_find-and-replace_dialog").dispatchEvent(new KeyboardEvent("keyup", { "key": "Escape" }));
+
+    // Check first hello now selected
+    assertEqual("FindAndReplace", "Selection Start on Focused Match when Dialog Exited", textarea.selectionStart, 3);
+    assertEqual("FindAndReplace", "Selection End on Focused Match when Dialog Exited", textarea.selectionEnd, 8);
+    
+    // Open replace dialog; conduct a find and replace
+    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "h", "ctrlKey": true }));
+    findInput.value = "";
+    findInput.focus();
+    allowInputEvents(findInput);
+    addText(findInput, "hello");
+    await waitAsync(150); // Wait for highlighting so matches update
+
+    replaceInput.value = "hi";
+    replaceAllButton.click();
+    assertEqual("FindAndReplace", "Replaces All Correctly", textarea.value, "// hi /\\S/g\ndo('hi', /\\s/g);\nhi");
+
+    // Exit find input box
+    codeInputElement.querySelector(".code-input_find-and-replace_dialog").dispatchEvent(new KeyboardEvent("keydown", { "key": "Escape" }));
+    codeInputElement.querySelector(".code-input_find-and-replace_dialog").dispatchEvent(new KeyboardEvent("keyup", { "key": "Escape" }));
+
     // GoToLine
     // Replace all code
     textarea.selectionStart = 0;
@@ -289,48 +415,44 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
     addText(textarea, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line");
     
     textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-    let dialog = codeInputElement.querySelector(".code-input_go-to_dialog input");
-    dialog.value = "1";
-    dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-    dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+    let lineInput = codeInputElement.querySelector(".code-input_go-to-line_dialog input");
+    lineInput.value = "1";
+    lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+    lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
     assertEqual("GoToLine", "Line Only", textarea.selectionStart, 0);
 
     textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-    dialog = codeInputElement.querySelector(".code-input_go-to_dialog input");
-    dialog.value = "3:18";
-    dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-    dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+    lineInput.value = "3:18";
+    lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+    lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
     assertEqual("GoToLine", "Line and Column", textarea.selectionStart, 45);
     
     textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-    dialog = codeInputElement.querySelector(".code-input_go-to_dialog input");
-    dialog.value = "10";
-    dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-    dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
-    assertEqual("GoToLine", "Rejects Out-of-range Line", dialog.classList.contains("code-input_go-to_error"), true);
+    lineInput.value = "10";
+    lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+    lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+    assertEqual("GoToLine", "Rejects Out-of-range Line", lineInput.classList.contains("code-input_go-to-line_error"), true);
 
     textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-    dialog = codeInputElement.querySelector(".code-input_go-to_dialog input");
-    dialog.value = "2:12";
-    dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-    dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
-    assertEqual("GoToLine", "Rejects Out-of-range Column", dialog.classList.contains("code-input_go-to_error"), true);
+    lineInput.value = "2:12";
+    lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+    lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+    assertEqual("GoToLine", "Rejects Out-of-range Column", lineInput.classList.contains("code-input_go-to-line_error"), true);
 
     textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-    dialog = codeInputElement.querySelector(".code-input_go-to_dialog input");
-    dialog.value = "sausages";
-    dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
-    dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
-    assertEqual("GoToLine", "Rejects Invalid Input", dialog.classList.contains("code-input_go-to_error"), true);
-    assertEqual("GoToLine", "Stays open when Rejects Input", dialog.parentElement.classList.contains("code-input_go-to_hidden-dialog"), false);
+    lineInput.value = "sausages";
+    lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
+    lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
+    assertEqual("GoToLine", "Rejects Invalid Input", lineInput.classList.contains("code-input_go-to-line_error"), true);
+    assertEqual("GoToLine", "Stays open when Rejects Input", lineInput.parentElement.classList.contains("code-input_go-to-line_hidden-dialog"), false);
 
-    dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Escape" }));
-    dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Escape" }));
-    assertEqual("GoToLine", "Exits when Esc pressed", dialog.parentElement.classList.contains("code-input_go-to_hidden-dialog"), true);
+    lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Escape" }));
+    lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Escape" }));
+    assertEqual("GoToLine", "Exits when Esc pressed", lineInput.parentElement.classList.contains("code-input_go-to-line_hidden-dialog"), true);
 
     // Indent
     textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
-    addText(textarea, "\nfor(let i = 0; i < 100; i++) {\n  for(let j = i; j < 100; j++) {\n    // Here's some code\n    console.log(i,j);\n  }\n}\n{\n  // This is indented\n}")
+    addText(textarea, "\nfor(let i = 0; i < 100; i++) {\n  for(let j = i; j < 100; j++) {\n    // Here's some code\n    console.log(i,j);\n  }\n}\n{\n  // This is indented\n}");
     textarea.selectionStart = 0;
     textarea.selectionEnd = textarea.value.length;
     textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Tab", "shiftKey": false }));
@@ -362,10 +484,10 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
     backspace(textarea);
 
     testAddingText("Indent-AutoCloseBrackets", textarea, function(textarea) {
-        addText(textarea, `function printTriples(max) {\nfor(let i = 0; i < max-2; i++) {\nfor(let j = 0; j < max-1; j++) {\nfor(let k = 0; k < max; k++) {\nconsole.log(i,j,k);\n}\n//Hmmm...`, true)
+        addText(textarea, `function printTriples(max) {\nfor(let i = 0; i < max-2; i++) {\nfor(let j = 0; j < max-1; j++) {\nfor(let k = 0; k < max; k++) {\nconsole.log(i,j,k);\n}\n//Hmmm...`, true);
     }, 'function printTriples(max) {\n  for(let i = 0; i < max-2; i++) {\n    for(let j = 0; j < max-1; j++) {\n      for(let k = 0; k < max; k++) {\n        console.log(i,j,k);\n      }\n      //Hmmm...\n      }\n    }\n  }\n}', 189, 189);
 
-    // Special Chars
+    // SpecialChars
     // Clear all code
     textarea.selectionStart = 0;
     textarea.selectionEnd = textarea.value.length;
@@ -395,4 +517,13 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
 
         document.getElementById("collapse-results").setAttribute("open", true);
     });
+
+    /* Make it clear if any tests have failed */
+    if(testsFailed) {
+        document.querySelector("h2").style.backgroundColor = "red";
+        document.querySelector("h2").textContent = "Some Tests have Failed.";
+    } else {
+        document.querySelector("h2").style.backgroundColor = "lightgreen";
+        document.querySelector("h2").textContent = "All Tests have Passed.";
+    }
 }

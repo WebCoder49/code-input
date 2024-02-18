@@ -31,13 +31,13 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         let columnNo = 0; // Means go to start of indented line
         let maxColumnNo = 1;
         const querySplitByColons = dialog.input.value.split(':');
-        if(querySplitByColons.length > 2) return dialog.input.classList.add('code-input_go-to_error');
+        if(querySplitByColons.length > 2) return dialog.input.classList.add('code-input_go-to-line_error');
 
         if (event.key == 'Escape') return this.cancelPrompt(dialog, event);
 
         if (dialog.input.value) {
             if (!/^[0-9:]*$/.test(dialog.input.value) || lineNo < 1 || lineNo > maxLineNo) {
-                return dialog.input.classList.add('code-input_go-to_error');
+                return dialog.input.classList.add('code-input_go-to-line_error');
             } else {
                 // Check if line:column
                 if(querySplitByColons.length >= 2) {
@@ -45,9 +45,9 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
                     maxColumnNo = lines[lineNo-1].length;
                 }
                 if(columnNo < 0 || columnNo > maxColumnNo) {
-                    return dialog.input.classList.add('code-input_go-to_error');
+                    return dialog.input.classList.add('code-input_go-to-line_error');
                 } else {
-                    dialog.input.classList.remove('code-input_go-to_error');
+                    dialog.input.classList.remove('code-input_go-to-line_error');
                 }
             }
         }
@@ -60,20 +60,12 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
 
     /* Called with a dialog box keyup event to close and clear the dialog box */    
     cancelPrompt(dialog, event) {
-        let delay;
-        console.log("Cancel", event);
         event.preventDefault();
         dialog.textarea.focus();
 
         // Remove dialog after animation
-        dialog.classList.add('code-input_go-to_hidden-dialog');
+        dialog.classList.add('code-input_go-to-line_hidden-dialog');
         dialog.input.value = "";
-
-        if (dialog.computedStyleMap) {
-            delay = 1000 * dialog.computedStyleMap().get('animation').toString().split('s')[0];
-        } else {
-            delay = 1000 * document.defaultView.getComputedStyle(dialog, null).getPropertyValue('animation').split('s')[0];
-        }
     }
 
     /**
@@ -91,7 +83,7 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             dialog.appendChild(input);
             dialog.appendChild(cancel);
 
-            dialog.className = 'code-input_go-to_dialog';
+            dialog.className = 'code-input_go-to-line_dialog';
             input.spellcheck = false;
             input.placeholder = "Line:Column / Line no. then Enter";
             dialog.codeInput = codeInput;
@@ -106,12 +98,12 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             input.addEventListener('keyup', (event) => { return this.checkPrompt(dialog, event); });
             cancel.addEventListener('click', (event) => { this.cancelPrompt(dialog, event); });
 
-            codeInput.appendChild(dialog);
+            codeInput.dialogContainerElement.appendChild(dialog);
             codeInput.pluginData.goToLine = {dialog: dialog};
             input.focus();
         } else {
-            codeInput.pluginData.goToLine.dialog.classList.remove("code-input_go-to_hidden-dialog");
-            codeInput.pluginData.goToLine.dialog.querySelector("input").focus();
+            codeInput.pluginData.goToLine.dialog.classList.remove("code-input_go-to-line_hidden-dialog");
+            codeInput.pluginData.goToLine.dialog.input.focus();
         }
     }
 
@@ -157,7 +149,6 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
 
     /* Event handler for keydown event that makes Ctrl+G open go to line dialog */
     checkCtrlG(codeInput, event) {
-        const textarea = codeInput.textareaElement;
         if (event.ctrlKey && event.key == 'g') {
             event.preventDefault();
             this.showPrompt(codeInput);
