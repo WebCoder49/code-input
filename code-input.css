@@ -137,4 +137,7 @@ code-input .code-input_dialog-container {
   left: 0;
   width: 100%;
   height: 0;
+
+  /* Dialog boxes' text is left-aligned */
+  text-align: left;
 }

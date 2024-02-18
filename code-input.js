@@ -427,7 +427,7 @@ var codeInput = {
         * Exposed child pre element where syntax-highlighted code is outputted.
         * Contains this.codeElement as its only child.
         */
-        preElement = null;
+        preElement = null
         /**
         * Exposed child pre element's child code element where syntax-highlighted code is outputted.
         * Has this.preElement as its parent.

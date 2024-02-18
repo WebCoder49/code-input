@@ -118,13 +118,13 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 To see a full list of plugins and their functions, please see [plugins/README.md](./plugins/README.md).
 
 ### 4. Using the component
-Now that you have registered a template, you can use the custom `<code-input>` element in HTML. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `lang` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events to make your element as simple or interactive as you like! 
+Now that you have registered a template, you can use the custom `<code-input>` element in HTML. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `language` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events to make your element as simple or interactive as you like! 
   ```HTML
-  <code-input lang="HTML"></code-input>
+  <code-input language="HTML"></code-input>
   ```
   *or*
   ```HTML
-  <code-input lang="HTML" placeholder="Type code here" template="syntax-highlighted" onchange="console.log('Your code is', this.value)">&lt; href='https://github.com/WebCoder49/code-input'>code-input&lt;/a></code-input>
+  <code-input language="HTML" placeholder="Type code here" template="syntax-highlighted" onchange="console.log('Your code is', this.value)">&lt; href='https://github.com/WebCoder49/code-input'>code-input&lt;/a></code-input>
   ```
 
 ## Contributing
