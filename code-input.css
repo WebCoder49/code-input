@@ -123,3 +123,18 @@ code-input:not(.code-input_registered)::before {
   display: block;
   color: grey;
 }
+
+/* Contains dialog boxes that might appear as the result of a plugin.
+Sticks to the top of the code-input element */
+code-input .code-input_dialog-container {
+  z-index: 2;
+  
+  position: sticky;
+  grid-row: 1;
+  grid-column: 1;
+  
+  top: 0px;
+  left: 0;
+  width: 100%;
+  height: 0;
+}

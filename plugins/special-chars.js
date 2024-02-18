@@ -66,7 +66,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
                     nextNode = nextNode.splitText(charIndex+1).previousSibling;
                     
                     if(charIndex > 0) {
-                        nextNode = nextNode.splitText(charIndex); // Keep those before in difft. span
+                        nextNode = nextNode.splitText(charIndex); // Keep characters before the special character in a different span
                     }
 
                     if(nextNode.textContent != "") {

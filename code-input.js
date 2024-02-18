@@ -434,6 +434,12 @@ var codeInput = {
         */
         codeElement = null;
 
+        /** 
+         * Exposed non-scrolling element designed to contain dialog boxes etc. that shouldn't scroll
+         * with the code-input element.
+         */
+        dialogContainerElement = null;
+
         /**
         * Form-Associated Custom Element Callbacks
         * https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-face-example
@@ -504,6 +510,7 @@ var codeInput = {
                 this.update();
                 this.needsHighlight = false;
             }
+
             window.requestAnimationFrame(this.animateFrame.bind(this));
         }
 
@@ -633,6 +640,12 @@ var codeInput = {
                     code.classList.add("language-" + lang.toLowerCase());
                 }
             }
+
+            // dialogContainerElement used to store non-scrolling dialog boxes, etc.
+            let dialogContainerElement = document.createElement("div");
+            dialogContainerElement.classList.add("code-input_dialog-container");
+            this.append(dialogContainerElement);
+            this.dialogContainerElement = dialogContainerElement;
 
             this.pluginEvt("afterElementsAdded");
 
@@ -793,10 +806,12 @@ var codeInput = {
          * @override
          */
         addEventListener(type, listener, options = undefined) {
+            // Save a copy of the callback where `this` refers to the code-input element 
             let boundCallback = listener.bind(this);
             this.boundEventCallbacks[listener] = boundCallback;
 
             if (codeInput.textareaSyncEvents.includes(type)) {
+                // Synchronise with textarea
                 if (options === undefined) {
                     if(this.textareaElement == null) {
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback); });
@@ -811,6 +826,7 @@ var codeInput = {
                     }
                 }
             } else {
+                // Synchronise with code-input element
                 if (options === undefined) {
                     super.addEventListener(type, boundCallback);
                 } else {
@@ -822,22 +838,32 @@ var codeInput = {
         /**
          * @override
          */
-        removeEventListener(type, listener, options = null) {
+        removeEventListener(type, listener, options = undefined) {
+            // Save a copy of the callback where `this` refers to the code-input element 
             let boundCallback = this.boundEventCallbacks[listener];
-            if (type == "change") {
-                if (options === null) {
-                    this.textareaElement.removeEventListener("change", boundCallback);
+
+            if (codeInput.textareaSyncEvents.includes(type)) {
+                // Synchronise with textarea
+                if (options === undefined) {
+                    if(this.textareaElement == null) {
+                        this.addEventListener("code-input_load", () => { this.textareaElement.removeEventListener(type, boundCallback); });
+                    } else {
+                        this.textareaElement.removeEventListener(type, boundCallback);
+                    }
                 } else {
-                    this.textareaElement.removeEventListener("change", boundCallback, options);
-                }
-            } else if (type == "selectionchange") {
-                if (options === null) {
-                    this.textareaElement.removeEventListener("selectionchange", boundCallback);
-                } else {
-                    this.textareaElement.removeEventListener("selectionchange", boundCallback, options);
+                    if(this.textareaElement == null) {
+                        this.addEventListener("code-input_load", () => { this.textareaElement.removeEventListener(type, boundCallback, options); });
+                    } else {
+                        this.textareaElement.removeEventListener(type, boundCallback, options);
+                    }
                 }
             } else {
-                super.removeEventListener(type, listener, options);
+                // Synchronise with code-input element
+                if (options === undefined) {
+                    super.removeEventListener(type, boundCallback);
+                } else {
+                    super.removeEventListener(type, boundCallback, options);
+                }
             }
         }
 
