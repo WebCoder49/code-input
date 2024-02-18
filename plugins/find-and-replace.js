@@ -34,6 +34,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             if(!codeInput.pluginData.findAndReplace.dialog.classList.contains("code-input_find-and-replace_hidden-dialog")) {
                 // Code updated and dialog open - re-highlight find matches
                 codeInput.pluginData.findAndReplace.dialog.findMatchState.rehighlightMatches();
+                this.updateMatchDescription(codeInput.pluginData.findAndReplace.dialog);
 
                 if(codeInput.pluginData.findAndReplace.dialog.findMatchState.numMatches == 0) {
                     // No more matches after editing
@@ -429,15 +430,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
 
     /* Highlight all currently found matches again if there are any matches */
     rehighlightMatches() {
-        if(this.codeInput.value != this.lastValue) {
-            this.updateMatches(this.lastSearchRegexp);
-        } else {
-            if(this.matchStartIndexes.length > 0) {
-                for(let i = 0; i < this.matchStartIndexes.length; i++) {
-                    this.highlightMatch(i, this.codeInput.codeElement, this.matchStartIndexes[i], this.matchEndIndexes[i]);
-                }
-            }
-        }
+        this.updateMatches(this.lastSearchRegexp);
         this.focusMatch();
     }
 
