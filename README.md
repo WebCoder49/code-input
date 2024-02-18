@@ -2,7 +2,7 @@
 
 ![Click to Switch](https://img.shields.io/static/v1?label=&message=Click%20to%20Switch:%20&color=grey&style=for-the-badge)[![GitHub](https://img.shields.io/static/v1?label=&message=GitHub&color=navy&style=for-the-badge&logo=github)](https://github.com/WebCoder49/code-input)[![NPM](https://img.shields.io/static/v1?label=&message=NPM&color=red&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@webcoder49/code-input)
 
-[![View License](https://img.shields.io/github/license/webcoder49/code-input?style=for-the-badge)](LICENSE) [![View Releases](https://img.sHields.io/github/v/release/webcoder49/code-input?style=for-the-badge)](https://github.com/WebCoder49/code-input/releases) [![View the demo on CodePen](https://img.shields.io/static/v1?label=Demo&message=on%20CodePen&color=orange&logo=codepen&style=for-the-badge)](https://codepen.io/WebCoder49/details/jOypJOx)
+[![View License](https://img.shields.io/github/license/webcoder49/code-input?style=for-the-badge)](LICENSE) [![View Releases](https://img.sHields.io/github/v/release/webcoder49/code-input?style=for-the-badge)](https://github.com/WebCoder49/code-input/releases) [![View the demo on CodePen](https://img.shields.io/static/v1?label=Demo&message=on%20CodePen&color=orange&logo=codepen&style=for-the-badge)](https://codepen.io/WebCoder49/full/jOypJOx)
 
 > ___Fully customisable, editable syntax-highlighted textareas that can be placed in any HTML form.___ [[🚀 View the Demo](https://codepen.io/WebCoder49/details/jOypJOx)]
 
