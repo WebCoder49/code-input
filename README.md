@@ -4,7 +4,7 @@
 
 [![View License](https://img.shields.io/github/license/webcoder49/code-input?style=for-the-badge)](LICENSE) [![View Releases](https://img.sHields.io/github/v/release/webcoder49/code-input?style=for-the-badge)](https://github.com/WebCoder49/code-input/releases) [![View the demo on CodePen](https://img.shields.io/static/v1?label=Demo&message=on%20CodePen&color=orange&logo=codepen&style=for-the-badge)](https://codepen.io/WebCoder49/full/jOypJOx)
 
-> ___Fully customisable, editable syntax-highlighted textareas that can be placed in any HTML form.___ [[🚀 View the Demo](https://codepen.io/WebCoder49/details/jOypJOx)]
+> ___Fully customisable, editable syntax-highlighted textareas that can be placed in any HTML form.___ [[🚀 View the Demo](https://codepen.io/WebCoder49/full/jOypJOx)]
 
 ![Using code-input with many different themes](https://user-images.githubusercontent.com/69071853/133924472-05edde5c-23e7-4350-a41b-5a74d2dc1a9a.gif)
 *This demonstration uses themes from [Prism.js](https://prismjs.com/) and [highlight.js](https://highlightjs.org/), two syntax-highlighting programs which work well with and have compatibility built-in with code-input.*
