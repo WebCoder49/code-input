@@ -1,5 +1,5 @@
 /**
- * Add basic Find-and-Replace (Ctrl+F for find, Ctrl+H for by default) functionality to the code editor.
+ * Add Find-and-Replace (Ctrl+F for find, Ctrl+H for replace by default) functionality to the code editor.
  * Files: find-and-replace.js / find-and-replace.css
  */
 codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {

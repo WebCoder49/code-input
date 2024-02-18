@@ -29,6 +29,13 @@ Files: [autodetect.js](./autodetect.js)
 
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/eYLyMae)
 
+### Find and Replace
+Add Find-and-Replace (Ctrl+F for find, Ctrl+H for replace by default, or when JavaScript triggers it) functionality to the code editor.
+
+Files: [find-and-replace.js](./find-and-replace.js) / [find-and-replace.css](./find-and-replace.css)
+
+[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/oNVVBBz)
+
 ### Go To Line
 Add a feature to go to a specific line when a line number is given (or column as well, in the format line no:column no) that appears when (optionally) Ctrl+G is pressed or when JavaScript triggers it.
 

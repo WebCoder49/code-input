@@ -124,6 +124,25 @@ export namespace plugins {
   }
 
   /**
+   * Add Find-and-Replace (Ctrl+F for find, Ctrl+H for replace by default) functionality to the code editor.
+   * Files: find-and-replace.js / find-and-replace.css
+   */
+  class FindAndReplace extends Plugin {
+    /**
+     * Create a find-and-replace command plugin to pass into a template
+     * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
+     * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
+     */
+    constructor(useCtrlF?: boolean, useCtrlH?: boolean);
+    /**
+     * Show a find-and-replace dialog.
+     * @param {codeInput.CodeInput} codeInputElement the `<code-input>` element.
+     * @param {boolean} replacePartExpanded whether the replace part of the find-and-replace dialog should be expanded
+     */
+    showPrompt(codeInput: CodeInput, replacePartExpanded: boolean): void;
+  }
+  
+  /**
    * Add basic Go-To-Line (ctrl-G by default) functionality to the code editor.
    * Files: go-to-line.js / go-to-line.css
    */
