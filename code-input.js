@@ -773,13 +773,15 @@ var codeInput = {
                             if (code.classList.contains(`language-${newValue}`)) break; // Already updated
                         }
 
+                        if(oldValue !== null) {
+                            // Case insensitive
+                            oldValue = oldValue.toLowerCase();
 
-                        // Case insensitive
-                        oldValue = oldValue.toLowerCase();
-
-                        // Remove old language class and add new
-                        code.classList.remove("language-" + oldValue); // From codeElement
-                        code.parentElement.classList.remove("language-" + oldValue); // From preElement
+                            // Remove old language class and add new
+                            code.classList.remove("language-" + oldValue); // From codeElement
+                            code.parentElement.classList.remove("language-" + oldValue); // From preElement
+                        }
+                        // Add new language class
                         code.classList.remove("language-none"); // Prism
                         code.parentElement.classList.remove("language-none"); // Prism
 
