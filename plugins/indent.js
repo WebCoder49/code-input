@@ -28,11 +28,33 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         }
     }
 
-    /* Add keystroke events */
+    /* Add keystroke events, and get the width of the indentation in pixels. */
     afterElementsAdded(codeInput) {
         let textarea = codeInput.textareaElement;
         textarea.addEventListener('keydown', (event) => { this.checkTab(codeInput, event); this.checkEnter(codeInput, event); this.checkBackspace(codeInput, event); });
         textarea.addEventListener('beforeinput', (event) => { this.checkCloseBracket(codeInput, event); });
+        
+        // Get the width of the indentation in pixels
+        let testIndentationWidthPre = document.createElement("pre");
+        testIndentationWidthPre.setAttribute("aria-hidden", "true"); // Hide for screen readers
+        let testIndentationWidthSpan = document.createElement("span");
+        if(codeInput.template.preElementStyled) {
+            testIndentationWidthPre.appendChild(testIndentationWidthSpan);
+            testIndentationWidthPre.classList.add("code-input_autocomplete_test-indentation-width");
+            codeInput.appendChild(testIndentationWidthPre); // Styled like first pre, but first pre found to update
+        } else {
+            let testIndentationWidthCode = document.createElement("code");
+            testIndentationWidthCode.appendChild(testIndentationWidthSpan);
+            testIndentationWidthCode.classList.add("code-input_autocomplete_test-indentation-width");
+            testIndentationWidthPre.appendChild(testIndentationWidthCode);
+            codeInput.appendChild(testIndentationWidthPre); // Styled like first pre, but first pre found to update
+        }
+
+        testIndentationWidthSpan.innerHTML = codeInput.escapeHtml(this.indentation);
+        let indentationWidthPx = testIndentationWidthSpan.offsetWidth;
+        codeInput.removeChild(testIndentationWidthPre);
+
+        codeInput.pluginData.indent = {indentationWidthPx: indentationWidthPx};
     }
 
     /* Deal with the Tab key causing indentation, and Tab+Selection indenting / Shift+Tab+Selection unindenting lines */
@@ -93,6 +115,15 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
             // move cursor
             inputElement.selectionStart = selectionStartI;
             inputElement.selectionEnd = selectionEndI;
+
+            // move scroll position to follow code
+            console.log("indw", codeInput.pluginData.indent.indentationWidthPx);
+            if(event.shiftKey) {
+                console.log("shift");
+                codeInput.scrollBy(-codeInput.pluginData.indent.indentationWidthPx, 0);
+            } else {
+                codeInput.scrollBy(codeInput.pluginData.indent.indentationWidthPx, 0);
+            }
         }
 
         codeInput.value = inputElement.value;
