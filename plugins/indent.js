@@ -117,9 +117,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
             inputElement.selectionEnd = selectionEndI;
 
             // move scroll position to follow code
-            console.log("indw", codeInput.pluginData.indent.indentationWidthPx);
             if(event.shiftKey) {
-                console.log("shift");
                 codeInput.scrollBy(-codeInput.pluginData.indent.indentationWidthPx, 0);
             } else {
                 codeInput.scrollBy(codeInput.pluginData.indent.indentationWidthPx, 0);
