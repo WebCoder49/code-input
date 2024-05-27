@@ -482,6 +482,7 @@ var codeInput = {
         * to syntax-highlight it. */
 
         needsHighlight = false; // Just inputted
+        passEventsToTextarea = true; // Turn to false when unusual internal events are called on the textarea
 
         /**
          * Highlight the code as soon as possible
@@ -494,17 +495,6 @@ var codeInput = {
          * Call an animation frame
          */
         animateFrame() {
-            // Synchronise the size of the pre/code and textarea elements
-            if(this.template.preElementStyled) {
-                this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
-                this.textareaElement.style.height = getComputedStyle(this.preElement).height;
-                this.textareaElement.style.width = getComputedStyle(this.preElement).width;
-            } else {
-                this.style.backgroundColor = getComputedStyle(this.codeElement).backgroundColor;
-                this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
-                this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
-            }
-
             // Synchronise the contents of the pre/code and textarea elements
             if(this.needsHighlight) {
                 this.update();
@@ -533,6 +523,22 @@ var codeInput = {
             // Syntax Highlight
             if (this.template.includeCodeInputInHighlightFunc) this.template.highlight(resultElement, this);
             else this.template.highlight(resultElement);
+
+            // Synchronise the size of the pre/code and textarea elements
+            if(this.template.preElementStyled) {
+                this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
+                this.textareaElement.style.height = getComputedStyle(this.preElement).height;
+                this.textareaElement.style.width = getComputedStyle(this.preElement).width;
+            } else {
+                this.style.backgroundColor = getComputedStyle(this.codeElement).backgroundColor;
+                this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
+                this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
+            }
+            // Scroll to the caret by focusing, though this shouldn't count as a focus event
+            this.passEventsToTextarea = false;
+            this.textareaElement.blur();
+            this.textareaElement.focus();
+            this.passEventsToTextarea = true;
 
             this.pluginEvt("afterHighlight");
         }
@@ -737,7 +743,7 @@ var codeInput = {
                         if (this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
                         else this.classList.remove("code-input_pre-element-styled");
                         // Syntax Highlight
-                        this.needsHighlight = true;
+                        this.scheduleHighlight();
 
                         break;
 
@@ -769,7 +775,7 @@ var codeInput = {
 
                         if (mainTextarea.placeholder == oldValue) mainTextarea.placeholder = newValue;
 
-                        this.needsHighlight = true;
+                        this.scheduleHighlight();
 
                         break;
                     default:
@@ -806,8 +812,9 @@ var codeInput = {
          * @override
          */
         addEventListener(type, listener, options = undefined) {
-            // Save a copy of the callback where `this` refers to the code-input element 
-            let boundCallback = listener.bind(this);
+            // Save a copy of the callback where `this` refers to the code-input element.
+            // This callback is modified to only run when the passEventsToTextarea is set.
+            let boundCallback = function(evt) { if(this.passEventsToTextarea) listener(evt); }.bind(this);
             this.boundEventCallbacks[listener] = boundCallback;
 
             if (codeInput.textareaSyncEvents.includes(type)) {
@@ -885,7 +892,7 @@ var codeInput = {
             // Save in editable textarea element
             this.textareaElement.value = val;
             // Trigger highlight
-            this.needsHighlight = true;
+            this.scheduleHighlight();
             return val;
         }
 
