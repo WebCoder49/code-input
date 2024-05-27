@@ -241,9 +241,9 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
     if(!isHLJS) {
         // Highlight.js has autodetect plugin that should make this fail, so don't run these tests with it.
         testAssertion("Core", "Language attribute Initial value", 
-            codeInputElement.codeElement.classList.contains("language-javascript")
+            !codeInputElement.codeElement.classList.contains("language-javascript")
             && !codeInputElement.codeElement.classList.contains("language-html"), 
-            `Language set to JavaScript but code element's class name is ${codeInputElement.codeElement.className}.`);
+            `Language unset but code element's class name is ${codeInputElement.codeElement.className}.`);
 
         codeInputElement.setAttribute("language", "HTML");
     
