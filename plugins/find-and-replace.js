@@ -6,6 +6,8 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
     useCtrlF = false;
     useCtrlH = false;
 
+    findMatchesOnValueChange = true; // Needed so the program can insert text to the find value and thus add it to Ctrl+Z without highlighting matches.
+
     /**
      * Create a find-and-replace command plugin to pass into a template
      * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
@@ -100,7 +102,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
         }, 100);
     }
 
-    /* Deal with Enter and Escape being pressed in the find field */
+    /* Deal with Enter being pressed in the find field */
     checkFindPrompt(dialog, codeInput, event) {
         if (event.key == 'Enter') {
             // Find next match
@@ -109,11 +111,12 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
         }
     }
 
-    /* Deal with Enter and Escape being pressed in the replace field */
+    /* Deal with Enter being pressed in the replace field */
     checkReplacePrompt(dialog, codeInput, event) {
         if (event.key == 'Enter') {
             // Replace focused match
             dialog.findMatchState.replaceOnce(dialog.replaceInput.value);
+            dialog.replaceInput.focus();
             this.updateMatchDescription(dialog);
         }
     }
@@ -121,7 +124,15 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
     /* Called with a dialog box keyup event to close and clear the dialog box */    
     cancelPrompt(dialog, codeInput, event) {
         event.preventDefault();
-        
+
+        // Add current value of find/replace to Ctrl+Z stack.
+        this.findMatchesOnValueChange = false;
+        dialog.findInput.focus();
+        dialog.findInput.selectionStart = 0;
+        dialog.findInput.selectionEnd = dialog.findInput.value.length;
+        document.execCommand("insertText", false, dialog.findInput.value);
+        this.findMatchesOnValueChange = true;
+
         // Reset original selection in code-input
         dialog.textarea.focus();
         if(dialog.findMatchState.numMatches > 0) {
@@ -146,10 +157,11 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
      * @param {boolean} replacePartExpanded whether the replace part of the find-and-replace dialog should be expanded
     */
     showPrompt(codeInputElement, replacePartExpanded) {
+        let dialog;
         if(codeInputElement.pluginData.findAndReplace == undefined || codeInputElement.pluginData.findAndReplace.dialog == undefined) {
             const textarea = codeInputElement.textareaElement;
 
-            const dialog = document.createElement('div');
+            dialog = document.createElement('div');
             const findInput = document.createElement('input');
             const findCaseSensitiveCheckbox = document.createElement('input');
             const findRegExpCheckbox = document.createElement('input');
@@ -229,7 +241,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
                 event.preventDefault();
 
                 dialog.findMatchState.replaceOnce(replaceInput.value);
-                replaceButton.focus();
+                dialog.focus();
             });
             replaceAllButton.addEventListener("click", (event) => {
                 // Stop form submit
@@ -275,6 +287,16 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
                 /* Stop enter from submitting form */
                 if (event.key == 'Enter') event.preventDefault();
             });
+            replaceInput.addEventListener('input', (event) => {
+                // Ctrl+Z can trigger this. If the dialog/replace dropdown aren't open, open them!
+                if(dialog.classList.contains("code-input_find-and-replace_hidden-dialog")) {
+                    // Show prompt
+                    this.showPrompt(dialog.codeInput, true);
+                } else if(!dialog.replaceDropdown.hasAttribute("open")) {
+                    // Open dropdown
+                    dialog.replaceDropdown.setAttribute("open", true);
+                }
+            });
 
             dialog.addEventListener('keyup', (event) => {
                 /* Close prompt on Enter pressed */
@@ -282,7 +304,13 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             });
             
             findInput.addEventListener('keyup', (event) => { this.checkFindPrompt(dialog, codeInputElement, event); });
-            findInput.addEventListener('input', (event) => { this.updateFindMatches(dialog); });
+            findInput.addEventListener('input', (event) => { 
+                if(this.findMatchesOnValueChange) this.updateFindMatches(dialog);
+                // Ctrl+Z can trigger this. If the dialog isn't open, open it!
+                if(dialog.classList.contains("code-input_find-and-replace_hidden-dialog")) {
+                    this.showPrompt(dialog.codeInput, false);
+                }
+            });
             findCaseSensitiveCheckbox.addEventListener('click', (event) => { this.updateFindMatches(dialog); });
             findRegExpCheckbox.addEventListener('click', (event) => { this.updateFindMatches(dialog); });
 
@@ -303,24 +331,42 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             // Save selection position
             dialog.selectionStart = codeInputElement.textareaElement.selectionStart;
             dialog.selectionEnd = codeInputElement.textareaElement.selectionEnd;
-        } else {
-            // Re-open dialog
-            codeInputElement.pluginData.findAndReplace.dialog.classList.remove("code-input_find-and-replace_hidden-dialog");
-            codeInputElement.pluginData.findAndReplace.dialog.findInput.focus();
-            if(replacePartExpanded) {
-                codeInputElement.pluginData.findAndReplace.dialog.replaceDropdown.setAttribute("open", true);
-            } else {
-                codeInputElement.pluginData.findAndReplace.dialog.replaceDropdown.removeAttribute("open");
-            }
 
-            
-            // Highlight matches
-            this.updateFindMatches(codeInputElement.pluginData.findAndReplace.dialog);
-            
-            // Save selection position
-            codeInputElement.pluginData.findAndReplace.dialog.selectionStart = codeInputElement.textareaElement.selectionStart;
-            codeInputElement.pluginData.findAndReplace.dialog.selectionEnd = codeInputElement.textareaElement.selectionEnd;
+            if(dialog.selectionStart < dialog.selectionEnd) {
+                // Copy selected text to Find input
+                let textToFind = codeInputElement.textareaElement.value.substring(dialog.selectionStart, dialog.selectionEnd);
+                dialog.findInput.focus();
+                dialog.findInput.selectionStart = 0;
+                dialog.findInput.selectionEnd = dialog.findInput.value.length;
+                document.execCommand("insertText", false, textToFind);
+            }
+        } else {
+            dialog = codeInputElement.pluginData.findAndReplace.dialog;
+            // Re-open dialog
+            dialog.classList.remove("code-input_find-and-replace_hidden-dialog");
+            dialog.findInput.focus();
+            if(replacePartExpanded) {
+                dialog.replaceDropdown.setAttribute("open", true);
+            } else {
+                dialog.replaceDropdown.removeAttribute("open");
+            }
         }
+
+        // Save selection position
+        dialog.selectionStart = codeInputElement.textareaElement.selectionStart;
+        dialog.selectionEnd = codeInputElement.textareaElement.selectionEnd;
+
+        if(dialog.selectionStart < dialog.selectionEnd) {
+            // Copy selected text to Find input
+            let textToFind = codeInputElement.textareaElement.value.substring(dialog.selectionStart, dialog.selectionEnd);
+            dialog.findInput.focus();
+            dialog.findInput.selectionStart = 0;
+            dialog.findInput.selectionEnd = dialog.findInput.value.length;
+            document.execCommand("insertText", false, textToFind);
+        }
+        
+        // Highlight matches
+        this.updateFindMatches(dialog);
     }
 
     /* Event handler for keydown event that makes Ctrl+F open find dialog */
