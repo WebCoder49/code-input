@@ -524,6 +524,21 @@ var codeInput = {
             if (this.template.includeCodeInputInHighlightFunc) this.template.highlight(resultElement, this);
             else this.template.highlight(resultElement);
 
+            this.syncSize();
+
+            // Scroll to the caret by focusing, though this shouldn't count as a focus event
+            this.passEventsToTextarea = false;
+            this.textareaElement.blur();
+            this.textareaElement.focus();
+            this.passEventsToTextarea = true;
+
+            this.pluginEvt("afterHighlight");
+        }
+
+        /**
+         * Set the size of the pre/code element to the size of the textarea element.
+         */
+        syncSize() {
             // Synchronise the size of the pre/code and textarea elements
             if(this.template.preElementStyled) {
                 this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
@@ -534,13 +549,6 @@ var codeInput = {
                 this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
                 this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
             }
-            // Scroll to the caret by focusing, though this shouldn't count as a focus event
-            this.passEventsToTextarea = false;
-            this.textareaElement.blur();
-            this.textareaElement.focus();
-            this.passEventsToTextarea = true;
-
-            this.pluginEvt("afterHighlight");
         }
 
         /**
@@ -659,6 +667,12 @@ var codeInput = {
 
             this.value = value;
             this.animateFrame();
+
+            const resizeObserver = new ResizeObserver((elements) => {
+                // The only element that could be resized is this code-input element.
+                this.syncSize();
+            });
+            resizeObserver.observe(this);
         }
 
         /**
