@@ -28,6 +28,8 @@ The `<code-input>` element works like a `<textarea>` and therefore **works in HT
 
 ## [`code-input` also supports TypeScript (click)](https://github.com/WebCoder49/code-input-for-typescript)
 
+**You can follow the instructions below, or use the starter code available [here for highlight.js](https://codepen.io/WebCoder49/pen/vYMpMoJ?editors=1100) and here for [here for Prism.js](https://codepen.io/WebCoder49/pen/ExzNRyb?editors=1100).**
+
 `code-input` is designed to be **both easy to use and customisable**. Here's how to use it to create syntax-highlighted textareas: 
 
 ### 1. Import `code-input`
@@ -118,7 +120,7 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 To see a full list of plugins and their functions, please see [plugins/README.md](./plugins/README.md).
 
 ### 4. Using the component
-Now that you have registered a template, you can use the custom `<code-input>` element in HTML. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `language` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events to make your element as simple or interactive as you like! 
+Now that you have registered a template, you can use the custom `<code-input>` element in HTML. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `language` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events, as well as CSS styles, to make your element as simple or interactive as you like, as if it were a `textarea` element! 
   ```HTML
   <code-input language="HTML"></code-input>
   ```
@@ -126,6 +128,8 @@ Now that you have registered a template, you can use the custom `<code-input>` e
   ```HTML
   <code-input language="HTML" placeholder="Type code here" template="syntax-highlighted" onchange="console.log('Your code is', this.value)">&lt; href='https://github.com/WebCoder49/code-input'>code-input&lt;/a></code-input>
   ```
+
+> ⚠️ At the moment, you need to set the `--padding` property rather than `padding` for a `code-input` element's CSS. All other properties should work as normal.
 
 ## Contributing
 If you have any features you would like to add to `code-input` as plugins or core functionality, or have found any bugs, please [open an issue](https://github.com/WebCoder49/code-input/issues) or [fork and submit a pull request](https://github.com/WebCoder49/code-input/fork)! All contributions to this open-source project will be greatly appreciated. You can see [more info in our `CONTRIBUTING.md` file](CONTRIBUTING.md).
