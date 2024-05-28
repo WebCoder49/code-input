@@ -511,11 +511,6 @@ var codeInput = {
             let resultElement = this.codeElement;
             let value = this.value;
 
-            // Handle final newlines
-            if (value[value.length - 1] == "\n" || value.length == 0) {
-                value += " ";
-            }
-
             // Update code
             resultElement.innerHTML = this.escapeHtml(value);
             this.pluginEvt("beforeHighlight");

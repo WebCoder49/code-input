@@ -14,7 +14,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
      * Create a special characters plugin instance.
      * Default = covers many non-renderable ASCII characters.
      * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code
-     * @param {Boolean} inheritTextColor If `colorInSpecialChars` is false, forces the color of the hex code to inherit from syntax highlighting. Otherwise, the base colour of the `pre code` element is used to give contrast to the small characters.
+     * @param {Boolean} inheritTextColor If `inheritTextColor` is false, forces the color of the hex code to inherit from syntax highlighting. Otherwise, the base color of the `pre code` element is used to give contrast to the small characters.
      * @param {RegExp} specialCharRegExp The regular expression which matches special characters
      */
     constructor(colorInSpecialChars = false, inheritTextColor = false, specialCharRegExp = /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug) { // By default, covers many non-renderable ASCII characters
@@ -71,6 +71,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
 
                     if(nextNode.textContent != "") {
                         let replacementElement = this.getStylisedSpecialChar(codeInput, nextNode.textContent);
+                        // This next node will become the i+1th node so automatically iterated to
                         nextNode.parentNode.insertBefore(replacementElement, nextNode);
                         nextNode.textContent = "";
                     }
@@ -120,14 +121,15 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     
     /* Get the colors a stylised representation of a given character must be shown in; lazy load and return [background color, text color] */
     getCharacterColors(asciiCode) {
-        let backgroundColor;
         let textColor;
         if(!(asciiCode in this.cachedColors)) {
-            // Get background color - arbitrary bit manipulation to get a good range of colours
-            backgroundColor = asciiCode^(asciiCode << 3)^(asciiCode << 7)^(asciiCode << 14)^(asciiCode << 16); // Arbitrary
-            backgroundColor = backgroundColor^0x1fc627; // Arbitrary
-            backgroundColor = backgroundColor.toString(16);
-            backgroundColor = ("000000" + backgroundColor).substring(backgroundColor.length); // So 6 chars with leading 0
+            // Get background color
+            let asciiHex = asciiCode.toString(16);
+            let backgroundColor = "";
+            for(let i = 0; i < asciiHex.length; i++) {
+                backgroundColor += asciiHex[i] + asciiHex[i];
+            }
+            backgroundColor = ("000000" + backgroundColor).substring(backgroundColor.length); // So valid HEX color with 6 characters
 
             // Get most suitable text color - white or black depending on background brightness
             let colorBrightness = 0;
@@ -148,7 +150,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     /* Get the width of a character in em (relative to font size), for use in creation of the stylised hexadecimal representation with the same width */
     getCharacterWidthEm(codeInput, char) {
         // Force zero-width characters
-        if(new RegExp("\u00AD|\u02de|[\u0300-\u036F]|[\u0483-\u0489]|\u200b").test(char) ) { return 0 }
+        if(new RegExp("\u00AD|\u02DE|[\u0300-\u036F]|[\u0483-\u0489]|[\u200B-\u200D]|\uFEFF").test(char) ) { return 0 }
         // Non-renderable ASCII characters should all be rendered at same size
         if(char != "\u0096" && new RegExp("[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]", "g").test(char)) {
             let fallbackWidth = this.getCharacterWidthEm(codeInput, "\u0096");

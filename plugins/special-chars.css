@@ -62,7 +62,7 @@
 
     mask-image: var(--hex-0), var(--hex-1), var(--hex-2), var(--hex-3);
     mask-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-    mask-size: 40%, 40%, 40%, 40%;
+    mask-size: min(40%, 0.25em), min(40%, 0.25em), min(40%, 0.25em), min(40%, 0.25em);
     mask-position: 10% 10%, 90% 10%, 10% 90%, 90% 90%;
 
     -webkit-mask-image: var(--hex-0), var(--hex-1), var(--hex-2), var(--hex-3);
