@@ -183,7 +183,7 @@ export namespace plugins {
      * Create a special characters plugin instance.
      * Default = covers many non-renderable ASCII characters.
      * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code
-     * @param {Boolean} inheritTextColor If `colorInSpecialChars` is false, forces the color of the hex code to inherit from syntax highlighting. Otherwise, the base color of the `pre code` element is used to give contrast to the small characters.
+     * @param {Boolean} inheritTextColor If `inheritTextColor` is false, forces the color of the hex code to inherit from syntax highlighting. Otherwise, the base color of the `pre code` element is used to give contrast to the small characters.
      * @param {RegExp} specialCharRegExp The regular expression which matches special characters
      */
     constructor(colorInSpecialChars?: boolean, inheritTextColor?: boolean, specialCharRegExp?: RegExp);
@@ -286,7 +286,7 @@ export namespace templates {
   /**
    * Constructor to create a proof-of-concept template that shows text in a repeating series of colors.
    * @param {string[]} rainbowColors - An array of CSS colors, in the order each color will be shown
-   * @param {string} delimiter - The character used to split up parts of text where each part is a different colour (e.g. "" = characters, " " = words)
+   * @param {string} delimiter - The character used to split up parts of text where each part is a different color (e.g. "" = characters, " " = words)
    * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
    * @returns template object
    */
