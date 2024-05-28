@@ -521,11 +521,13 @@ var codeInput = {
 
             this.syncSize();
 
-            // Scroll to the caret by focusing, though this shouldn't count as a focus event
-            this.passEventsToTextarea = false;
-            this.textareaElement.blur();
-            this.textareaElement.focus();
-            this.passEventsToTextarea = true;
+            // If editing here, scroll to the caret by focusing, though this shouldn't count as a focus event
+            if(this.textareaElement === document.activeElement) {
+                this.passEventsToTextarea = false;
+                this.textareaElement.blur();
+                this.textareaElement.focus();
+                this.passEventsToTextarea = true;
+            }
 
             this.pluginEvt("afterHighlight");
         }
@@ -990,16 +992,12 @@ var codeInput = {
      * has loaded (or now if it has already loaded)
      */
     runOnceWindowLoaded(callback, codeInputElem) {
-        if(codeInput.windowLoaded) {
+        if(document.readyState == "complete") {
             callback(); // Fully loaded
         } else {
             window.addEventListener("load", callback);
         }
-    },
-    windowLoaded: false
+    }
 }
-window.addEventListener("load", function() {
-    codeInput.windowLoaded = true;
-});
 
 customElements.define("code-input", codeInput.CodeInput);
