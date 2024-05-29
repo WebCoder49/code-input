@@ -62,6 +62,9 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
     cancelPrompt(dialog, event) {
         event.preventDefault();
         dialog.textarea.focus();
+        dialog.setAttribute("inert", true); // Hide from keyboard navigation when closed.
+        dialog.setAttribute("tabindex", -1); // Hide from keyboard navigation when closed.
+        dialog.setAttribute("aria-hidden", true); // Hide from screen reader when closed.
 
         // Remove dialog after animation
         dialog.classList.add('code-input_go-to-line_hidden-dialog');
@@ -79,6 +82,8 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             const dialog = document.createElement('div');
             const input = document.createElement('input');
             const cancel = document.createElement('span');
+            cancel.setAttribute("tabindex", 0); // Visible to keyboard navigation
+            cancel.setAttribute("title", "Close Dialog and Return to Editor");
 
             dialog.appendChild(input);
             dialog.appendChild(cancel);
@@ -97,12 +102,16 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             
             input.addEventListener('keyup', (event) => { return this.checkPrompt(dialog, event); });
             cancel.addEventListener('click', (event) => { this.cancelPrompt(dialog, event); });
+            cancel.addEventListener('keypress', (event) => { if (event.key == "Space" || event.key == "Enter") this.cancelPrompt(dialog, event); });
 
             codeInput.dialogContainerElement.appendChild(dialog);
             codeInput.pluginData.goToLine = {dialog: dialog};
             input.focus();
         } else {
             codeInput.pluginData.goToLine.dialog.classList.remove("code-input_go-to-line_hidden-dialog");
+            codeInput.pluginData.goToLine.dialog.removeAttribute("inert"); // Show to keyboard navigation when open.
+            codeInput.pluginData.goToLine.dialog.setAttribute("tabindex", 0); // Show to keyboard navigation when open.
+            codeInput.pluginData.goToLine.dialog.removeAttribute("aria-hidden"); // Show to screen reader when open.
             codeInput.pluginData.goToLine.dialog.input.focus();
         }
     }

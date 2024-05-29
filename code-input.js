@@ -539,13 +539,24 @@ var codeInput = {
             // Synchronise the size of the pre/code and textarea elements
             if(this.template.preElementStyled) {
                 this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
+                console.log(`calc(${getComputedStyle(this.preElement).height} - ${getComputedStyle(this.preElement).paddingTop} - ${getComputedStyle(this.preElement).paddingBottom})`, `calc(${getComputedStyle(this.preElement).width} - ${getComputedStyle(this.preElement).paddingLeft} - ${getComputedStyle(this.preElement).paddingRight})`);
                 this.textareaElement.style.height = getComputedStyle(this.preElement).height;
                 this.textareaElement.style.width = getComputedStyle(this.preElement).width;
             } else {
                 this.style.backgroundColor = getComputedStyle(this.codeElement).backgroundColor;
+                console.log(`calc(${getComputedStyle(this.codeElement).height} - ${getComputedStyle(this.codeElement).paddingTop} - ${getComputedStyle(this.codeElement).paddingBottom})`, `calc(${getComputedStyle(this.codeElement).width} - ${getComputedStyle(this.codeElement).paddingLeft} - ${getComputedStyle(this.codeElement).paddingRight})`);
                 this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
                 this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
             }
+        }
+
+        /**
+         * Show some instructions to the user only if they are using keyboard navigation - for example, a prompt on how to navigate with the keyboard if Tab is repurposed.
+         * @param {string} instructions The instructions to display only if keyboard navigation is being used. If it's blank, no instructions will be shown.
+         */
+        setKeyboardNavInstructions(instructions) {
+            this.dialogContainerElement.querySelector(".code-input_keyboard-navigation-instructions").innerText = instructions;
+            this.setAttribute("aria-description", "code-input. " + instructions);
         }
 
         /**
@@ -604,11 +615,14 @@ var codeInput = {
 
             // First-time attribute sync
             let lang = this.getAttribute("language") || this.getAttribute("lang");
-            let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
+            let placeholder = this.getAttribute("placeholder") || this.getAttribute("language") || this.getAttribute("lang") || "";
             let value = this.unescapeHtml(this.innerHTML) || this.getAttribute("value") || "";
             // Value attribute deprecated, but included for compatibility
 
             this.initialValue = value; // For form reset
+
+            // Disable focusing on the code-input element - only allow the textarea to be focusable
+            this.setAttribute("tabindex", -1);
 
             // Create textarea
             let textarea = document.createElement("textarea");
@@ -618,6 +632,16 @@ var codeInput = {
             }
             textarea.innerHTML = this.innerHTML;
             textarea.setAttribute("spellcheck", "false");
+
+            // Accessibility - detect when mouse focus to remove focus outline + keyboard navigation guidance that could irritate users.
+            textarea.addEventListener("mousedown", () => {
+                this.classList.add("code-input_mouse-focused");
+            });
+            textarea.addEventListener("blur", () => {
+                if(this.passEventsToTextarea) {
+                    this.classList.remove("code-input_mouse-focused");
+                }
+            });
 
             this.innerHTML = ""; // Clear Content
 
@@ -639,6 +663,8 @@ var codeInput = {
             let code = document.createElement("code");
             let pre = document.createElement("pre");
             pre.setAttribute("aria-hidden", "true"); // Hide for screen readers
+            pre.setAttribute("tabindex", "-1"); // Hide for keyboard navigation
+            pre.setAttribute("inert", true); // Hide for keyboard navigation
 
             // Save elements internally
             this.preElement = pre;
@@ -657,6 +683,10 @@ var codeInput = {
             dialogContainerElement.classList.add("code-input_dialog-container");
             this.append(dialogContainerElement);
             this.dialogContainerElement = dialogContainerElement;
+
+            let keyboardNavigationInstructions = document.createElement("div");
+            keyboardNavigationInstructions.classList.add("code-input_keyboard-navigation-instructions");
+            dialogContainerElement.append(keyboardNavigationInstructions);
 
             this.pluginEvt("afterElementsAdded");
 
