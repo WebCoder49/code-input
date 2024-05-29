@@ -539,12 +539,10 @@ var codeInput = {
             // Synchronise the size of the pre/code and textarea elements
             if(this.template.preElementStyled) {
                 this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
-                console.log(`calc(${getComputedStyle(this.preElement).height} - ${getComputedStyle(this.preElement).paddingTop} - ${getComputedStyle(this.preElement).paddingBottom})`, `calc(${getComputedStyle(this.preElement).width} - ${getComputedStyle(this.preElement).paddingLeft} - ${getComputedStyle(this.preElement).paddingRight})`);
                 this.textareaElement.style.height = getComputedStyle(this.preElement).height;
                 this.textareaElement.style.width = getComputedStyle(this.preElement).width;
             } else {
                 this.style.backgroundColor = getComputedStyle(this.codeElement).backgroundColor;
-                console.log(`calc(${getComputedStyle(this.codeElement).height} - ${getComputedStyle(this.codeElement).paddingTop} - ${getComputedStyle(this.codeElement).paddingBottom})`, `calc(${getComputedStyle(this.codeElement).width} - ${getComputedStyle(this.codeElement).paddingLeft} - ${getComputedStyle(this.codeElement).paddingRight})`);
                 this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
                 this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
             }

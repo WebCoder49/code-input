@@ -49,7 +49,6 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
     afterElementsAdded(codeInput) {
 
         let textarea = codeInput.textareaElement;
-        console.log(textarea);
         textarea.addEventListener('focus', (event) => { if(this.escTabToChangeFocus) codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for indentation. Press Esc to enable keyboard navigation."); })
         textarea.addEventListener('keydown', (event) => { this.checkTab(codeInput, event); this.checkEnter(codeInput, event); this.checkBackspace(codeInput, event); });
         textarea.addEventListener('beforeinput', (event) => { this.checkCloseBracket(codeInput, event); });
