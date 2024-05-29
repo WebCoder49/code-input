@@ -2,12 +2,26 @@
 
 ![Click to Switch](https://img.shields.io/static/v1?label=&message=Click%20to%20Switch:%20&color=grey&style=for-the-badge)[![GitHub](https://img.shields.io/static/v1?label=&message=GitHub&color=navy&style=for-the-badge&logo=github)](https://github.com/WebCoder49/code-input)[![NPM](https://img.shields.io/static/v1?label=&message=NPM&color=red&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@webcoder49/code-input)
 
-[![View License](https://img.shields.io/github/license/webcoder49/code-input?style=for-the-badge)](LICENSE) [![View Releases](https://img.sHields.io/github/v/release/webcoder49/code-input?style=for-the-badge)](https://github.com/WebCoder49/code-input/releases) [![View the demo on CodePen](https://img.shields.io/static/v1?label=Demo&message=on%20CodePen&color=orange&logo=codepen&style=for-the-badge)](https://codepen.io/WebCoder49/full/jOypJOx)
+[![View License](https://img.shields.io/github/license/webcoder49/code-input?style=for-the-badge)](LICENSE) [![View Releases](https://img.shields.io/github/v/release/webcoder49/code-input?style=for-the-badge)](https://github.com/WebCoder49/code-input/releases)
 
-> ___Fully customisable, editable syntax-highlighted textareas that can be placed in any HTML form.___ [[🚀 View the Demo](https://codepen.io/WebCoder49/full/jOypJOx)]
+<div id="markdown-only">
+
+> ___Fully customisable, editable syntax-highlighted textareas that can be placed in any HTML form.___
 
 ![Using code-input with many different themes](https://user-images.githubusercontent.com/69071853/133924472-05edde5c-23e7-4350-a41b-5a74d2dc1a9a.gif)
 *This demonstration uses themes from [Prism.js](https://prismjs.com/) and [highlight.js](https://highlightjs.org/), two syntax-highlighting programs which work well with and have compatibility built-in with code-input.*
+
+</div>
+<div id="website-only" style="display: none;">
+
+Test website content
+
+</div>
+<script>
+  // Only the website can run JavaScript
+  document.getElementById("markdown-only").style.display = "none";
+  document.getElementById("website-only").style.display = "block";
+</script>
 
 *A frontend JavaScript library, with:*<br/>
 [![TypeScript Bindings - Click to Use](https://img.shields.io/static/v1?label=TypeScript%20Bindings&message=Click%20to%20Use&style=for-the-badge&color=blue&logo=typescript&logoColor=white)](https://github.com/WebCoder49/code-input-for-typescript)
