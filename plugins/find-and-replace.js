@@ -135,6 +135,10 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
 
         // Reset original selection in code-input
         dialog.textarea.focus();
+        dialog.setAttribute("inert", true); // Hide from keyboard navigation when closed.
+        dialog.setAttribute("tabindex", -1); // Hide from keyboard navigation when closed.
+        dialog.setAttribute("aria-hidden", true); // Hide from screen reader when closed.
+
         if(dialog.findMatchState.numMatches > 0) {
             // Select focused match
             codeInput.textareaElement.selectionStart = dialog.findMatchState.matchStartIndexes[dialog.findMatchState.focusedMatchID];
@@ -166,6 +170,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             const findCaseSensitiveCheckbox = document.createElement('input');
             const findRegExpCheckbox = document.createElement('input');
             const matchDescription = document.createElement('code');
+            matchDescription.setAttribute("aria-live", "assertive"); // Screen reader must read the number of matches found.
 
             const replaceInput = document.createElement('input');
             const replaceDropdown = document.createElement('details');
@@ -177,6 +182,8 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             const replaceButton = document.createElement('button');
             const replaceAllButton = document.createElement('button');
             const cancel = document.createElement('span');
+            cancel.setAttribute("tabindex", 0); // Visible to keyboard navigation
+            cancel.setAttribute("title", "Close Dialog and Return to Editor");
 
             buttonContainer.appendChild(findNextButton);
             buttonContainer.appendChild(findPreviousButton);
@@ -218,9 +225,17 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             replaceButton.className = 'code-input_find-and-replace_button-hidden';
             replaceButton.innerText = "Replace";
             replaceButton.title = "Replace This Occurence";
+            replaceButton.addEventListener("focus", () => {
+                // Show replace section
+                replaceDropdown.setAttribute("open", true);
+            });
             replaceAllButton.className = 'code-input_find-and-replace_button-hidden';
             replaceAllButton.innerText = "Replace All";
             replaceAllButton.title = "Replace All Occurences";
+            replaceAllButton.addEventListener("focus", () => {
+                // Show replace section
+                replaceDropdown.setAttribute("open", true);
+            });
 
             findNextButton.addEventListener("click", (event) => {
                 // Stop form submit
@@ -319,6 +334,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
                 replaceInput.focus();
             });
             cancel.addEventListener('click', (event) => { this.cancelPrompt(dialog, codeInputElement, event); });
+            cancel.addEventListener('keypress', (event) => { if (event.key == "Space" || event.key == "Enter") this.cancelPrompt(dialog, codeInputElement, event); });
 
             codeInputElement.dialogContainerElement.appendChild(dialog);
             codeInputElement.pluginData.findAndReplace = {dialog: dialog};
@@ -344,6 +360,9 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             dialog = codeInputElement.pluginData.findAndReplace.dialog;
             // Re-open dialog
             dialog.classList.remove("code-input_find-and-replace_hidden-dialog");
+            dialog.removeAttribute("inert"); // Show to keyboard navigation when open.
+            dialog.setAttribute("tabindex", 0); // Show to keyboard navigation when open.
+            dialog.removeAttribute("aria-hidden"); // Show to screen reader when open.
             dialog.findInput.focus();
             if(replacePartExpanded) {
                 dialog.replaceDropdown.setAttribute("open", true);

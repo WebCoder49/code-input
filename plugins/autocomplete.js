@@ -30,7 +30,9 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         codeInput.appendChild(popupElem);
 
         let testPosPre = document.createElement("pre");
-        testPosPre.setAttribute("aria-hidden", "true"); // Hide for screen readers
+        popupElem.setAttribute("inert", true); // Invisible to keyboard navigation
+        popupElem.setAttribute("tabindex", -1); // Invisible to keyboard navigation
+        testPosPre.setAttribute("aria-hidden", true); // Hide for screen readers
         if(codeInput.template.preElementStyled) {
             testPosPre.classList.add("code-input_autocomplete_testpos");
             codeInput.appendChild(testPosPre); // Styled like first pre, but first pre found to update    

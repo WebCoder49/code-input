@@ -8,14 +8,18 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
     bracketPairs = {}; // No bracket-auto-indentation used when {}
     indentation = "\t";
     indentationNumChars = 1;
+    tabIndentationEnabled = true; // Can be disabled for accessibility reasons to allow keyboard navigation
+    escTabToChangeFocus = true;
+    escJustPressed = false; // Becomes true when Escape key is pressed and false when another key is pressed
 
     /**
      * Create an indentation plugin to pass into a template
-     * @param {Boolean} defaultSpaces Should the Tab key enter spaces rather than tabs? Defaults to false.
+     * @param {boolean} defaultSpaces Should the Tab key enter spaces rather than tabs? Defaults to false.
      * @param {Number} numSpaces How many spaces is each tab character worth? Defaults to 4.
      * @param {Object} bracketPairs Opening brackets mapped to closing brackets, default and example {"(": ")", "[": "]", "{": "}"}. All brackets must only be one character, and this can be left as null to remove bracket-based indentation behaviour.
+     * @param {boolean} escTabToChangeFocus Whether pressing the Escape key before Tab and Shift-Tab should make this keypress focus on a different element (Tab's default behaviour). You should always either enable this or use this plugin's disableTabIndentation and enableTabIndentation methods linked to other keyboard shortcuts, for accessibility.
      */
-    constructor(defaultSpaces=false, numSpaces=4, bracketPairs={"(": ")", "[": "]", "{": "}"}) {
+    constructor(defaultSpaces=false, numSpaces=4, bracketPairs={"(": ")", "[": "]", "{": "}"}, escTabToChangeFocus=true) {
         super([]); // No observed attributes
 
         this.bracketPairs = bracketPairs;
@@ -26,14 +30,29 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
             }
             this.indentationNumChars = numSpaces;
         }
+
+        this.escTabToChangeFocus = true;
+    }
+
+    /**
+     * Make the Tab key 
+     */
+    disableTabIndentation() {
+        this.tabIndentationEnabled = false;
+    }
+
+    enableTabIndentation() {
+        this.tabIndentationEnabled = true;
     }
 
     /* Add keystroke events, and get the width of the indentation in pixels. */
     afterElementsAdded(codeInput) {
+
         let textarea = codeInput.textareaElement;
+        textarea.addEventListener('focus', (event) => { if(this.escTabToChangeFocus) codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for indentation. Press Esc to enable keyboard navigation."); })
         textarea.addEventListener('keydown', (event) => { this.checkTab(codeInput, event); this.checkEnter(codeInput, event); this.checkBackspace(codeInput, event); });
         textarea.addEventListener('beforeinput', (event) => { this.checkCloseBracket(codeInput, event); });
-        
+
         // Get the width of the indentation in pixels
         let testIndentationWidthPre = document.createElement("pre");
         testIndentationWidthPre.setAttribute("aria-hidden", "true"); // Hide for screen readers
@@ -57,11 +76,33 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         codeInput.pluginData.indent = {indentationWidthPx: indentationWidthPx};
     }
 
-    /* Deal with the Tab key causing indentation, and Tab+Selection indenting / Shift+Tab+Selection unindenting lines */
+    /* Deal with the Tab key causing indentation, and Tab+Selection indenting / Shift+Tab+Selection unindenting lines, and the mechanism through which Tab can be used to switch focus instead (accessibility). */
     checkTab(codeInput, event) {
-        if(event.key != "Tab") {
+        if(!this.tabIndentationEnabled) return;
+        if(this.escTabToChangeFocus) {
+            // Accessibility - allow Tab for keyboard navigation when Esc pressed right before it.
+            if(event.key == "Escape") {
+                this.escJustPressed = true;
+                codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for keyboard navigation. Type to return to indentation.");
+                return;
+            } else if(event.key != "Tab") {
+                if(event.key == "Shift") {
+                    return; // Shift+Tab after Esc should still be keyboard navigation
+                }
+                codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for indentation. Press Esc to enable keyboard navigation.");
+                this.escJustPressed = false;
+                return;
+            }
+
+            if(!this.enableTabIndentation || this.escJustPressed) {
+                codeInput.setKeyboardNavInstructions("");
+                this.escJustPressed = false;
+                return;
+            }
+        } else if(event.key != "Tab") {
             return;
         }
+
         let inputElement = codeInput.textareaElement;
         event.preventDefault(); // stop normal
         

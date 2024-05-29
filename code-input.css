@@ -102,10 +102,13 @@ code-input textarea, code-input pre {
   word-wrap: normal;
 }
 
-/* No resize on textarea; stop outline */
+/* No resize on textarea; transfer outline on focus to code-input element */
 code-input textarea {
   resize: none;
   outline: none!important;
+}
+code-input:focus-within:not(.code-input_mouse-focused) {
+  outline: 2px solid black;
 }
 
 /* Before registering give a hint about how to register. */
@@ -149,4 +152,32 @@ code-input .code-input_dialog-container {
 
   /* Dialog boxes' text is left-aligned */
   text-align: left;
+}
+/* Instructions specific to keyboard navigation set by plugins that override Tab functionality. */
+code-input .code-input_dialog-container .code-input_keyboard-navigation-instructions {
+  top: 0;
+  right: 0;
+  display: block;
+  position: absolute;
+  background-color: black;
+  color: white;
+  padding: 2px;
+  padding-left: 10px;
+  text-wrap: auto;
+  width: calc(100% - 12px);
+  max-height: 3em;
+}
+
+code-input:not(:focus-within) .code-input_dialog-container .code-input_keyboard-navigation-instructions,
+code-input.code-input_mouse-focused .code-input_dialog-container .code-input_keyboard-navigation-instructions,
+code-input .code-input_dialog-container .code-input_keyboard-navigation-instructions:empty {
+  /* When not keyboard-focused / no instructions don't show instructions */
+  display: none;
+}
+
+/* Things with padding when instructions are present */
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):focus-within:not(.code-input_mouse-focused) textarea,
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):focus-within:not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code,
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):focus-within:not(.code-input_mouse-focused).code-input_pre-element-styled pre {
+  padding-top: calc(var(--padding) + 3em)!important;
 }
