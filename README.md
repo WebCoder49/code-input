@@ -17,8 +17,6 @@
 Test website content
 
 </div>
-<script>
-</script>
 
 *A frontend JavaScript library, with:*<br/>
 [![TypeScript Bindings - Click to Use](https://img.shields.io/static/v1?label=TypeScript%20Bindings&message=Click%20to%20Use&style=for-the-badge&color=blue&logo=typescript&logoColor=white)](https://github.com/WebCoder49/code-input-for-typescript)
