@@ -12,15 +12,12 @@
 *This demonstration uses themes from [Prism.js](https://prismjs.com/) and [highlight.js](https://highlightjs.org/), two syntax-highlighting programs which work well with and have compatibility built-in with code-input.*
 
 </div>
-<div id="website-only" style="display: none;">
+<div hidden onload="/* Only the website can run JavaScript */ document.getElementById('markdown-only').setAttribute('hidden', true); document.getElementById('website-only').removeAttribute('hidden');" id="website-only">
 
 Test website content
 
 </div>
 <script>
-  // Only the website can run JavaScript
-  document.getElementById("markdown-only").style.display = "none";
-  document.getElementById("website-only").style.display = "block";
 </script>
 
 *A frontend JavaScript library, with:*<br/>
