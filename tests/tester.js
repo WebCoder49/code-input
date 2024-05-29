@@ -187,7 +187,8 @@ async function startTests(textarea, isHLJS) {
     let renderedValue = codeInputElement.codeElement.innerHTML.replace(/<[^>]+>/g, "");
     assertEqual("Core", "Initial Rendered Value", renderedValue, `console.log("Hello, World!");
 // A second line
-// A third line with &lt;html&gt; tags`);
+// A third line with &lt;html&gt; tags
+`); // Extra newline so line numbers visible if enabled
 
 
     // Update code-input value with JavaScript, new value and num events should be correct.
@@ -206,7 +207,8 @@ console.log("I've got another line!", 2 < 3, "should be true.");`);
     assertEqual("Core", "JS-updated Rendered Value", renderedValue, `console.log("Hello, World!");
 // A second line
 // A third line with &lt;html&gt; tags
-console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
+console.log("I've got another line!", 2 &lt; 3, "should be true.");
+`); // Extra newline so line numbers visible if enabled
 
     // Event Tests
     let numTimesInputCalled = 0;
@@ -278,7 +280,8 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
     renderedValue = codeInputElement.codeElement.innerHTML.replace(/<[^>]+>/g, "");
     assertEqual("Core", "Form Reset resets Rendered Value", renderedValue, `console.log("Hello, World!");
 // A second line
-// A third line with &lt;html&gt; tags`);
+// A third line with &lt;html&gt; tags
+`); // Extra newline so line numbers visible if enabled.
 
     /*--- Tests for plugins ---*/
     // AutoCloseBrackets

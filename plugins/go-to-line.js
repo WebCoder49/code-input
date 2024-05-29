@@ -61,7 +61,9 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
     /* Called with a dialog box keyup event to close and clear the dialog box */    
     cancelPrompt(dialog, event) {
         event.preventDefault();
+        dialog.codeInput.handleEventsFromTextarea = false;
         dialog.textarea.focus();
+        dialog.codeInput.handleEventsFromTextarea = true;
         dialog.setAttribute("inert", true); // Hide from keyboard navigation when closed.
         dialog.setAttribute("tabindex", -1); // Hide from keyboard navigation when closed.
         dialog.setAttribute("aria-hidden", true); // Hide from screen reader when closed.

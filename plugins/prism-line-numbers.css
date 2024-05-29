@@ -7,14 +7,10 @@
 /* Update padding to match line-numbers plugin */
 code-input.line-numbers textarea, code-input.line-numbers.code-input_pre-element-styled pre,
 .line-numbers code-input textarea, .line-numbers code-input.code-input_pre-element-styled pre {
-  padding-top: 1em!important;
-  padding-bottom: 1em!important;
-  padding-right: 1em!important;
-  padding-left: 3.8em!important;
+  padding-left: max(3.8em, var(--padding, 16px))!important;
 }
 
-/* Remove unnecessary, interfering padding values */
-code-input.line-numbers, code-input.line-numbers.code-input_pre-element-styled code,
-.line-numbers code-input, .line-numbers code-input.code-input_pre-element-styled code{
-  padding: 0;
+/* Ensure pre code/textarea just wide enough to give 100% width with line numbers */
+code-input.line-numbers, .line-numbers code-input {
+  grid-template-columns: calc(100% - max(0em, calc(3.8em - var(--padding, 16px))));
 }

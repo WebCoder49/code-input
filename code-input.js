@@ -482,7 +482,8 @@ var codeInput = {
         * to syntax-highlight it. */
 
         needsHighlight = false; // Just inputted
-        passEventsToTextarea = true; // Turn to false when unusual internal events are called on the textarea
+        handleEventsFromTextarea = true; // Turn to false when unusual internal events are called on the textarea
+        originalAriaDescription;
 
         /**
          * Highlight the code as soon as possible
@@ -510,6 +511,7 @@ var codeInput = {
         update() {
             let resultElement = this.codeElement;
             let value = this.value;
+            value += "\n"; // Placeholder for next line
 
             // Update code
             resultElement.innerHTML = this.escapeHtml(value);
@@ -523,17 +525,17 @@ var codeInput = {
 
             // If editing here, scroll to the caret by focusing, though this shouldn't count as a focus event
             if(this.textareaElement === document.activeElement) {
-                this.passEventsToTextarea = false;
+                this.handleEventsFromTextarea = false;
                 this.textareaElement.blur();
                 this.textareaElement.focus();
-                this.passEventsToTextarea = true;
+                this.handleEventsFromTextarea = true;
             }
 
             this.pluginEvt("afterHighlight");
         }
 
         /**
-         * Set the size of the pre/code element to the size of the textarea element.
+         * Set the size of the textarea element to the size of the pre/code element.
          */
         syncSize() {
             // Synchronise the size of the pre/code and textarea elements
@@ -551,10 +553,15 @@ var codeInput = {
         /**
          * Show some instructions to the user only if they are using keyboard navigation - for example, a prompt on how to navigate with the keyboard if Tab is repurposed.
          * @param {string} instructions The instructions to display only if keyboard navigation is being used. If it's blank, no instructions will be shown.
+         * @param {boolean} includeAriaDescriptionFirst Whether to include the aria-description of the code-input element before the keyboard navigation instructions for a screenreader. Keep this as true when the textarea is first focused.
          */
-        setKeyboardNavInstructions(instructions) {
+        setKeyboardNavInstructions(instructions, includeAriaDescriptionFirst) {
             this.dialogContainerElement.querySelector(".code-input_keyboard-navigation-instructions").innerText = instructions;
-            this.setAttribute("aria-description", "code-input. " + instructions);
+            if(includeAriaDescriptionFirst) {
+                this.textareaElement.setAttribute("aria-description", this.originalAriaDescription + ". " + instructions);
+            } else {
+                this.textareaElement.setAttribute("aria-description", instructions);
+            }
         }
 
         /**
@@ -619,9 +626,6 @@ var codeInput = {
 
             this.initialValue = value; // For form reset
 
-            // Disable focusing on the code-input element - only allow the textarea to be focusable
-            this.setAttribute("tabindex", -1);
-
             // Create textarea
             let textarea = document.createElement("textarea");
             textarea.placeholder = placeholder;
@@ -630,13 +634,19 @@ var codeInput = {
             }
             textarea.innerHTML = this.innerHTML;
             textarea.setAttribute("spellcheck", "false");
+            
+            // Disable focusing on the code-input element - only allow the textarea to be focusable
+            textarea.setAttribute("tabindex", this.getAttribute("tabindex") || 0);
+            this.setAttribute("tabindex", -1);
+            // Save aria-description so keyboard navigation guidance can be added.
+            this.originalAriaDescription = this.getAttribute("aria-description") || "Code input field";
 
             // Accessibility - detect when mouse focus to remove focus outline + keyboard navigation guidance that could irritate users.
-            textarea.addEventListener("mousedown", () => {
+            this.addEventListener("mousedown", () => {
                 this.classList.add("code-input_mouse-focused");
             });
             textarea.addEventListener("blur", () => {
-                if(this.passEventsToTextarea) {
+                if(this.handleEventsFromTextarea) {
                     this.classList.remove("code-input_mouse-focused");
                 }
             });
@@ -854,12 +864,15 @@ var codeInput = {
          */
         addEventListener(type, listener, options = undefined) {
             // Save a copy of the callback where `this` refers to the code-input element.
-            // This callback is modified to only run when the passEventsToTextarea is set.
-            let boundCallback = function(evt) { if(this.passEventsToTextarea) listener(evt); }.bind(this);
+            // This callback is modified to only run when the handleEventsFromTextarea is set.
+            let boundCallback = function(evt) { listener(evt); }.bind(this);
             this.boundEventCallbacks[listener] = boundCallback;
 
             if (codeInput.textareaSyncEvents.includes(type)) {
-                // Synchronise with textarea
+                // Synchronise with textarea, only when handleEventsFromTextarea is true
+                let boundCallback = function(evt) { if(this.handleEventsFromTextarea) listener(evt); }.bind(this);
+                this.boundEventCallbacks[listener] = boundCallback;
+
                 if (options === undefined) {
                     if(this.textareaElement == null) {
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback); });

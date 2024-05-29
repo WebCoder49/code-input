@@ -107,7 +107,7 @@ code-input textarea {
   resize: none;
   outline: none!important;
 }
-code-input:focus-within:not(.code-input_mouse-focused) {
+code-input:has(textarea:focus):not(.code-input_mouse-focused) {
   outline: 2px solid black;
 }
 
@@ -163,12 +163,14 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
   color: white;
   padding: 2px;
   padding-left: 10px;
-  text-wrap: auto;
+  text-wrap: pretty;
+  overflow: hidden;
+  text-overflow: ellipsis;
   width: calc(100% - 12px);
   max-height: 3em;
 }
 
-code-input:not(:focus-within) .code-input_dialog-container .code-input_keyboard-navigation-instructions,
+code-input:not(:has(textarea:focus)) .code-input_dialog-container .code-input_keyboard-navigation-instructions,
 code-input.code-input_mouse-focused .code-input_dialog-container .code-input_keyboard-navigation-instructions,
 code-input .code-input_dialog-container .code-input_keyboard-navigation-instructions:empty {
   /* When not keyboard-focused / no instructions don't show instructions */
@@ -176,8 +178,8 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
 }
 
 /* Things with padding when instructions are present */
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):focus-within:not(.code-input_mouse-focused) textarea,
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):focus-within:not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code,
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):focus-within:not(.code-input_mouse-focused).code-input_pre-element-styled pre {
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused) textarea,
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code,
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused).code-input_pre-element-styled pre {
   padding-top: calc(var(--padding) + 3em)!important;
 }

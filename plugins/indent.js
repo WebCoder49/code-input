@@ -49,7 +49,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
     afterElementsAdded(codeInput) {
 
         let textarea = codeInput.textareaElement;
-        textarea.addEventListener('focus', (event) => { if(this.escTabToChangeFocus) codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for indentation. Press Esc to enable keyboard navigation."); })
+        textarea.addEventListener('focus', (event) => { if(this.escTabToChangeFocus) codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for indentation. Press Esc to enable keyboard navigation.", true); })
         textarea.addEventListener('keydown', (event) => { this.checkTab(codeInput, event); this.checkEnter(codeInput, event); this.checkBackspace(codeInput, event); });
         textarea.addEventListener('beforeinput', (event) => { this.checkCloseBracket(codeInput, event); });
 
@@ -83,19 +83,19 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
             // Accessibility - allow Tab for keyboard navigation when Esc pressed right before it.
             if(event.key == "Escape") {
                 this.escJustPressed = true;
-                codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for keyboard navigation. Type to return to indentation.");
+                codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for keyboard navigation. Type to return to indentation.", false);
                 return;
             } else if(event.key != "Tab") {
                 if(event.key == "Shift") {
                     return; // Shift+Tab after Esc should still be keyboard navigation
                 }
-                codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for indentation. Press Esc to enable keyboard navigation.");
+                codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for indentation. Press Esc to enable keyboard navigation.", false);
                 this.escJustPressed = false;
                 return;
             }
 
             if(!this.enableTabIndentation || this.escJustPressed) {
-                codeInput.setKeyboardNavInstructions("");
+                codeInput.setKeyboardNavInstructions("", false);
                 this.escJustPressed = false;
                 return;
             }

@@ -506,12 +506,14 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
             this.focusedMatchStartIndex += replacementText.length;
 
             // Select the match
+            this.codeInput.handleEventsFromTextarea = false;
             this.codeInput.textareaElement.focus();
             this.codeInput.textareaElement.selectionStart = this.matchStartIndexes[this.focusedMatchID];
             this.codeInput.textareaElement.selectionEnd = this.matchEndIndexes[this.focusedMatchID];
 
             // Replace it with the replacement text
             document.execCommand("insertText", false, replacementText);
+            this.codeInput.handleEventsFromTextarea = true;
         }
     }
 
@@ -524,6 +526,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
             // Replace each match
             
             // Select the match, taking into account characters added before
+            this.codeInput.handleEventsFromTextarea = false;
             this.codeInput.textareaElement.focus();
             this.codeInput.textareaElement.selectionStart = this.matchStartIndexes[i] + numCharsAdded;
             this.codeInput.textareaElement.selectionEnd = this.matchEndIndexes[i] + numCharsAdded;
@@ -532,6 +535,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
 
             // Replace it with the replacement text
             document.execCommand("insertText", false, replacementText);
+            this.codeInput.handleEventsFromTextarea = true;
         }
     }
 
