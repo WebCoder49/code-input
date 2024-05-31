@@ -1,0 +1,98 @@
+<!--This is the code of the page you're on now!
+For simplicity's sake, editing it won't change this page. Use the full demo to see functionality like that.
+Here's the code for this minimal usage of code-input with Prism.js.-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>code-input with Prism.js</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!--Import Prism.js-->
+    <!--For a downloaded version of Prism.js: -->
+    <!--  1. Download Prism.js with the languages you need here: https://prismjs.com/download.html-->
+    <!--  2. Replace the JavaScript imports below with one import of prism.js (prism-core.js and prism-autoloader.js are designed for online CDNs like the one currently being used).-->
+    <!--  3. Ensure the file paths of imported CSS and JavaScript files are relative from this HTML file.-->
+    <!--Guide: https://prismjs.com/#basic-usage-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29/themes/prism.min.css">
+    <!--You can also choose custom themes by changing "prism" above to something like "prism-dark" from https://prismjs.com/index.html-->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29/plugins/autoloader/prism-autoloader.min.js"></script>
+        
+    <!--Import code-input-->
+    <!--The same goes for downloaded versions.-->
+    <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/code-input.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/code-input.min.css">
+    
+    <!--Import some code-input plugins-->
+    <!--The same goes for downloaded versions.-->
+    <!--Plugin files are here: https://github.com/WebCoder49/code-input/tree/main/plugins.-->
+    <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/indent.min.js"></script>
+    
+    <!--Register code-input template-->
+    <script>
+      codeInput.registerTemplate("syntax-highlighted", 
+        codeInput.templates.prism(
+          Prism, 
+          [
+            // You can add or remove plugins in this list from https://github.com/WebCoder49/code-input/blob/main/plugins/README.md.
+            // All plugins used must be imported above.
+            new codeInput.plugins.Indent(true, 2) // Allow Tab-key indentation, with 2 spaces indentation
+          ]
+        )
+      );
+      // Register templates with different names here, if needed.
+    </script>
+    <style>
+        body {
+          margin: 0;
+          padding: 10px;
+        }
+        nav, p, h1, h2, h3, h4, h5, h6 {
+          font-family: sans-serif;
+        }
+        nav {
+          padding: 10px;
+          min-height: 10px;
+          margin: 0px;
+          position: sticky;
+          top: 0;
+          background-color: white;
+          z-index: 1;
+        }
+        code-input {
+            margin: 10px;
+            --padding: 10px; /* The -- is needed, as a small caveat of the current version of code-input. */
+            height: calc(100vh - 70px);
+        }
+    </style>
+  </head>
+  <body>
+    <nav><a href="../../">&lt; Back Home</a> || <a href="../full/">Full demo</a> || <strong>Prism.js starter</strong> || <a href="../hljs/">highlight.js starter</a> <code style="float: right;">code-input v2.2</code></nav>
+
+    <!--The language attribute is case-insensitive but must refer to a language from https://prismjs.com/index.html#supported-languages.-->
+    <code-input template="syntax-highlighted" language="HTML">&lt;!--Loading HTML--&gt;</code-input>
+    <!--You should now be able to use the code-input element in HTML5 forms / attributes and with JavaScript events / properties as if it were a textarea!-->   
+    
+    <!--Additional usage details are here: https://github.com/WebCoder49/code-input/blob/main/README.md-->
+    <!--A list of plugins are here, allowing a well-rounded code-editor to be created quickly from code-input, if you're into that: https://github.com/WebCoder49/code-input/blob/main/plugins/README.md-->
+
+    <script>
+        // The document must be loaded to interact with its elements
+        window.addEventListener("load", function() {
+            // Just for the demo
+            const pageCodeRequest = new Request(window.location);
+            fetch(pageCodeRequest)
+                .then((response) => {
+                    if(!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then((response) => {
+                    // Accessed just like a textarea!
+                    document.querySelector("code-input").value = response;
+                });
+        });
+    </script>
+  </body>
+</html>

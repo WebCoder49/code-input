@@ -1,0 +1,301 @@
+<!--This is the code of the page you're on now!
+For simplicity's sake, editing it won't change this page. Use the full demo to see functionality like that.
+Here's the code for this minimal usage of code-input with highlight.js.-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>code-input Full demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!--Import Prism.js-->
+  <!--For a downloaded version of Prism.js: -->
+  <!--  1. Download Prism.js with the languages you need here: https://prismjs.com/download.html -->
+  <!--  2. Replace the JavaScript imports below with one import of prism.js (prism-core.js and prism-autoloader.js are designed for online CDNs like the one currently being used).-->
+  <!--  3. Ensure the file paths of imported CSS and JavaScript files are relative from this HTML file.-->
+  <!--Guide: https://prismjs.com/#basic-usage-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29/themes/prism.min.css" id="prism-css">
+  <!--You can also choose custom themes by changing "prism" above to something like "prism-dark" from https://prismjs.com/index.html -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!--For prism-line-numbers plugin-->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29/plugins/line-numbers/prism-line-numbers.min.css">
+
+
+  <!--Import highlight.js-->
+  <!--For a downloaded version of highlight.js, replace the file paths for both CSS and JS below with the relative file paths from this HTML file.-->
+  <!--This is similar to the "self hosted" example below.-->
+  <!--Guide: https://highlightjs.org/#usage#:~:text=As%20HTML%20Tags -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/styles/default.min.css" id="hljs-css">
+  <!--You can also choose custom themes by changing "default" above to the theme name from https://highlightjs.org/demo -->
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/highlight.min.js"></script>
+
+  <!--Import highlight.js languages-->
+  <!--You can copy this line to import additional languages, replacing "javascript" with a language name from https://highlightjs.org/demo .-->
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/html.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/css.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/javascript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/typescript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/java.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/csharp.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/cpp.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/c.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/rust.min.js"></script>
+
+  <!--Import code-input-->
+  <!--The same goes for downloaded versions.-->
+  <!--TODO: <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/code-input.min.js"></script> -->
+  <script src="../../code-input.js"></script>
+  <!--TODO: <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/code-input.min.css"> -->
+  <link rel="stylesheet" href="../../code-input.css">
+
+  <!--Import some code-input plugins-->
+  <!--The same goes for downloaded versions.-->
+  <!--Plugin files are here: https://github.com/WebCoder49/code-input/tree/main/plugins.-->
+  <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/auto-close-brackets.min.js"></script>
+  <!-- TODO: <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/autocomplete.min.js"></script> -->
+  <script src="../../plugins/autocomplete.js"></script>
+  <!--TODO: <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/autocomplete.min.css"/> -->
+  <link rel="stylesheet" href="../../plugins/autocomplete.css"/>
+  <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/autodetect.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/find-and-replace.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/find-and-replace.min.css"/>
+  <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/go-to-line.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/go-to-line.min.css"/>
+  <!--TODO: <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/indent.min.js"></script> -->
+  <script src="../../plugins/indent.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/prism-line-numbers.min.css"/>
+  <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/special-chars.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/special-chars.min.css"/>
+
+
+  <style>
+    code-input .code-input_autocomplete_popup {
+      display: none; /* Until code adds content to it */ 
+
+      background-color: white;
+      padding: 5px;
+      border: 2px solid black;
+      opacity: 0.9;
+
+      font-family: monospace;
+      overflow: hidden;
+    }
+    code-input .code-input_autocomplete_popup .to-insert {
+      color: blue;
+    }
+  </style>
+
+  <!--Register code-input template-->
+  <script type="module">
+    // ----------------------Autocomplete-------------------------
+    // ---Configuration more complex but extremely customisable---
+
+    // In this example, Emmet used for autocomplete
+    import expand, { extract } from 'https://cdn.jsdelivr.net/npm/emmet@2.4.7/+esm';
+    /**
+     * Get the expansion of the emmet abbreviation given the code and position of the caret in the code.
+     */
+    function getEmmetExpansion(code, caretPosition) {
+    }
+
+    const indentPlugin = new codeInput.plugins.Indent(true, 2); // true=Indent using spaces rather than tab characters; 2 = 2 spaces per indentation
+
+    const autocompletePlugin = new codeInput.plugins.Autocomplete((popupElem, textarea, selectionEnd) => {
+      // Runs each keystroke
+      let expansion;
+      let emmetExpression;
+      if(textarea.selectionStart !== textarea.selectionEnd) {
+        // When text selected don't try to expand
+        expansion = undefined;
+      } else {
+        let codeInputElement = textarea.parentElement;
+        // Make sure abbreviations match language
+        if(codeInputElement.getAttribute("language") == null) {
+          emmetExpression = undefined;
+        } else if(["HTML", "PHP", "XML"].includes(codeInputElement.getAttribute("language").toUpperCase())) {
+          emmetExpression = extract(textarea.value, selectionEnd, { type: "markup" });
+        } else if(codeInputElement.getAttribute("language").toUpperCase() === "CSS") {
+          emmetExpression = extract(textarea.value, selectionEnd, { type: "stylesheet" });
+        } else {
+          emmetExpression = undefined;
+        }
+
+        if(emmetExpression === undefined) {
+          expansion = undefined;
+        } else {
+          if(["HTML", "PHP", "XML"].includes(codeInputElement.getAttribute("language").toUpperCase())) {
+            expansion = expand(emmetExpression.abbreviation, { type: "markup" });
+          } else {
+            expansion = expand(emmetExpression.abbreviation, { type: "stylesheet" });
+          }
+          expansion = expansion.replace(/\t/g, "  "); // Change to 2-space indentation as code-input expects
+        }
+      }
+      if(expansion === undefined) {
+        popupElem.style.display = "none";
+        // Tabs used to trigger indentation, not expansion, when autocomplete popup hidden
+        indentPlugin.enableTabIndentation();
+      } else {
+        popupElem.style.display = "block";
+        // Tabs used to trigger expansion, not indentation, when autocomplete popup showing
+        indentPlugin.disableTabIndentation();
+        
+        popupElem.innerHTML = "";
+        let insertHint = document.createElement("span");
+        insertHint.classList.add("insert-hint");
+        insertHint.innerText = "[Tab] to insert "
+        let toInsert = document.createElement("span");
+        toInsert.classList.add("to-insert");
+        toInsert.innerText = expansion;
+
+        popupElem.append(insertHint);
+        popupElem.append(toInsert);
+
+        popupElem.onclick = () => {
+          // onclick so overwrites old expansion
+          // Insert expansion at position of abbreviation
+          textarea.selectionStart = emmetExpression.start;
+          textarea.selectionEnd = emmetExpression.end;
+          textarea.focus();
+          document.execCommand("insertText", false, expansion);
+        }
+      }
+    }, (popupElem, codeInputElem) => {
+      // Runs when code-input initialised
+      popupElem.style.display = "none"; // Hidden until triggered to appear
+
+      codeInputElem.addEventListener("keydown", (event) => {
+        if(popupElem.style.display != "none") {
+          // Autocomplete
+          if(event.key == "Tab") {
+            event.preventDefault();
+            popupElem.click();
+          }
+        }
+      });
+    });
+
+    // ------------------------Register---------------------------
+    // -----------------Templates and plugins---------------------
+
+    let commonPlugins = [
+      // Plugins for both Prism.js and highlight.js
+      // You can add or remove plugins in this list from https://github.com/WebCoder49/code-input/blob/main/plugins/README.md.
+      // All plugins used must be imported above.
+      new codeInput.plugins.AutoCloseBrackets(),
+      autocompletePlugin,
+      new codeInput.plugins.FindAndReplace(),
+      new codeInput.plugins.GoToLine(),
+      indentPlugin,
+      new codeInput.plugins.SpecialChars(),
+    ];
+    codeInput.registerTemplate("prism",
+      codeInput.templates.prism(
+        Prism,
+        commonPlugins.concat([
+          // Prism.js-specific plugins
+          // none
+        ])
+      )
+    );
+    codeInput.registerTemplate("hljs",
+      codeInput.templates.hljs(
+        hljs,
+        commonPlugins.concat([
+          // highlight.js-specific plugins
+          new codeInput.plugins.Autodetect(),
+        ])
+      )
+    );
+  </script>
+  <style>
+    body {
+      margin: 0;
+      padding: 10px;
+    }
+
+    nav, p, h1, h2, h3, h4, h5, h6, label, li {
+      font-family: sans-serif;
+    }
+
+    nav {
+      padding: 10px;
+      min-height: 10px;
+      margin: 0px;
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="full-page">
+    <nav><a href="../../">&lt; Back Home</a> || <strong>Full demo</strong> || <a href="../prism/">Prism.js starter</a>
+      || <a href="../hljs/">highlight.js starter</a> <code style="float: right;">code-input v2.2</code></nav>
+    <h1>Full Demo of code-input</h1>
+    <p>All its plugins are loaded, with both Prism.js and highlight.js, and it's ready to show you its full potential!
+    </p>
+    <p>If you want a minimal starter template, there are Prism.js starter and highlight.js starter demos at the links above.</p>
+  </div>
+  <script>
+    if(window != window.top) {
+      /* In an iframe */
+      document.getElementById("full-page").setAttribute("hidden", true);
+    }
+  </script>
+
+  <label for="highlighter"><strong>Choose highlighter (we can't load both and let their CSS files clash):</strong> </label>
+  <select onchange="document.getElementById(`prism-css`).setAttribute('disabled', true); document.getElementById(`hljs-css`).setAttribute('disabled', true); document.getElementById(`${this.value}-css`).removeAttribute('disabled'); document.getElementById(`prism-demo`).setAttribute('hidden', true); document.getElementById(`hljs-demo`).setAttribute('hidden', true); document.getElementById(`${this.value}-demo`).removeAttribute('hidden');" id="highlighter"><option value="prism">Prism.js</option><option value="hljs">highlight.js</option></select>
+  <section id="prism-demo">
+    <h2>Prism.js + <code>code-input</code> plugins + JavaScript interaction</h2>
+    <label for="prism-theme">Choose theme: </label>
+    <select onchange="document.getElementById('prism-css').setAttribute('href', `https:\/\/cdn.jsdelivr.net/npm/prismjs@1.29/themes/${this.value}.min.css`)" id="prism-theme">
+      <option value="prism">Default</option>
+      <option value="prism-dark">Dark</option>
+      <option value="prism-funky">Funky</option>
+      <option value="prism-okaidia">Okaidia</option>
+      <option value="prism-twilight">Twilight</option>
+      <!-- <option value="prism-coy">Coy</option> - currently not supported. -->
+      <option value="prism-solarizedlight">Solarized Light</option>
+      <option value="prism-tomorrow">Tomorrow Night</option>
+    </select>
+    <code-input class="line-numbers" template="prism" language="HTML" id="prism-code-input">html:5</code-input>
+    <p>
+      <button onclick="document.getElementById('prism-result').setAttribute('src', `data:text/html,${document.getElementById('prism-code-input').value}`);">Render Preview</button>
+      <br/>
+      <iframe style="width: calc(100% - 20px); border: 0; outline: 0; border-top: 2px solid grey; border-bottom: 2px solid grey; margin: 10px; border-radius: 10px; height: 500px;" src="data:text/html,Live preview of your code" id="prism-result"></iframe>
+    </p>
+  </section>
+  
+  <section id="hljs-demo" hidden>
+    <h2>highlight.js + <code>code-input</code> plugins + HTML5 form</h2>
+    <label for="hljs-theme">Choose theme: </label><input onchange="document.getElementById('hljs-css').setAttribute('href', `https:\/\/cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/styles/${this.value}.min.css`)" id="hljs-theme" value="default"></input>
+    <p>^ How about <code>default</code>, <code>atom-one-dark</code> or <code>github-dark</code>? You can also try any <a href="https://highlightjs.org/demo">theme from highlight.js' demo</a>.</p>
+    <form method="get" action="https://github.com/search">
+      <code-input name="q" template="hljs" placeholder="Autodetect plugin allows any language! Autocomplete with Emmet supports HTML and CSS."></code-input>
+      <input name="type" type="hidden" value="code"/>
+      <input type="submit" value="Search GitHub for your code"/>
+    </form>
+  </section>
+
+  <ul>
+    <li>The <strong>AutoCloseBrackets</strong> plugin ensures you always get complete bracket pairs when you type an opening bracket.</li>
+    <li>The <strong>Autocomplete</strong> plugin allows a popup to appear when you type and makes it be positioned correctly, then leaves you to define its functionality and appearance. Here we've combined it with <a href="https://www.npmjs.com/package/emmet">Emmet</a> to expand abbreviations.</li>
+    <li>The <strong>Autodetect</strong> plugin (highlight.js only) auto-detects and highlights the programming language. Here we've combined it with Autocomplete to offer you autocomplete suggestions for HTML or CSS only when your code is that language.</li>
+    <li>The <strong>FindAndReplace</strong> plugin provides you with the Ctrl+F and Ctrl+H functionality. It doesn't care which highlighter you use, be it Prism.js, highlight.js, or something else!</li>
+    <li>The <strong>GoToLine</strong> plugin provides you with the Ctrl+G functionality. It doesn't care which highlighter you use, be it Prism.js, highlight.js, or something else!</li>
+    <li>The <strong>PrismLineNumbers</strong> plugin (Prism.js only, to be used with <a href="https://prismjs.com/plugins/line-numbers/">the Prism.js <code>line-numbers</code> plugin</a>) ensures the user interface remains correct when line numbers are applied.</li>
+    <li>The <strong>SpecialChars</strong> plugin <code></code></li>
+  </ul>
+
+  <!--Additional usage details are here: https://github.com/WebCoder49/code-input/blob/main/README.md-->
+  <!--A list of plugins are here, allowing a well-rounded code-editor to be created quickly from code-input, if you're into that: https://github.com/WebCoder49/code-input/blob/main/plugins/README.md-->
+</body>
+
+</html>

@@ -86,7 +86,7 @@ export namespace plugins {
      * Create an auto-close brackets plugin to pass into a template
      * @param {Object} bracketPairs Opening brackets mapped to closing brackets, default and example {"(": ")", "[": "]", "{": "}", '"': '"'}. All brackets must only be one character.
      */
-    constructor(bracketPairs: Object);
+    constructor(bracketPairs?: Object);
   }
 
   /**
@@ -95,10 +95,11 @@ export namespace plugins {
    */
   class Autocomplete extends Plugin {
     /**
-     * Pass in a function to create a plugin that displays the popup that takes in (popup element, textarea, textarea.selectionEnd).
+     * Pass in a function to create a plugin that displays the popup that takes in (popup element, textarea, textarea.selectionEnd), and optionally another initialisation callback.
      * @param {function} updatePopupCallback  a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
+     * @param {function} initCallback a function to set up the popup / keybindings that runs after the elements have been added to the textarea and takes in (popup element, code-input element).
      */
-    constructor(updatePopupCallback: (popupElem: HTMLElement, textarea: HTMLTextAreaElement, selectionEnd: number) => void);
+    constructor(updatePopupCallback: (popupElem: HTMLElement, textarea: HTMLTextAreaElement, selectionEnd: number) => void, initCallback: (popupElem: HTMLElement, textarea: HTMLTextAreaElement, selectionEnd: number) => void);
   }
 
   /**

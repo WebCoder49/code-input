@@ -4,12 +4,14 @@
  */
 codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
     /**
-     * Pass in a function to create a plugin that displays the popup that takes in (popup element, textarea, textarea.selectionEnd).
-     * @param {function} updatePopupCallback  a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
+     * Pass in a function to create a plugin that displays the popup that takes in (popup element, textarea, textarea.selectionEnd), and optionally another initialisation callback.
+     * @param {function} updatePopupCallback a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
+     * @param {function} initCallback a function to set up the popup / keybindings that runs after the elements have been added to the textarea and takes in (popup element, code-input element).
      */
-    constructor(updatePopupCallback) {
+    constructor(updatePopupCallback, initCallback=function(popup, codeInput) {}) {
         super([]); // No observed attributes
         this.updatePopupCallback = updatePopupCallback;
+        this.initCallback = initCallback;
     }
     /* When a key is pressed, or scrolling occurs, update the popup position */
     updatePopup(codeInput, onlyScrolled) {
@@ -30,8 +32,8 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         codeInput.appendChild(popupElem);
 
         let testPosPre = document.createElement("pre");
-        popupElem.setAttribute("inert", true); // Invisible to keyboard navigation
-        popupElem.setAttribute("tabindex", -1); // Invisible to keyboard navigation
+        testPosPre.setAttribute("inert", true); // Invisible to keyboard navigation
+        testPosPre.setAttribute("tabindex", -1); // Invisible to keyboard navigation
         testPosPre.setAttribute("aria-hidden", true); // Hide for screen readers
         if(codeInput.template.preElementStyled) {
             testPosPre.classList.add("code-input_autocomplete_testpos");
@@ -44,8 +46,10 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         }
         
         let textarea = codeInput.textareaElement;
-        codeInput.addEventListener("keypress", () => { this.updatePopup(codeInput, false)});
-        codeInput.addEventListener("click", () => { this.updatePopup(codeInput, false)});
+        textarea.addEventListener("keyup", (event) => { this.updatePopup(codeInput, false)});
+        textarea.addEventListener("click", () => { this.updatePopup(codeInput, false)});
+
+        this.initCallback(popupElem, codeInput);
     }
     /**
      * Return the coordinates of the caret in a code-input

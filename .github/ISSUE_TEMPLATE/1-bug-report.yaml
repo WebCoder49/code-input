@@ -1,0 +1,160 @@
+name: Bug Report
+description: File a bug report / code-input lack of textarea functionality
+title: '[Bug] '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form allows us to organise and implement contributions as quickly as possible. We greatly appreciate everyone who uses their time to contribute through Issues and don't mean to put you off with all the fields!
+        
+        ---
+  - type: checkboxes
+    id: correct-template
+    attributes:
+      label: This is just for reporting bugs / behaviour inconsistent with a textarea.
+      description: Bugs are where code-input produces unexpected behaviour or perhaps logs errors in the console, plus when code-input does not act reasonably like a textarea element to your program. For functionality enhancement suggestions, please use the other issue templates.
+      options:
+        - label: I have encountered unexpected behaviour, or code-input is acting differently to a textarea.
+        required: true
+  - type: checkboxes
+    id: latest
+    attributes:
+      label: Please Check your code-input Version
+      description: We're constantly fixing bugs and shipping patches when we notice them, so the quickest way to fix a bug is to upgrade code-input. [Check this page for the latest version and upgrade to it, then check the below box, if possible](https://github.com/WebCoder49/code-input/releases/). If that's impossible, please keep this box unchecked and give us your version number in the steps to reproduce.
+      options:
+        - label: I'm using the latest version of code-input.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ---
+  - type: dropdown
+    id: plugins
+    attributes:
+      label: Plugins Used
+      description: Which code-input plugins did you have in your template where you saw this bug?
+      multiple: true
+      options:
+        - AutoCloseBrackets
+        - Autocomplete
+        - Autodetect
+        - FindAndReplace
+        - GoToLine
+        - Indent
+        - PrismLineNumbers
+        - SpecialChars
+        - Another external plugin (please specify in Additional Information)
+  - type: textarea
+    id: demo-or-code
+    attributes:
+      label: (Optional) Demo / Code
+      description: Please give a link to a page where you get the bug or paste your HTML, CSS and JavaScript code here. A minimal reproducible example would also be good if your project is very large / proprietary, which could be on a platform like [CodePen](https://codepen.io).
+      placeholder: Paste code / a link.
+    validations:
+      required: false
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: From when you loaded the page to when you encountered the bug, what steps did you take?
+      placeholder: List the steps in as much detail as possible so we can reproduce them and encounter the bug.
+      value: "1. "
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also, what did you expect to happen? Give screenshots wherever possible
+      placeholder: Give a short description and screenshots.
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened-console
+    attributes:
+      label: What happened in the console?
+      description: Look in your browser's DevTools (`Ctrl+Shift+I`/`Cmd+Alt+I`) then switch to the console. Has code-input or your program logged any messages? 
+      placeholder: Paste a screenshot of the console, and/or describe it.
+    validations:
+      required: true
+  - type: dropdown
+    id: affected-browsers
+    attributes:
+      label: Affected Browsers
+      description: What browsers are you seeing the problem on? You can select multiple, and don't need to try all of them!
+      multiple: true
+      options:
+        - Google Chrome for Windows (Blink)
+        - Google Chrome for macOS (Blink)
+        - Google Chrome / Chromium for Linux (Blink)
+        - Google Chrome for Android (Blink)
+        - Google Chrome for iOS (WebKit)
+        - Microsoft Edge for Windows (Blink)
+        - Microsoft Edge for macOS (Blink)
+        - Microsoft Edge for Linux (Blink)
+        - Microsoft Edge for iOS (WebKit)
+        - Microsoft Edge for Android (Blink)
+        - Safari for macOS (WebKit)
+        - Safari for iOS (WebKit)
+        - Mozilla Firefox for Windows (Gecko)
+        - Mozilla Firefox for macOS (Gecko)
+        - Mozilla Firefox for Linux (Gecko)
+        - Mozilla Firefox for Android (Gecko)
+        - Mozilla Firefox for iOS (WebKit)
+        - Opera for Windows (Blink)
+        - Opera for macOS (Blink)
+        - Opera for Linux (Blink)
+        - Opera Mobile for Android (Blink)
+        - Opera Mini for Android (Blink)
+        - Opera Mobile for iOS (WebKit)
+        - Opera Mini for iOS (WebKit)
+        - Internet Explorer for Windows (Trident)
+        - Samsung Internet for Android (Blink)
+        - Other (please specify in Additional Information)
+    validations:
+      required: true
+  - type: dropdown
+    id: unaffected-browsers
+    attributes:
+      label: (Optional) Unaffected Browsers
+      description: What browsers, if any, are you *not* seeing the problem on? You can select multiple, and don't need to try all of them!
+      multiple: true
+      options:
+        - Google Chrome for Windows (Blink)
+        - Google Chrome for macOS (Blink)
+        - Google Chrome / Chromium for Linux (Blink)
+        - Google Chrome for Android (Blink)
+        - Google Chrome for iOS (WebKit)
+        - Microsoft Edge for Windows (Blink)
+        - Microsoft Edge for macOS (Blink)
+        - Microsoft Edge for Linux (Blink)
+        - Microsoft Edge for iOS (WebKit)
+        - Microsoft Edge for Android (Blink)
+        - Safari for macOS (WebKit)
+        - Safari for iOS (WebKit)
+        - Mozilla Firefox for Windows (Gecko)
+        - Mozilla Firefox for macOS (Gecko)
+        - Mozilla Firefox for Linux (Gecko)
+        - Mozilla Firefox for Android (Gecko)
+        - Mozilla Firefox for iOS (WebKit)
+        - Opera for Windows (Blink)
+        - Opera for macOS (Blink)
+        - Opera for Linux (Blink)
+        - Opera Mobile for Android (Blink)
+        - Opera Mini for Android (Blink)
+        - Opera Mobile for iOS (WebKit)
+        - Opera Mini for iOS (WebKit)
+        - Internet Explorer for Windows (Trident)
+        - Samsung Internet for Android (Blink)
+        - Other (please specify in Additional Information)
+    validations:
+      required: fakse
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: (Optional) Additional Information
+      description: Is there anything else it might be useful for us to know about this bug?
+      placeholder: Markdown supported
+    validations:
+      required: false

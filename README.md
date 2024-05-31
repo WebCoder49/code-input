@@ -1,49 +1,59 @@
-# code-input
+# code-input 
 
-![Click to Switch](https://img.shields.io/static/v1?label=&message=Click%20to%20Switch:%20&color=grey&style=for-the-badge)[![GitHub](https://img.shields.io/static/v1?label=&message=GitHub&color=navy&style=for-the-badge&logo=github)](https://github.com/WebCoder49/code-input)[![NPM](https://img.shields.io/static/v1?label=&message=NPM&color=red&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@webcoder49/code-input)
+![Click to Switch](https://img.shields.io/static/v1?label=&message=Click%20to%20Switch:%20&color=grey&style=for-the-badge)[![GitHub](https://img.shields.io/static/v1?label=&message=GitHub&color=navy&style=for-the-badge&logo=github)](https://github.com/WebCoder49/code-input)[![NPM](https://img.shields.io/static/v1?label=&message=NPM&color=red&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@webcoder49/code-input)[![Website & Demo](https://img.shields.io/static/v1?label=&message=Website+%26+Demo&color=purple&logoColor=white&style=for-the-badge&logo=html5)](https://webcoder49.dev/code-input)
 
 [![View License](https://img.shields.io/github/license/webcoder49/code-input?style=for-the-badge)](LICENSE) [![View Releases](https://img.shields.io/github/v/release/webcoder49/code-input?style=for-the-badge)](https://github.com/WebCoder49/code-input/releases)
 
-<div id="markdown-only">
+> ___Fully customisable, editable syntax-highlighted textareas that can be placed in any HTML form. For frontend JavaScript and TypeScript.___
 
-> ___Fully customisable, editable syntax-highlighted textareas that can be placed in any HTML form.___
+<iframe title="Full Demo on Website" src="./demos/full" style="width: 100%; height: 500px;"></iframe>
+
+[![Click to Get Started Quickly](https://img.shields.io/static/v1?label=&message=👇+Click+To+Get+Started+Quickly&color=orange&logoColor=white&style=for-the-badge&logo=markdown)](#-getting-started)
+
+## What does it do?
+**`code-input`** lets you **turn any ordinary JavaScript syntax-highlighting theme and program into customisable syntax-highlighted editable textareas** using an HTML custom element. It uses vanilla CSS to superimpose a `textarea` on a `pre code` block, then handles indentations, scrolling and fixes any resulting bugs with JavaScript. If you wish to see how the basic idea works, you can see [this CSS-Tricks article](https://css-tricks.com/creating-an-editable-textarea-that-supports-syntax-highlighted-code/ "Creating an Editable Textarea That Supports Syntax-Highlighted Code") I wrote.
 
 ![Using code-input with many different themes](https://user-images.githubusercontent.com/69071853/133924472-05edde5c-23e7-4350-a41b-5a74d2dc1a9a.gif)
 *This demonstration uses themes from [Prism.js](https://prismjs.com/) and [highlight.js](https://highlightjs.org/), two syntax-highlighting programs which work well with and have compatibility built-in with code-input.*
 
-</div>
-<div hidden onload="/* Only the website can run JavaScript */ document.getElementById('markdown-only').setAttribute('hidden', true); document.getElementById('website-only').removeAttribute('hidden');" id="website-only">
+More recently, it has gained a **highly modular architecture** and **grown** due to open-source contributions, to have **many optional plugins**.
 
-Test website content
+### How's it Unique?
 
-</div>
+These features make `code-input` unique compared to other JavaScript code-editing libraries. They also dictate the long-term development of the library. 
 
-*A frontend JavaScript library, with:*<br/>
-[![TypeScript Bindings - Click to Use](https://img.shields.io/static/v1?label=TypeScript%20Bindings&message=Click%20to%20Use&style=for-the-badge&color=blue&logo=typescript&logoColor=white)](https://github.com/WebCoder49/code-input-for-typescript)
+1. **📝 Just like a `<textarea>`:** The core `code-input` element acts *as much as possible* like a `textarea`, including HTML forms support, but supports syntax highlighting.
+2. **🎨 Choose any highlighter:** This syntax highlighting can be implemented by *any available* library, such as Prism.js and highlight.js but including many more.
+3. **🔌 Plug (your selected plugins) and play:** The core functionality and code of `code-input` are *as lean as possible* without compromising the first two aims, and extra features that might be wanted are available as plugins, including ones in this repository. The choice to select plugins and isolate them creates user freedom and helps developers / contributors.
 
----
+### Contributing
 
-## What does it do?
-**`code-input`** lets you **turn any ordinary JavaScript syntax-highlighting theme and program into customisable syntax-highlighted textareas** using an HTML custom element. It uses vanilla CSS to superimpose a `textarea` on a `pre code` block, then handles indentations, scrolling and fixes any resulting bugs with JavaScript. To see how it works in more detail, please see [this CSS-Tricks article](https://css-tricks.com/creating-an-editable-textarea-that-supports-syntax-highlighted-code/ "Creating an Editable Textarea That Supports Syntax-Highlighted Code") I wrote.
+As a user of this library, if you find a bug that breaks any of these aims, or a plugin you want is not present, [please see our `CONTRIBUTING.md` file](CONTRIBUTING.md). It will be greatly appreciated and help us keep this library thriving.
 
-## What are the advantages of using code-input, and what can it be used for?
-Unlike other front-end code-editor projects, the simplicity of how `code-input` works means it is **highly customisable**. As it is not a full-featured editor, you can **choose what features you want it to include, and use your favourite syntax-highlighting algorithms and themes**.
+|[![Contributors](https://contrib.rocks/image?repo=WebCoder49%2Fcode-input)](https://github.com/WebCoder49/code-input/graphs/contributors)|
+|---|
+|...have contributed pull requests so far.|
+|(source: [contrib.rocks](https://contrib.rocks))|
 
-The `<code-input>` element works like a `<textarea>` and therefore **works in HTML5 forms and supports using the `name`, `value` and `placeholder` attributes, events like `onchange`, form resets, to name a few...** [(Demo)](https://codepen.io/WebCoder49/details/JjmqjZv)
+## 🚀 Getting Started
 
-`code-input` has also accumulated many **features in optional [plugins](./plugins/README.md)** from open-source contributions, allowing you to choose any features you want. If a feature you want is not present, [please open an issue / contribute it!](#contributing)
+### Links to Demos / Alternative Starting Points
+To see if `code-input` is right for you and try out its range of optional plugins, you can use the full demo below. The starter demos also show you their code so you can use them to help you get started. 
+* [![Full Demo](https://img.shields.io/static/v1?label=&message=Full+Demo&color=blue&logoColor=white&style=default&logo=javascript)](https://webcoder49.dev/code-input/demos/full)
+* [![Starter Demo & Code for Prism.js](https://img.shields.io/static/v1?label=&message=Starter+Demo+%26+Code+for+Prism.js&color=purple&logoColor=white&style=default&logo=javascript)](https://webcoder49.dev/code-input/demos/prism)
+* [![Starter Demo & Code for highlight.js](https://img.shields.io/static/v1?label=&message=Starter+Demo+%26+Code+for+highlight.js&color=orange&logoColor=white&style=default&logo=javascript)](https://webcoder49.dev/code-input/demos/hljs)
 
-## 🚀 Getting Started With `code-input` (in 4 simple steps)
+### Written Guide
 
-## [`code-input` also supports TypeScript (click)](https://github.com/WebCoder49/code-input-for-typescript)
+`code-input` is designed to be **both easy to use and customisable**.
 
-**You can follow the instructions below, or use the starter code available [here for highlight.js](https://codepen.io/WebCoder49/pen/vYMpMoJ?editors=1100) and here for [here for Prism.js](https://codepen.io/WebCoder49/pen/ExzNRyb?editors=1100).**
+> 📚 **If you're using TypeScript,** `code-input` and the steps below should work for both plain JavaScript and TypeScript once you link the library and its `.d.ts` bindings. [Here's an annotated example project.](https://github.com/WebCoder49/code-input-for-typescript)
 
-`code-input` is designed to be **both easy to use and customisable**. Here's how to use it to create syntax-highlighted textareas: 
-
-### 1. Import `code-input`
+#### 1. Import `code-input`
 - **First, import your favourite syntax-highlighter's JS and CSS theme files** to turn editable. 
 - Then, import the CSS and JS files of `code-input` from a downloaded release or a CDN. The non-minified files are useful for using during development.
+
+> ⬇️ **For a downloaded release,** you should download all of the files in this repository from [the latest release]() and keep at least the license and the JavaScript and CSS files in the root folder and `plugins` folder. When you've imported all the plugins you need, you can (but don't have to) delete the rest. The `.github`, `demos` and `tests` folders are all for development so can be deleted.
 
 <details>
 <summary>
@@ -63,12 +73,12 @@ From JSDelivr CDN (click)
 
 ```html
 <!--In the <head>-->
-<script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/code-input.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/code-input.min.css">
+<script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.3/code-input.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.3/code-input.min.css">
 ```
 </details>
 
-### 2. Creating a template
+#### 2. Creating a template
 The next step is to set up a `template` to link `code-input` to your syntax-highlighter. If you're using Prism.js or highlight.js, you can use the built-in template, or you can create your own otherwise. In these examples, I am registering the template as `"syntax-highlighted"`, but you can use any template name as long as you are consistent.
 
 - *Highlight.js:*
@@ -103,7 +113,7 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
   ));
   ```
 
-### 3. Adding plugins
+#### 3. Adding plugins
 [Plugins](./plugins/) allow you to add extra features to a template, like [automatic indentation](plugins/indent.js) or [support for highlight.js's language autodetection](plugins/autodetect.js). To use them, just:
 - Import the plugins' JS files after you have imported `code-input` and before registering the template.
 - Place instances of the plugins in the array of plugins argument when registering, like this:
@@ -128,7 +138,7 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 
 To see a full list of plugins and their functions, please see [plugins/README.md](./plugins/README.md).
 
-### 4. Using the component
+#### 4. Using the component
 Now that you have registered a template, you can use the custom `<code-input>` element in HTML. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `language` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events, as well as CSS styles, to make your element as simple or interactive as you like, as if it were a `textarea` element! 
   ```HTML
   <code-input language="HTML"></code-input>
@@ -140,11 +150,8 @@ Now that you have registered a template, you can use the custom `<code-input>` e
 
 > ⚠️ At the moment, you need to set the `--padding` property rather than `padding` for a `code-input` element's CSS. All other properties should work as normal.
 
-## Contributing
-If you have any features you would like to add to `code-input` as plugins or core functionality, or have found any bugs, please [open an issue](https://github.com/WebCoder49/code-input/issues) or [fork and submit a pull request](https://github.com/WebCoder49/code-input/fork)! All contributions to this open-source project will be greatly appreciated. You can see [more info in our `CONTRIBUTING.md` file](CONTRIBUTING.md).
+#### 5. (Optional) Contributing
 
+We can help you, and you can help us, to meet your full potential with `code-input` and even create new plugins! Found a bug? Please let us know!
 
-|[![Contributors](https://contrib.rocks/image?repo=WebCoder49%2Fcode-input)](https://github.com/WebCoder49/code-input/graphs/contributors)|
-|---|
-|...have contributed pull requests so far.|
-|(source: [contrib.rocks](https://contrib.rocks))|
+[See `CONTRIBUTING.md`.](CONTRIBUTING.md)

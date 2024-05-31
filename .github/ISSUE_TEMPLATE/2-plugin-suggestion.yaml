@@ -1,0 +1,74 @@
+name: Plugin Suggestion
+description: Suggest or Contribute a new plugin / change to an existing plugin for code-input
+title: '[Plugin] '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form allows us to organise and implement contributions as quickly as possible. We greatly appreciate everyone who uses their time to contribute through Issues and don't mean to put you off with all the fields!
+        
+        ---
+  - type: checkboxes
+    id: correct-template
+    attributes:
+      label: This is just for suggesting additional plugins or parts of plugins.
+      description: Bugs should be mentioned in the Bug Report template, and suggestions for the core code-input.js and code-input.css files should be filed as a Core Suggestion.
+      options:
+        - label: This is an enhancement, not a bug fix, and is about plugins.
+        required: true
+  - type: checkboxes
+    id: plugin-is-new
+    attributes:
+      label: Please Check the Plugin Doesn't Already Exist
+      description: We're accumulating a good number of [plugins in the `plugin` folder](https://github.com/WebCoder49/code-input/tree/main/plugins). What you want may already exist!
+      options:
+        - label: The plugin / all the functionality I want isn't yet implemented.
+          required: true
+  - type: markdown
+    attributes:
+      value: |
+        ---
+  - type: dropdown
+    id: plugins-to-extend
+    attributes:
+      label: (Optional) Enhancement of an Existing Plugin?
+      description: If you want to add more functionality to an existing plugin, please select the plugin you want more functionality in below. This is unlikely, as plugins are meant to provide small but self-contained pieces of functionality, but things like extending the Indentation plugin from tabs to also support spaces (already done) would count here. Basically, a plugin should make sense to run by itself.
+      options:
+        - AutoCloseBrackets
+        - Autocomplete
+        - Autodetect
+        - FindAndReplace
+        - GoToLine
+        - Indent
+        - PrismLineNumbers
+        - SpecialChars
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: When might this plugin be used? When do *you* plan to use it?
+    validations:
+      required: true
+  - type: textarea
+    id: parameters
+    attributes:
+      label: Parameters
+      description: List the parameters you want to be able to pass into the plugin when you instantiate it, which let you customise how it runs. If there are no needed parameters, state it.
+    validations:
+      required: true
+  - type: textarea
+    id: desired-behaviour
+    attributes:
+      label: Desired Behaviour
+      description: How do you want the plugin to look and work? If you know what user stories are, you can include them, and if you have ideas about the implementation, you can note them down here too.
+      placeholder: You can be brief if you want.
+    validations:
+      required: true
+  - type: checkboxes
+    id: plugin-is-new
+    attributes:
+      label: Will you submit a pull request?
+      description: Just suggesting a plugin is contributing, but if you want to really help us out and have the time, you can contribute the plugin via the normal fork-and-pull-request Git flow. Either way, we will contact you via the Issue you are creating for advice.
+      options:
+        - label: I will contribute this plugin through a pull request.
+          required: false

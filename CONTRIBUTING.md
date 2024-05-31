@@ -1,35 +1,34 @@
 # Contributing to `code-input`
 
-🎉**Here at `code-input`, contributions of all sizes are more than welcome. Below are some scenarios where you could contribute and how to do so.** Contributions are generally accepted when they help achieve at least one of the aims below, but others will be considered:
+🎉**Here at `code-input`, contributions of all sizes are more than welcome. Below are some scenarios where you could contribute and how to do so.** Contributions are generally accepted when they help achieve at least one of our aims below, but others will be considered:
 
-* The `code-input` element should act like a normal HTML `textarea` in all browsers, working with all of the normal attributes, events and other types of behaviour.
-* The `code-input` element should be easy to use with all popular syntax-highlighting libraries.
-* Any modifications of `code-input` that would be useful for the open-source community but are not core to this functionality should be available as optional plugins in the `plugins` folder. Here's where most feature contributions will go.
+1. **📝 Just like a `<textarea>`:** The core `code-input` element acts *as much as possible* like a `textarea`, including HTML forms support, but supports syntax highlighting.
+2. **🎨 Choose any highlighter:** This syntax highlighting can be implemented by *any available* library, such as Prism.js and highlight.js but including many more.
+3. **🔌 Plug (your selected plugins) and play:** The core functionality and code of `code-input` are *as lean as possible* without compromising the first two aims, and extra features that might be wanted are available as plugins, including ones in this repository. The choice to select plugins and isolate them creates user freedom and helps developers / contributors.
 
-We will generally *not* consider the following contributions:
-* Excess functionality and/or complexity in the main code-input files - these types of contributions should go in the plugin folder instead.
-* Issues that have been closed as not planned in the past (you can search the issue list to check), unless you bring a change that overcomes the reason they were not planned.
+We will generally *not* consider the contributions that place excess functionality in the `code-input.js` file rather than in a plugin. 
 
 This said, if you're not sure whether your change will be accepted, please ask in an issue.
 
----
 
-To keep this community productive and enjoyable, please [don't break our code of conduct](https://github.com/WebCoder49/code-input/blob/main/CODE_OF_CONDUCT.md).
+> To keep this community productive and enjoyable, please [don't break our code of conduct](https://github.com/WebCoder49/code-input/blob/main/CODE_OF_CONDUCT.md). I think it's mostly common sense.
 
----
 # Ways you could contribute:
-## 1. I've found a bug but don't know how / don't have time to fix it.
-If you think you've found a bug, please [submit an issue](https://github.com/WebCoder49/code-input/issues) with screenshots, how you found the bug, and copies of the console's logs if an error is in them. Please also mention the template and plugins you used (your `codeInput.registerTemplate(...)` snippet). We'd be more than happy to help you fix it. A demo using [CodePen](https://codepen.io/) would be incredibly useful.
 
-## 2. I have implemented a feature / have thought of a potential feature for the library and think it could be useful for others.
-The best way to implement a feature is as a plugin like those in the `plugins` folder of `code-input`. If you do this, you could contribute it as in point 3 below.
-Otherwise, if you do not have the time needed / do not want to implement it, any potential plugins would be [welcome as an Issue](https://github.com/WebCoder49/code-input/issues) which specifies the uses and desired characteristics.
+## Always start by submitting / finding an Issue
 
-## 3. I want to contribute code that I need / have seen in the Issues.
+We have a guided process in place to let you submit bug reports and feature suggestions as GitHub Issues, which you should do whether you are going to contribute a solution through a Pull Request or not.
+
+Firstly, [search the issues here](https://github.com/WebCoder49/code-input/issues) to check whether anyone else has already reported/suggested it. If so, comment that you have the same bug/idea and add any more details you think are useful.
+
+If the issue doesn't exist, [create the issue from a template here](https://github.com/WebCoder49/code-input/issues/new/choose).
+
+## Code contributions via Pull Requests
+
 Firstly, thank you for doing this! This is probably the most time consuming way of contributing but is also the most rewarding for both you and me as a maintainer.
 
-Please first open an issue if one doesn't already exist, and assign yourself to it. Then, [make a fork of the repo and submit a pull request](https://docs.github.com/en/get-started/quickstart/contributing-to-projects).
+Once you have followed the steps above to get an Issue, check that nobody else is implementing it (i.e. it is not assigned to anyone), and comment on the Issue that you want to contribute to, notifying @WebCoder49. I will assign you to the Issue to welcome your contribution, while you [make a fork of the repo and submit a pull request](https://docs.github.com/en/get-started/quickstart/contributing-to-projects).
 
-In the pull request, include the code updates for your feature / bug, and if you're adding a new feature make sure you comment your code so it's understandable to future contributors, and if you can, add unit tests for it in tests/tester.js. If you have any questions, just let me (@WebCoder49) know! 
+You can be pretty sure I'll accept contributions that match the main aims of `code-input`, but if you doubt they will be useful you can wait until I assign you and give you the go-ahead.
 
-If an issue is open but already assigned to someone, it is probably already being worked on - you could still suggest a method of fixing it in the comments but shouldn't open a pull request as it would waste your time.
+In the pull request, include the code updates for your feature / bug, and if you're adding a new feature make sure you comment your code so it's understandable to future contributors, and if you can, add unit tests for it in tests/tester.js. If you have any questions, just let me (@WebCoder49) know!

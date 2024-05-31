@@ -1,0 +1,99 @@
+<!--This is the code of the page you're on now!
+For simplicity's sake, editing it won't change this page. Use the full demo to see functionality like that.
+Here's the code for this minimal usage of code-input with highlight.js.-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>code-input with highlight.js</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!--Import highlight.js-->
+    <!--For a downloaded version of highlight.js, replace the file paths for both CSS and JS below with the relative file paths from this HTML file.-->
+    <!--This is similar to the "self hosted" example below.-->
+    <!--Guide: https://highlightjs.org/#usage#:~:text=As%20HTML%20Tags-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/styles/default.min.css">
+    <!--You can also choose custom themes by changing "default" above to the theme name from https://highlightjs.org/demo-->
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/highlight.min.js"></script>
+    
+    <!--Import highlight.js languages-->
+    <!--You can copy this line to import additional languages, replacing "javascript" with a language name from https://highlightjs.org/demo.-->
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9/build/languages/javascript.min.js"></script>
+    
+    <!--Import code-input-->
+    <!--The same goes for downloaded versions, but with relative file paths.-->
+    <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/code-input.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/code-input.min.css">
+    
+    <!--Import some code-input plugins-->
+    <!--The same goes for downloaded versions, but with relative file paths.-->
+    <!--Plugin files are here: https://github.com/WebCoder49/code-input/tree/main/plugins.-->
+    <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.2/plugins/indent.min.js"></script>
+    
+    <!--Register code-input template-->
+    <script>
+      codeInput.registerTemplate("syntax-highlighted", 
+        codeInput.templates.hljs(
+          hljs, 
+          [
+            // You can add or remove plugins in this list from https://github.com/WebCoder49/code-input/blob/main/plugins/README.md.
+            // All plugins used must be imported above.
+            new codeInput.plugins.Indent(true, 2) // Allow Tab-key indentation, with 2 spaces indentation
+          ]
+        )
+      );
+      // Register other templates with different names here, if needed.
+    </script>
+    <style>
+      body {
+        margin: 0;
+        padding: 10px;
+      }
+      nav, p, h1, h2, h3, h4, h5, h6 {
+        font-family: sans-serif;
+      }
+      nav {
+        padding: 10px;
+        min-height: 10px;
+        margin: 0px;
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 1;
+      }
+      code-input {
+        margin: 10px;
+        --padding: 10px; /* The -- is needed, as a small caveat of the current version of code-input. */
+        height: calc(100vh - 70px);
+      }
+    </style>
+  </head>
+  <body>
+    <nav><a href="../../">&lt; Back Home</a> || <a href="../full/">Full demo</a> || <a href="../prism/">Prism.js starter</a> || <strong>highlight.js starter</strong> <code style="float: right;">code-input v2.2</code></nav>
+
+    <!--The language attribute is case-insensitive but must refer to a language imported above.-->
+    <code-input template="syntax-highlighted" language="HTML">&lt;!--Loading HTML--&gt;</code-input>
+    <!--You should now be able to use the code-input element in HTML5 forms / attributes and with JavaScript events / properties as if it were a textarea!-->
+    
+    <!--Additional usage details are here: https://github.com/WebCoder49/code-input/blob/main/README.md-->
+    <!--A list of plugins are here. We recommend the Autodetect plugin with highlight.js: https://github.com/WebCoder49/code-input/blob/main/plugins/README.md-->
+
+    <script>
+        // The document must be loaded to interact with its elements
+        window.addEventListener("load", function() {
+            // Just for the demo
+            const pageCodeRequest = new Request(window.location);
+            fetch(pageCodeRequest)
+                .then((response) => {
+                    if(!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then((response) => {
+                    // Accessed just like a textarea!
+                    document.querySelector("code-input").value = response;
+                });
+        });
+    </script>
+  </body>
+</html>

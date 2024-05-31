@@ -1,0 +1,29 @@
+name: Core Functionality Suggestion
+description: Suggest or Contribute a change to the core code-input.js / code-input.css files
+title: '[Core] '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form allows us to organise and implement contributions as quickly as possible. We greatly appreciate everyone who uses their time to contribute through Issues and don't mean to put you off with all the fields!
+        
+        ---
+  - type: checkboxes
+    id: correct-template
+    attributes:
+      label: This is just for suggesting new features / refactors of the core code-input code.
+      description: For example, a template creation function for another syntax-highlighting library. The code-input element not supporting a piece of native textarea functionality itself is classified as a bug and should be filed in the Bug Report template. For changes to plugins, use the Plugin Suggestion template.
+      options:
+        - label: I want a change to the core code that is not patching textarea functionality into the code-input element (as this would need a Bug Report).
+        required: true
+  - type: markdown
+    attributes:
+      value: |
+        ---
+  - type: textarea
+    id: suggestions
+    attributes:
+      label: Suggestions
+      description: List your suggestions below.
+    validations:
+      required: true
