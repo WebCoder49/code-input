@@ -865,7 +865,13 @@ var codeInput = {
         addEventListener(type, listener, options = undefined) {
             // Save a copy of the callback where `this` refers to the code-input element.
             // This callback is modified to only run when the handleEventsFromTextarea is set.
-            let boundCallback = function(evt) { listener(evt); }.bind(this);
+            let boundCallback = function (evt) {
+                if (typeof listener === 'function') {
+                    listener(evt);
+                } else if (listener && listener.handleEvent) {
+                    listener.handleEvent(evt);
+                }
+            }.bind(this);
             this.boundEventCallbacks[listener] = boundCallback;
 
             if (codeInput.textareaSyncEvents.includes(type)) {
