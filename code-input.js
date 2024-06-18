@@ -864,7 +864,6 @@ var codeInput = {
          */
         addEventListener(type, listener, options = undefined) {
             // Save a copy of the callback where `this` refers to the code-input element.
-            // This callback is modified to only run when the handleEventsFromTextarea is set.
             let boundCallback = function (evt) {
                 if (typeof listener === 'function') {
                     listener(evt);
@@ -876,20 +875,21 @@ var codeInput = {
 
             if (codeInput.textareaSyncEvents.includes(type)) {
                 // Synchronise with textarea, only when handleEventsFromTextarea is true
-                let boundCallback = function(evt) { if(this.handleEventsFromTextarea) listener(evt); }.bind(this);
-                this.boundEventCallbacks[listener] = boundCallback;
+                // This callback is modified to only run when the handleEventsFromTextarea is set.
+                let conditionalBoundCallback = function(evt) { if(this.handleEventsFromTextarea) boundCallback(evt); }.bind(this);
+                this.boundEventCallbacks[listener] = conditionalBoundCallback;
 
                 if (options === undefined) {
                     if(this.textareaElement == null) {
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback); });
                     } else {
-                        this.textareaElement.addEventListener(type, boundCallback);
+                        this.textareaElement.addEventListener(type, conditionalBoundCallback);
                     }
                 } else {
                     if(this.textareaElement == null) {
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback, options); });
                     } else {
-                        this.textareaElement.addEventListener(type, boundCallback, options);
+                        this.textareaElement.addEventListener(type, conditionalBoundCallback, options);
                     }
                 }
             } else {
