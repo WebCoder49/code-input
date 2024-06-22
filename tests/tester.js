@@ -210,17 +210,21 @@ console.log("I've got another line!", 2 < 3, "should be true.");`);
 console.log("I've got another line!", 2 &lt; 3, "should be true.");
 `); // Extra newline so line numbers visible if enabled
 
-    // Event Tests
+    // Event Listener Tests
+    // Function type listeners
     let numTimesInputCalled = 0;
     let numTimesChangeCalled = 0;
-    codeInputElement.addEventListener("input", (evt) => {
+
+    let inputListener = (evt) => {
         if(!evt.isTrusted) { // To prevent duplicate calling due to allowInputEvents hack
             numTimesInputCalled++;
         }
-    });
-    codeInputElement.addEventListener("change", () => {
+    };
+    codeInputElement.addEventListener("input", inputListener);
+    let changeListener = () => {
         numTimesChangeCalled++;
-    });
+    };
+    codeInputElement.addEventListener("change", changeListener);
 
     let inputDeletedListenerCalled = false;
     let deletedListener = () => {
@@ -235,9 +239,41 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     textarea.blur(); // Unfocus textarea - calls change event
     textarea.focus();
 
-    assertEqual("Core", "Input Event Listener Called Right Number of Times", numTimesInputCalled, 6);
-    assertEqual("Core", "Change Event Listener Called Right Number of Times", numTimesChangeCalled, 1);
-    testAssertion("Core", "Input Event Removed Listener Not Called", !inputDeletedListenerCalled, "(code-input element).removeEventListener did not work.");
+    assertEqual("Core", "Function Event Listeners: Input Called Right Number of Times", numTimesInputCalled, 6);
+    assertEqual("Core", "Function Event Listeners: Change Called Right Number of Times", numTimesChangeCalled, 1);
+    testAssertion("Core", "Function Event Listeners: Input Removed Listener Not Called", !inputDeletedListenerCalled, "(code-input element).removeEventListener did not work.");
+    
+    codeInputElement.removeEventListener("input", inputListener);
+    codeInputElement.removeEventListener("change", changeListener);
+
+    // Repeat for Object type listeners
+    numTimesInputCalled = 0;
+    numTimesChangeCalled = 0;
+    codeInputElement.addEventListener("input", {handleEvent: (evt) => {
+        if(!evt.isTrusted) { // To prevent duplicate calling due to allowInputEvents hack
+            numTimesInputCalled++;
+        }
+    }});
+    codeInputElement.addEventListener("change", {handleEvent: () => {
+        numTimesChangeCalled++;
+    }});
+
+    inputDeletedListenerCalled = false;
+    deletedListener = {handleEvent: () => {
+        inputDeletedListenerCalled = true;
+    }};
+    codeInputElement.addEventListener("input", deletedListener);
+    codeInputElement.removeEventListener("input", deletedListener);
+
+    // Make listeners be called
+    textarea.focus(); // Focus textarea
+    addText(textarea, " // Hi");
+    textarea.blur(); // Unfocus textarea - calls change event
+    textarea.focus();
+
+    assertEqual("Core", "Object Event Listeners: Input Called Right Number of Times", numTimesInputCalled, 6);
+    assertEqual("Core", "Object Event Listeners: Change Called Right Number of Times", numTimesChangeCalled, 1);
+    testAssertion("Core", "Object Event Listeners: Input Removed Listener Not Called", !inputDeletedListenerCalled, "(code-input element).removeEventListener did not work.");
     
     // Changing language should be correct
     if(!isHLJS) {
