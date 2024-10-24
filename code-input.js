@@ -158,14 +158,14 @@ var codeInput = {
         /**
          * Constructor to create a custom template instance. Pass this into `codeInput.registerTemplate` to use it.
          * I would strongly recommend using the built-in simpler template `codeInput.templates.prism` or `codeInput.templates.hljs`.
-         * @param {Function} highlight - a callback to highlight the code, that takes an HTML `<code>` element inside a `<pre>` element as a parameter
+         * @param {(codeElement: HTMLCodeElement, codeInput?: codeInput.CodeInput) => void} highlight - a callback to highlight the code, that takes an HTML `<code>` element inside a `<pre>` element as a parameter
          * @param {boolean} preElementStyled - is the `<pre>` element CSS-styled as well as the `<code>` element? If true, `<pre>` element's scrolling is synchronised; if false, `<code>` element's scrolling is synchronised.
          * @param {boolean} isCode - is this for writing code? If true, the code-input's lang HTML attribute can be used, and the `<code>` element will be given the class name 'language-[lang attribute's value]'.
          * @param {boolean} includeCodeInputInHighlightFunc - Setting this to true passes the `<code-input>` element as a second argument to the highlight function.
          * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.Plugin`
          * @returns {codeInput.Template} template object
          */
-        constructor(highlight = function () { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
+        constructor(highlight = function (codeElement) { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
             this.highlight = highlight;
             this.preElementStyled = preElementStyled;
             this.isCode = isCode;
