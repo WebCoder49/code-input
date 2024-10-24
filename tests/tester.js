@@ -123,6 +123,7 @@ function beginTest(isHLJS) {
             new codeInput.plugins.FindAndReplace(),
             new codeInput.plugins.GoToLine(),
             new codeInput.plugins.Indent(true, 2),
+            new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
             new codeInput.plugins.SpecialChars(true),
         ]));
     } else {
@@ -140,6 +141,7 @@ function beginTest(isHLJS) {
             new codeInput.plugins.FindAndReplace(),
             new codeInput.plugins.GoToLine(),
             new codeInput.plugins.Indent(true, 2),
+            new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
             new codeInput.plugins.SpecialChars(true),
         ]));
     }
@@ -525,6 +527,29 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     testAddingText("Indent-AutoCloseBrackets", textarea, function(textarea) {
         addText(textarea, `function printTriples(max) {\nfor(let i = 0; i < max-2; i++) {\nfor(let j = 0; j < max-1; j++) {\nfor(let k = 0; k < max; k++) {\nconsole.log(i,j,k);\n}\n//Hmmm...`, true);
     }, 'function printTriples(max) {\n  for(let i = 0; i < max-2; i++) {\n    for(let j = 0; j < max-1; j++) {\n      for(let k = 0; k < max; k++) {\n        console.log(i,j,k);\n      }\n      //Hmmm...\n      }\n    }\n  }\n}', 189, 189);
+
+    // SelectTokenCallbacks
+    if(isHLJS) {
+        addText(textarea, "\nlet x = 1;\nlet y = 2;\nconsole.log(`${x} + ${y} = ${x+y}`);");
+        move(textarea, -4); // Ends at |: "${x+y|}`);"
+        textarea.selectionStart -= 35; // Starts at |: "let y = |2;"
+        await waitAsync(50); // Wait for highlighting so text updates
+        assertEqual("SelectTokenCallbacks", "Number of Selected Tokens", codeInputElement.querySelectorAll(".in-selection").length, 13);
+        assertEqual("SelectTokenCallbacks", "Number of Selected .hljs-string Tokens", codeInputElement.querySelectorAll(".hljs-string.in-selection").length, 0); // Since parentTokensAreSelected set to false    
+        assertEqual("SelectTokenCallbacks", "Number of Selected .hljs-subst Tokens", codeInputElement.querySelectorAll(".hljs-subst.in-selection").length, 2);    
+    } else {
+        // Combined with compatiblity-added match-braces plugin
+        addText(textarea, "\n[(),((),'Hi')]");
+        await waitAsync(50); // Wait for highlighting so text updates
+        // Move back 2 characters so just after 'Hi'
+        move(textarea, -2);
+        await waitAsync(50); // Wait for highlighting so text updates
+        assertEqual("SelectTokenCallbacks", "Number of Selected Braces 1", codeInputElement.getElementsByClassName("brace-hover").length, 2);
+        // Move forward 1 character so between )]
+        move(textarea, 1);
+        await waitAsync(50); // Wait for highlighting so text updates
+        assertEqual("SelectTokenCallbacks", "Number of Selected Braces 2", codeInputElement.getElementsByClassName("brace-hover").length, 4);    
+    }
 
     // SpecialChars
     // Clear all code

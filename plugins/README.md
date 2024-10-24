@@ -65,6 +65,13 @@ Files: [special-chars.js](./special-chars.js) / [special-chars.css](./special-ch
 
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/jOeYJbm)
 
+### Select Token Callbacks
+Make tokens in the `<pre><code>` element that are included within the selected text of the `<code-input>` gain a CSS class while selected, or trigger JavaScript callbacks.
+
+Files: select-token-callbacks.js
+
+[🚀 *CodePen Demo*]()
+
 ## Using Plugins
 Plugins allow you to add extra features to a template, like [automatic indentation](./indent.js) or [support for highlight.js's language autodetection](./autodetect.js). To use them, just:
 - Import the plugins' JS/CSS files (there may only be one of these; import all of the files that exist) after you have imported `code-input` and before registering the template.

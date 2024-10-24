@@ -596,7 +596,8 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
 
     /* Highlight a match from the find functionality given its start and end indexes in the text. 
     Start from the currentElement as this function is recursive. Use the matchID in the class name
-    of the match so different matches can be identified. */
+    of the match so different matches can be identified.
+    This code is similar to codeInput.plugins.SelectTokenCallbacks.SelectedTokenState.updateSelectedTokens*/
     highlightMatch(matchID, currentElement, startIndex, endIndex) {
         for(let i = 0; i < currentElement.childNodes.length; i++) {
             let childElement = currentElement.childNodes[i];
@@ -604,6 +605,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
 
             let noInnerElements = false;
             if(childElement.nodeType == 3) {
+                // Text node
                 if(i + 1 < currentElement.childNodes.length && currentElement.childNodes[i+1].nodeType == 3) {
                     // Can merge with next text node
                     currentElement.childNodes[i+1].textContent = childElement.textContent + currentElement.childNodes[i+1].textContent; // Merge textContent with next node
@@ -616,7 +618,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
 
                 let replacementElement = document.createElement("span");
                 replacementElement.textContent = childText;
-                replacementElement.classList.add("code-input_find-and-replace_temporary-span"); // Can remove
+                replacementElement.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
                 
                 currentElement.replaceChild(replacementElement, childElement);
                 childElement = replacementElement;
@@ -631,7 +633,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
                         let startSpan = document.createElement("span");
                         startSpan.classList.add("code-input_find-and-replace_find-match"); // Highlighted
                         startSpan.setAttribute("data-code-input_find-and-replace_match-id", matchID);
-                        startSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove
+                        startSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
                         startSpan.textContent = childText.substring(0, endIndex);
                         if(startSpan.textContent[0] == "\n") {
                             // Newline at start - make clear
@@ -666,7 +668,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
                         // Match starts and ends in childElement - highlight middle part
                         // Text node - highlight last part
                         let startSpan = document.createElement("span");
-                        startSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove
+                        startSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
                         startSpan.textContent = childText.substring(0, startIndex);
 
                         let middleText = childText.substring(startIndex, endIndex);
@@ -679,7 +681,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
                         }
 
                         let endSpan = document.createElement("span");
-                        endSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove
+                        endSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
                         endSpan.textContent = childText.substring(endIndex);
                         
                         childElement.insertAdjacentElement('beforebegin', startSpan);
@@ -693,7 +695,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
                         let endSpan = document.createElement("span");
                         endSpan.classList.add("code-input_find-and-replace_find-match"); // Highlighted
                         endSpan.setAttribute("data-code-input_find-and-replace_match-id", matchID);
-                        endSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove
+                        endSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
                         endSpan.textContent = childText.substring(startIndex);
                         if(endSpan.textContent[0] == "\n") {
                             // Newline at start - make clear
