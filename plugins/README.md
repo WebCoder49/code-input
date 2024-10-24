@@ -70,7 +70,7 @@ Make tokens in the `<pre><code>` element that are included within the selected t
 
 Files: select-token-callbacks.js
 
-[🚀 *CodePen Demo*]()
+[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/WNVZXxM)
 
 ## Using Plugins
 Plugins allow you to add extra features to a template, like [automatic indentation](./indent.js) or [support for highlight.js's language autodetection](./autodetect.js). To use them, just:
