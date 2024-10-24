@@ -117,6 +117,8 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 </script>
 ```
 
+> ⚠️ Unfortunately placing multiple plugins of the same type in a template can currently cause errors and undefined behaviour, even if such a configuration makes logical sense. [This is issue #118](https://github.com/WebCoder49/code-input/issues/118) and will be fixed as soon as possible - if you'd like to help and have the time you're welcome, but it's also at the top of the maintainer's To-Do list.
+
 To see a full list of plugins and their functions, please see [plugins/README.md](./plugins/README.md).
 
 ### 4. Using the component
