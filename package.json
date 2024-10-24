@@ -1,6 +1,6 @@
 {
   "name": "@webcoder49/code-input",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Fully customisable, editable syntax-highlighted textareas.",
   "browser": "code-input.js",
   "scripts": {
