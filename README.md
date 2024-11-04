@@ -15,7 +15,7 @@
 ---
 
 ## What does it do?
-**`code-input`** lets you **turn any ordinary JavaScript syntax-highlighting theme and program into customisable syntax-highlighted textareas** using an HTML custom element. It uses vanilla CSS to superimpose a `textarea` on a `pre code` block, then handles indentations, scrolling and fixes any resulting bugs with JavaScript. To see how it works in more detail, please see [this CSS-Tricks article](https://css-tricks.com/creating-an-editable-textarea-that-supports-syntax-highlighted-code/ "Creating an Editable Textarea That Supports Syntax-Highlighted Code") I wrote.
+**`code-input`** lets you **turn any ordinary JavaScript syntax-highlighting theme and program into customisable syntax-highlighted textareas** using an HTML custom element. It uses vanilla CSS to superimpose a `textarea` on a `pre code` block, then handles indentations, scrolling and fixes any resulting bugs with JavaScript. To see how it works behind the scenes (not how to use this library), please see [this CSS-Tricks article](https://css-tricks.com/creating-an-editable-textarea-that-supports-syntax-highlighted-code/ "Creating an Editable Textarea That Supports Syntax-Highlighted Code") I wrote.
 
 ## What are the advantages of using code-input, and what can it be used for?
 Unlike other front-end code-editor projects, the simplicity of how `code-input` works means it is **highly customisable**. As it is not a full-featured editor, you can **choose what features you want it to include, and use your favourite syntax-highlighting algorithms and themes**.
@@ -28,7 +28,7 @@ The `<code-input>` element works like a `<textarea>` and therefore **works in HT
 
 ## [`code-input` also supports TypeScript (click)](https://github.com/WebCoder49/code-input-for-typescript)
 
-**You can follow the instructions below, or use the starter code available [here for highlight.js](https://codepen.io/WebCoder49/pen/vYMpMoJ?editors=1100) and here for [here for Prism.js](https://codepen.io/WebCoder49/pen/ExzNRyb?editors=1100).**
+**You can follow the instructions below, or use the starter code available [here for highlight.js](https://codepen.io/WebCoder49/pen/vYMpMoJ?editors=1100) and [here for Prism.js](https://codepen.io/WebCoder49/pen/ExzNRyb?editors=1100).**
 
 `code-input` is designed to be **both easy to use and customisable**. Here's how to use it to create syntax-highlighted textareas: 
 
