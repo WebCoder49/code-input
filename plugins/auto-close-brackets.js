@@ -17,6 +17,9 @@ codeInput.plugins.AutoCloseBrackets = class extends codeInput.Plugin {
         this.bracketPairs = bracketPairs;
     }
 
+    multipleInstancesCanBeAdded() { return false; } // TODO: Allow multiple instances
+    canBeAddedAndRemoved() { return false; } // TODO: Implement
+
     /* Add keystroke events */
     afterElementsAdded(codeInput) {
         codeInput.textareaElement.addEventListener('keydown', (event) => { this.checkBackspace(codeInput, event) });

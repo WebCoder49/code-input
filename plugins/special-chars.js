@@ -31,6 +31,9 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
         this.canvasContext = canvas.getContext("2d");
     }
 
+    multipleInstancesCanBeAdded() { return false; } // TODO: Allow multiple instances; Remove pluginData usage
+    canBeAddedAndRemoved() { return false; } // TODO: Implement
+
     /* Initially render special characters as the highlighting algorithm may automatically highlight and remove them */
     afterElementsAdded(codeInput) {
         setTimeout(() => { codeInput.value = codeInput.value; }, 100);

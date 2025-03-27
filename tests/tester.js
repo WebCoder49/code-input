@@ -107,57 +107,51 @@ function waitAsync(milliseconds) {
 /* Start the test, for Prism.js if isHLJS is false, or for highlight.js if isHLJS is true. */
 function beginTest(isHLJS) {
     let codeInputElem = document.querySelector("code-input");
+    let template;
     if(isHLJS) {
-        codeInput.registerTemplate("code-editor", codeInput.templates.hljs(hljs, [
-            new codeInput.plugins.AutoCloseBrackets(), 
-            new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
-                if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
-                    // Show popup
-                    popupElem.style.display = "block";
-                    popupElem.innerHTML = "Here's your popup!";
-                } else {
-                    popupElem.style.display = "none";
-                }
-            }),
-            new codeInput.plugins.Autodetect(),
-            new codeInput.plugins.FindAndReplace(),
-            new codeInput.plugins.GoToLine(),
-            new codeInput.plugins.Indent(true, 2),
-            new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
-            new codeInput.plugins.SpecialChars(true),
-        ]));
+        template = codeInput.templates.hljs(hljs);
+
+        // highlight.js-only plugins
+        template.addPlugin(new codeInput.plugins.Autodetect());
+
     } else {
-        codeInput.registerTemplate("code-editor", codeInput.templates.prism(Prism, [
-            new codeInput.plugins.AutoCloseBrackets(), 
-            new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
-                if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
-                    // Show popup
-                    popupElem.style.display = "block";
-                    popupElem.innerHTML = "Here's your popup!";
-                } else {
-                    popupElem.style.display = "none";
-                }
-            }),
-            new codeInput.plugins.FindAndReplace(),
-            new codeInput.plugins.GoToLine(),
-            new codeInput.plugins.Indent(true, 2),
-            new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
-            new codeInput.plugins.SpecialChars(true),
-        ]));
+        template = codeInput.templates.prism(Prism);
+
+        // Prism.js-only plugins
+        // (none)
+
     }
+
+    template.addPlugin(new codeInput.plugins.AutoCloseBrackets());
+    template.addPlugin(new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+        if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+            // Show popup
+            popupElem.style.display = "block";
+            popupElem.innerHTML = "Here's your popup!";
+        } else {
+            popupElem.style.display = "none";
+        }
+    }));
+    template.addPlugin(new codeInput.plugins.FindAndReplace());
+    template.addPlugin(new codeInput.plugins.GoToLine());
+    template.addPlugin(new codeInput.plugins.Indent(true, 2));
+    template.addPlugin(new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false));
+    template.addPlugin(new codeInput.plugins.SpecialChars(true));
+
+    codeInput.registerTemplate("code-editor", template);
     startLoad(codeInputElem, isHLJS);
 }
 
-/* Start loading the tests, using the codeInput load time as one of the tests. */
+/* Wait until the textarea has loaded then run the tests. */
 function startLoad(codeInputElem, isHLJS) {
     let textarea;
-    let timeToLoad = 0;
+    // Wait for textarea to show
     let interval = window.setInterval(() => {
         textarea = codeInputElem.querySelector("textarea");
-        if(textarea != null) window.clearInterval(interval);
-        timeToLoad += 10;
-        testData("TimeTaken", "Textarea Appears", timeToLoad+"ms (nearest 10)");
-        startTests(textarea, isHLJS);
+        if(textarea != null) {
+            window.clearInterval(interval);
+            startTests(textarea, isHLJS);
+        }
     }, 10);
 }
 

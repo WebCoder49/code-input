@@ -34,6 +34,10 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         this.escTabToChangeFocus = true;
     }
 
+    multipleInstancesCanBeAdded() { return false; } // Adding multiple instances wouldn't make sense
+    canBeAddedAndRemoved() { return false; } // TODO: Implement
+    // TODO: Remove pluginData usage
+
     /**
      * Make the Tab key 
      */

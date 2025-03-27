@@ -64,17 +64,19 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 
 - *Highlight.js:*
   ```js
-  codeInput.registerTemplate("syntax-highlighted", codeInput.templates.hljs(hljs, [] /* Array of plugins (see below) */));
+  let template = codeInput.templates.hljs(hljs);
+  codeInput.registerTemplate("syntax-highlighted", template);
   ```
 
 - *Prism.js:*
   ```js
-  codeInput.registerTemplate("syntax-highlighted", codeInput.templates.prism(Prism, [] /* Array of plugins (see below) */));
+  let template = codeInput.templates.prism(Prism);
+  codeInput.registerTemplate("syntax-highlighted", template));
   ```
 
 - *Custom:*
   ```js
-  codeInput.registerTemplate("syntax-highlighted", new codeInput.Template(
+  let template = new codeInput.Template(
     function(result_element) { /* Highlight function - with `pre code` code element */
       /* Highlight code in result_element - code is already escaped so it doesn't become HTML */
     },
@@ -88,16 +90,15 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 
     false /* Optional - Setting this to true passes the `<code-input>` element as a second
            * argument to the highlight function to be used for getting data- attribute values
-           * and using the DOM for the code-input */,
-
-    [] // Array of plugins (see below)
-  ));
+           * and using the DOM for the code-input */
+  );
+  codeInput.registerTemplate("syntax-highlighted", template);
   ```
 
 ### 3. Adding plugins
 [Plugins](./plugins/) allow you to add extra features to a template, like [automatic indentation](plugins/indent.js) or [support for highlight.js's language autodetection](plugins/autodetect.js). To use them, just:
 - Import the plugins' JS files after you have imported `code-input` and before registering the template.
-- Place instances of the plugins in the array of plugins argument when registering, like this:
+- Use the `addPlugin` method of the template with an instance of each plugin you want to add, like this:
 ```html
 <script src="code-input.js"></script>
 <!--...-->
@@ -105,17 +106,26 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 <script src="plugins/indent.js"></script>
 <!--...-->
 <script>
-  codeInput.registerTemplate("syntax-highlighted", 
-    codeInput.templates.hljs(
-      hljs, 
-      [
-        new codeInput.plugins.Autodetect(), 
-        new codeInput.plugins.Indent(true, 2) // 2 spaces indentation
-      ]
-    )
-  );
+  let template = codeInput.templates.hljs(hljs);
+  
+  template.addPlugin(new codeInput.plugins.Autodetect());
+  template.addPlugin(new codeInput.plugins.Indent(true, 2)); 
+
+  codeInput.registerTemplate("syntax-highlighted", template);
+
+// If you used to use an older version of code-input where
+// plugins were passed in an array, you don't need to change
+// your code when you update - the old way will still work
+// in versions 2.*.
 </script>
 ```
+
+<details>
+<summary>Remove and re-add a plugin on demand!</summary>
+
+Many plugins can be removed (with the template's `removePlugin` method) and re-added (with the template's `addPlugin` method, as above) on demand to a template and thus all of its connected elements. Just make sure you assign the constructed plugin to a variable first rather than directly passing it into the `addPlugin` function as above, so you can pass it into later calls. You can see the plugins available for this in the page linked below, or just try it out and an error will be thrown if it's impossible!
+
+</details>
 
 > ⚠️ Unfortunately placing multiple plugins of the same type in a template can currently cause errors and undefined behaviour, even if such a configuration makes logical sense. [This is issue #118](https://github.com/WebCoder49/code-input/issues/118) and will be fixed as soon as possible - if you'd like to help and have the time you're welcome, but it's also at the top of the maintainer's To-Do list.
 

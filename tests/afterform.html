@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Form Submitted</title>
+    </head>
+    <body>
+        <a href="javascript:history.go(-1)"/>Back to form</a>
+        <h1><code>GET</code> Parameters</h1>
+        <noscript>This page requires JavaScript; when JavaScript is disabled you can look at the URL for the parameters instead.</noscript>
+        <main></main>
+        <script>
+            // Load parameters into page
+            let output = document.querySelector("main");
+            let getParams = new URLSearchParams(window.location.search);
+            let getKeys = getParams.keys().toArray();
+            let getValues = getParams.values().toArray();
+            for(let i = 0; i < getKeys.length; i++) {
+                let section = document.createElement("section");
+                let title = document.createElement("h2");
+                title.textContent = getKeys[i];
+                let content = document.createElement("pre");
+                content.textContent = getValues[i];
+
+                section.appendChild(title);
+                section.appendChild(content);
+                output.appendChild(section);
+            }
+        </script>
+    </body>
+</html>

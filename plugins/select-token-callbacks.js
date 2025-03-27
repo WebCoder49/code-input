@@ -28,6 +28,10 @@ codeInput.plugins.SelectTokenCallbacks = class extends codeInput.Plugin {
         this.partiallySelectedTokensAreSelected = partiallySelectedTokensAreSelected;
         this.parentTokensAreSelected = parentTokensAreSelected;
     }
+
+    multipleInstancesCanBeAdded() { return false; } // TODO: Allow multiple instances; Remove pluginData usage
+    canBeAddedAndRemoved() { return false; } // TODO: Implement
+
     /* Runs after code is highlighted; Params: codeInput element) */
     afterHighlight(codeInputElement) {
         this.syncSelection(codeInputElement);

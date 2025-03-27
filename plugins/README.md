@@ -83,14 +83,11 @@ Plugins allow you to add extra features to a template, like [automatic indentati
 <script src="plugins/indent.js"></script>
 <!--...-->
 <script>
-  codeInput.registerTemplate("syntax-highlighted", 
-    codeInput.templates.hljs(
-      hljs, 
-      [
-        new codeInput.plugins.Autodetect(), 
-        new codeInput.plugins.Indent(true, 2) // 2 spaces indentation
-      ]
-    )
-  );
+  let template = codeInput.templates.hljs(hljs);
+  
+  template.addPlugin(new codeInput.plugins.Autodetect());
+  template.addPlugin(new codeInput.plugins.Indent(true, 2)); 
+
+  codeInput.registerTemplate("syntax-highlighted", template);
 </script>
 ```

@@ -162,7 +162,10 @@ var codeInput = {
          * @param {boolean} preElementStyled - is the `<pre>` element CSS-styled as well as the `<code>` element? If true, `<pre>` element's scrolling is synchronised; if false, `<code>` element's scrolling is synchronised.
          * @param {boolean} isCode - is this for writing code? If true, the code-input's lang HTML attribute can be used, and the `<code>` element will be given the class name 'language-[lang attribute's value]'.
          * @param {boolean} includeCodeInputInHighlightFunc - Setting this to true passes the `<code-input>` element as a second argument to the highlight function.
-         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.Plugin`
+         * @param {List[codeInput.Plugin]} plugins DEPRECATED: Please use
+         *         (template).addPlugin() multiple times after the constructor instead.
+         *         The plugins parameter will be dropped in the next major version of
+         *         code-input, as is the purpose of major version changes.
          * @returns {codeInput.Template} template object
          */
         constructor(highlight = function (codeElement) { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
@@ -170,7 +173,64 @@ var codeInput = {
             this.preElementStyled = preElementStyled;
             this.isCode = isCode;
             this.includeCodeInputInHighlightFunc = includeCodeInputInHighlightFunc;
-            this.plugins = plugins;
+
+            this.elements = [];
+            this.plugins = [];
+            for(let i = 0; i < plugins.length; i++) {
+                this.addPlugin(plugins[i]);
+            }
+        }
+
+        /**
+         * Add a plugin to all code-input elements following this template.
+         * @param {codeInput.Plugin} plugin The plugin object to add.
+         */
+        addPlugin(plugin) {
+            this.plugins.push(plugin);
+            for(let i = 0; i < this.elements.length; i++) {
+                this.elements[i].addPlugin(plugin);
+            }
+        }
+
+        /**
+         * Remove a plugin from all code-input elements following this template.
+         * @param {codeInput.Plugin} plugin The plugin object to remove.
+         */
+        removePlugin(plugin) {
+            for(let i = 0; i < this.elements.length; i++) {
+                this.elements[i].removePlugin(plugin);
+            }
+        }
+
+        /**
+         * Add a code-input element to this template, so occasions where the template
+         * needs to propogate an event to all its member elements work.
+         * @param {codeInput.CodeInput} element The code-input element to add.
+         */
+        addElement(element) {
+            this.elements.push(element);
+
+            // Add changes from preElementStyled
+            if(this.preElementStyled) {
+                element.classList.add("code-input_pre-element-styled");
+            } else {
+                element.classList.remove("code-input_pre-element-styled");
+            }
+            // Syntax Highlight
+            element.scheduleHighlight();
+        }
+
+        /**
+         * Remove a code-input element from this template, and fail silently if
+         * the specified code-input element was not a member of the template.
+         * @param {codeInput.Plugin} plugin The code-input element to remove.
+         */
+        removeElement(element) {
+            for(let i = 0; i < this.elements.length; i++) {
+                if(this.elements[i] == element) {
+                    this.elements.splice(i);
+                }
+            }
         }
 
         /**
@@ -225,10 +285,24 @@ var codeInput = {
         /**
          * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
          * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
-         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
          * @returns {codeInput.Template} template object
          */
-        prism(prism, plugins = []) { // Dependency: Prism.js (https://prismjs.com/)
+        prism(prism) { // Dependency: Prism.js (https://prismjs.com/)
+            return new codeInput.Template(
+                prism.highlightElement, // highlight
+                true, // preElementStyled
+                true, // isCode
+                false // includeCodeInputInHighlightFunc
+            );
+        },
+
+        /**
+         * @deprecated Please drop the final array of plugins and use
+         * (template).addPlugin() multiple times after the constructor instead. The plugins
+         * parameter will be dropped in the next major version of code-input, as is the
+         * purpose of major version changes.
+         */
+        prism(prism, plugins) { // Dependency: Prism.js (https://prismjs.com/)
             return new codeInput.Template(
                 prism.highlightElement, // highlight
                 true, // preElementStyled
@@ -237,13 +311,31 @@ var codeInput = {
                 plugins
             );
         },
+
         /**
          * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
          * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
-         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
          * @returns {codeInput.Template} template object
          */
-        hljs(hljs, plugins = []) { // Dependency: Highlight.js (https://highlightjs.org/)
+        hljs(hljs) { // Dependency: Highlight.js (https://highlightjs.org/)
+            return new codeInput.Template(
+                function(codeElement) {
+                    codeElement.removeAttribute("data-highlighted");
+                    hljs.highlightElement(codeElement);
+                }, // highlight
+                false, // preElementStyled
+                true, // isCode
+                false // includeCodeInputInHighlightFunc
+            );
+        },
+
+        /**
+         * @deprecated Please drop the final array of plugins and use
+         * (template).addPlugin() multiple times after the constructor instead. The plugins
+         * parameter will be dropped in the next major version of code-input, as is the
+         * purpose of major version changes.
+         */
+        hljs(hljs, plugins) { // Dependency: Highlight.js (https://highlightjs.org/)
             return new codeInput.Template(
                 function(codeElement) {
                     codeElement.removeAttribute("data-highlighted");
@@ -257,7 +349,7 @@ var codeInput = {
         },
 
         /**
-         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next major version of code-input.
          */
         characterLimit(plugins) {
             return {
@@ -281,7 +373,7 @@ var codeInput = {
         },
 
         /**
-         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next major version of code-input.
          */
         rainbowText(rainbowColors = ["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue", "magenta"], delimiter = "", plugins = []) {
             return {
@@ -305,13 +397,13 @@ var codeInput = {
         },
 
         /**
-         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next major version of code-input.
          */
         character_limit() {
             return this.characterLimit([]);
         },
         /**
-         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
+         * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next major version of code-input.
          */
         rainbow_text(rainbowColors = ["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue", "magenta"], delimiter = "", plugins = []) {
             return this.rainbowText(rainbowColors, delimiter, plugins);
@@ -376,6 +468,30 @@ var codeInput = {
                 codeInput.observedAttributes.push(attribute);
             });
         }
+
+        /**
+         * Can multiple instances of this plugin class be added to the same codeInput element?
+         * @returns {boolean} Whether multiple instances of this plugin class be added to the same codeInput element
+         */
+        multipleInstancesCanBeAdded() { return false; /* For backwards compatibility */ }
+
+        /**
+         * Can this plugin be added and removed from a codeInput element - i.e. does it implement onAdd and onRemove?
+         * @returns {boolean} Whether this plugin be added and removed from a codeInput element
+         */
+        canBeAddedAndRemoved() { return false; /* For backwards compatibility */ }
+
+        /**
+         * Runs when this template is added to a codeInput element.
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         */
+        onAdd(codeInput) { }
+
+        /**
+         * Runs when this template is removed from a codeInput element.
+         * @param {codeInput.CodeInput} codeInput - The codeInput element
+         */
+        onRemove(codeInput) { }
 
         /**
          * Runs before code is highlighted.
@@ -518,8 +634,11 @@ var codeInput = {
             this.pluginEvt("beforeHighlight");
 
             // Syntax Highlight
-            if (this.template.includeCodeInputInHighlightFunc) this.template.highlight(resultElement, this);
-            else this.template.highlight(resultElement);
+            if(this.template.includeCodeInputInHighlightFunc) {
+                this.template.highlight(resultElement, this);
+            } else {
+                this.template.highlight(resultElement);
+            }
 
             this.syncSize();
 
@@ -584,15 +703,17 @@ var codeInput = {
 
         /**
          * Get the template object this code-input element is using.
+         * @param {string} attributeName the value of the "template" HTML attribute of
+         *                 the element.
          * @returns {Object} - Template object
          */
-        getTemplate() {
+        getTemplate(attributeName = codeInput.getAttribute("template")) {
             let templateName;
-            if (this.getAttribute("template") == undefined) {
+            if (attributeName == undefined) {
                 // Default
                 templateName = codeInput.defaultTemplate;
             } else {
-                templateName = this.getAttribute("template");
+                templateName = attributeName;
             }
             if (templateName in codeInput.usedTemplates) {
                 return codeInput.usedTemplates[templateName];
@@ -721,7 +842,7 @@ var codeInput = {
          * @deprecated Please use `codeInput.CodeInput.getTemplate`
          */
         get_template() {
-            return this.getTemplate();
+            return this.getTemplate(this.getAttribute("template"));
         }
 
 
@@ -736,8 +857,10 @@ var codeInput = {
          * find its template and set up the element.
          */
         connectedCallback() {
-            this.template = this.getTemplate();
+            this.template = this.getTemplate(this.getAttribute("template"));
             if (this.template != undefined) {
+                this.template.addElement(this);
+
                 this.classList.add("code-input_registered");
                 codeInput.runOnceWindowLoaded(() => { 
                     this.setup();
@@ -758,11 +881,11 @@ var codeInput = {
 
                 /* Check regular attributes */
                 for(let i = 0; i < codeInput.observedAttributes.length; i++) {
-                    if (mutation.attributeName == codeInput.observedAttributes[i]) {
+                    if(mutation.attributeName == codeInput.observedAttributes[i]) {
                         return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                     }
                 }
-                if (mutation.attributeName.substring(0, 5) == "aria-") {
+                if(mutation.attributeName.substring(0, 5) == "aria-") {
                     return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                 }
             }
@@ -788,11 +911,13 @@ var codeInput = {
                         this.value = newValue;
                         break;
                     case "template":
-                        this.template = codeInput.usedTemplates[newValue || codeInput.defaultTemplate];
-                        if (this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
-                        else this.classList.remove("code-input_pre-element-styled");
-                        // Syntax Highlight
-                        this.scheduleHighlight();
+                        // Remove old template
+                        if(this.template !== undefined) {
+                            this.template.removeElement(this);
+                        }
+                        // Add new template
+                        this.template = this.getTemplate(newValue);
+                        this.template.addElement(this);
 
                         break;
 

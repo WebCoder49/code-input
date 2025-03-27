@@ -19,6 +19,10 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
         this.useCtrlH = useCtrlH;
     }
 
+    multipleInstancesCanBeAdded() { return false; } // Adding multiple instances wouldn't make sense
+    canBeAddedAndRemoved() { return false; } // TODO: Implement
+    // TODO: Remove pluginData usage
+
     /* Add keystroke events */
     afterElementsAdded(codeInput) {
         const textarea = codeInput.textareaElement;

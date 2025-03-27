@@ -11,6 +11,10 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         super([]); // No observed attributes
         this.updatePopupCallback = updatePopupCallback;
     }
+
+    multipleInstancesCanBeAdded() { return false; } // TODO: Allow multiple instances; Remove pluginData usage
+    canBeAddedAndRemoved() { return false; } // TODO: Implement
+
     /* When a key is pressed, or scrolling occurs, update the popup position */
     updatePopup(codeInput, onlyScrolled) {
         let textarea = codeInput.textareaElement;
