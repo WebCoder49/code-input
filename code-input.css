@@ -66,6 +66,7 @@ code-input textarea, code-input pre, code-input pre * {
   font-family: inherit!important;
   line-height: inherit!important;
   tab-size: inherit!important;
+  text-align: inherit!important;
 }
 
 code-input textarea, code-input pre {
