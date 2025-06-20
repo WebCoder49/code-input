@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Right-to-left text!</title>
+        <title>code-input should be global</title>
 
         <meta charset="utf-8"/>
 
@@ -79,6 +79,72 @@
                 new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
                 new codeInput.plugins.SpecialChars(true),*/
             ]));
+
+            // Attribution: Translated by Oliver Geer with some help from English Wiktionary
+            let findAndReplaceTranslations = {
+                start: "Buscar términos en su código.",
+                none: "No hay sucesos",
+                oneFound: "1 suceso encontrado.",
+                matchIndex: (index, count) => `${index} de ${count} sucesos.`,
+                error: (message) => `Error: ${message}`,
+                infiniteLoopError: "Causa un ciclo infinito",
+                closeDialog: "Cerrar el Diálogo y Regresar al Editor",
+                findPlaceholder: "Buscar",
+                findCaseSensitive: "Prestar atención a las minúsculas/mayúsculas",
+                findRegExp: "Utilizar expresión regular de JavaScript",
+                replaceTitle: "Reemplazar",
+                replacePlaceholder: "Reemplazar con",
+                findNext: "Buscar Suceso Próximo",
+                findPrevious: "Buscar Suceso Previo",
+                replaceActionShort: "Reemplazar",
+                replaceAction: "Reemplazar este Suceso",
+                replaceAllActionShort: "Reemplazar Todos",
+                replaceAllAction: "Reemplazar Todos los Sucesos"
+            };
+            let goToLineTranslations = {
+                closeDialog: "Cerrar el Diálogo y Regresar al Editor",
+                input: "Línea:Columno o Línea luego Retorno",
+            };
+            let indentTranslations = {
+                tabForIndentation: "Tabulador y Mayús-Tabulador actualmente para la indentación. Tecla Escape para activar la navegación por el teclado.",
+                tabForNavigation: "Tabulador y Mayús-Tabulador actualmente para la navegación por el teclado. Tecla para activar la indentación.",
+            };
+
+            codeInput.registerTemplate("hljs+", codeInput.templates.hljs(hljs, [
+                new codeInput.plugins.AutoCloseBrackets(),
+                new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+                    if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+                        // Show popup
+                        popupElem.style.display = "block";
+                        popupElem.innerHTML = "Here's your popup!";
+                    } else {
+                        popupElem.style.display = "none";
+                    }
+                }),
+                new codeInput.plugins.Autodetect(),
+                new codeInput.plugins.FindAndReplace(true, true, findAndReplaceTranslations),
+                new codeInput.plugins.GoToLine(true, goToLineTranslations),
+                new codeInput.plugins.Indent(true, 2, {"(": ")", "[": "]", "{": "}"}, true, indentTranslations),
+                new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
+                //new codeInput.plugins.SpecialChars(true),
+            ]));
+            codeInput.registerTemplate("prism+", codeInput.templates.prism(Prism, [
+                new codeInput.plugins.AutoCloseBrackets(),
+                new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+                    if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+                        // Show popup
+                        popupElem.style.display = "block";
+                        popupElem.innerHTML = "Here's your popup!";
+                    } else {
+                        popupElem.style.display = "none";
+                    }
+                }),
+                new codeInput.plugins.FindAndReplace(true, true, findAndReplaceTranslations),
+                new codeInput.plugins.GoToLine(true, goToLineTranslations),
+                new codeInput.plugins.Indent(true, 2, {"(": ")", "[": "]", "{": "}"}, true, indentTranslations),
+                new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
+                //new codeInput.plugins.SpecialChars(true),
+            ]));
         </script>
     </head>
     <body>
@@ -88,6 +154,10 @@
         <code-input dir="ltr" template="prism" language="markdown" placeholder="prism ltr"></code-input>
         <code-input dir="rtl" template="hljs" language="markdown" placeholder="hljs rtl"></code-input>
         <code-input dir="ltr" template="hljs" language="markdown" placeholder="hljs ltr"></code-input>
+        <code-input dir="rtl" template="prism+" language="markdown" placeholder="prism rtl" class="line-numbers"></code-input>
+        <code-input dir="ltr" template="prism+" language="markdown" placeholder="prism ltr" class="line-numbers"></code-input>
+        <code-input dir="rtl" template="hljs+" language="markdown" placeholder="hljs rtl"></code-input>
+        <code-input dir="ltr" template="hljs+" language="markdown" placeholder="hljs ltr"></code-input>
 
         <script>
             rtl = `# ערך מומלץ ערך מומלץ

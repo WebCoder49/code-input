@@ -12,14 +12,20 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
     escTabToChangeFocus = true;
     escJustPressed = false; // Becomes true when Escape key is pressed and false when another key is pressed
 
+    instructions = {
+        tabForIndentation: "Tab and Shift-Tab currently for indentation. Press Esc to enable keyboard navigation.",
+        tabForNavigation: "Tab and Shift-Tab currently for keyboard navigation. Type to return to indentation.",
+    };
+
     /**
      * Create an indentation plugin to pass into a template
      * @param {boolean} defaultSpaces Should the Tab key enter spaces rather than tabs? Defaults to false.
      * @param {Number} numSpaces How many spaces is each tab character worth? Defaults to 4.
      * @param {Object} bracketPairs Opening brackets mapped to closing brackets, default and example {"(": ")", "[": "]", "{": "}"}. All brackets must only be one character, and this can be left as null to remove bracket-based indentation behaviour.
      * @param {boolean} escTabToChangeFocus Whether pressing the Escape key before Tab and Shift-Tab should make this keypress focus on a different element (Tab's default behaviour). You should always either enable this or use this plugin's disableTabIndentation and enableTabIndentation methods linked to other keyboard shortcuts, for accessibility.
+     * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the available keys and English text.
      */
-    constructor(defaultSpaces=false, numSpaces=4, bracketPairs={"(": ")", "[": "]", "{": "}"}, escTabToChangeFocus=true) {
+    constructor(defaultSpaces=false, numSpaces=4, bracketPairs={"(": ")", "[": "]", "{": "}"}, escTabToChangeFocus=true, instructionTranslations = {}) {
         super([]); // No observed attributes
 
         this.bracketPairs = bracketPairs;
@@ -32,6 +38,8 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         }
 
         this.escTabToChangeFocus = true;
+
+        this.addTranslations(this.instructions, instructionTranslations);
     }
 
     /**
@@ -49,7 +57,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
     afterElementsAdded(codeInput) {
 
         let textarea = codeInput.textareaElement;
-        textarea.addEventListener('focus', (event) => { if(this.escTabToChangeFocus) codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for indentation. Press Esc to enable keyboard navigation.", true); })
+        textarea.addEventListener('focus', (event) => { if(this.escTabToChangeFocus) codeInput.setKeyboardNavInstructions(this.instructions.tabForIndentation, true); })
         textarea.addEventListener('keydown', (event) => { this.checkTab(codeInput, event); this.checkEnter(codeInput, event); this.checkBackspace(codeInput, event); });
         textarea.addEventListener('beforeinput', (event) => { this.checkCloseBracket(codeInput, event); });
 
@@ -83,13 +91,13 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
             // Accessibility - allow Tab for keyboard navigation when Esc pressed right before it.
             if(event.key == "Escape") {
                 this.escJustPressed = true;
-                codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for keyboard navigation. Type to return to indentation.", false);
+                codeInput.setKeyboardNavInstructions(this.instructions.tabForNavigation, false);
                 return;
             } else if(event.key != "Tab") {
                 if(event.key == "Shift") {
                     return; // Shift+Tab after Esc should still be keyboard navigation
                 }
-                codeInput.setKeyboardNavInstructions("Tab and Shift-Tab currently for indentation. Press Esc to enable keyboard navigation.", false);
+                codeInput.setKeyboardNavInstructions(this.instructions.tabForIndentation, false);
                 this.escJustPressed = false;
                 return;
             }
@@ -158,10 +166,23 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
             inputElement.selectionEnd = selectionEndI;
 
             // move scroll position to follow code
-            if(event.shiftKey) {
-                codeInput.scrollBy(-codeInput.pluginData.indent.indentationWidthPx, 0);
+            const textDirection = getComputedStyle(codeInput).direction;
+            if(textDirection == "rtl") {
+                if(event.shiftKey) {
+                    // Scroll right
+                    codeInput.scrollBy(codeInput.pluginData.indent.indentationWidthPx, 0);
+                } else {
+                    // Scroll left
+                    codeInput.scrollBy(-codeInput.pluginData.indent.indentationWidthPx, 0);
+                }
             } else {
-                codeInput.scrollBy(codeInput.pluginData.indent.indentationWidthPx, 0);
+                if(event.shiftKey) {
+                    // Scroll left
+                    codeInput.scrollBy(-codeInput.pluginData.indent.indentationWidthPx, 0);
+                } else {
+                    // Scroll right
+                    codeInput.scrollBy(codeInput.pluginData.indent.indentationWidthPx, 0);
+                }
             }
         }
 

@@ -378,6 +378,17 @@ var codeInput = {
         }
 
         /**
+         * Replace the keys in destination with any source
+         * @param {Object} destination Where to place the translated strings, already filled with the keys pointing to English strings.
+         * @param {Object} source The same keys, or some of them, mapped to translated strings.
+         */
+        addTranslations(destination, source) {
+            for(const key in source) {
+                destination[key] = source[key];
+            }
+        }
+
+        /**
          * Runs before code is highlighted.
          * @param {codeInput.CodeInput} codeInput - The codeInput element
          */
