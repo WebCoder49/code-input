@@ -181,7 +181,7 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
   width: calc(100% - 12px);
   max-height: 3em;
 }
-[dir=rtl] code-input .code-input_dialog-container .code-input_keyboard-navigation-instructions, code-input[dir=rtl] .code-input_dialog-container .code-input_keyboard-navigation-instructions {
+code-input:has(pre[dir=rtl]) .code-input_dialog-container .code-input_keyboard-navigation-instructions {
   left: unset;
   right: 0;
 }
