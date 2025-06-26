@@ -69,6 +69,20 @@ code-input textarea, code-input pre, code-input pre * {
   text-align: inherit!important;
 }
 
+/* Make changing the text direction propogate */
+code-input textarea[dir=auto] + pre {
+  unicode-bidi: plaintext;
+}
+
+code-input textarea[dir=ltr] + pre {
+  direction: ltr;
+}
+
+code-input textarea[dir=rtl] + pre {
+  direction: rtl;
+}
+
+
 code-input textarea, code-input pre {
   /* In the same place */
   grid-column: 1;
