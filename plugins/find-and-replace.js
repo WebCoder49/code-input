@@ -8,15 +8,38 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
 
     findMatchesOnValueChange = true; // Needed so the program can insert text to the find value and thus add it to Ctrl+Z without highlighting matches.
 
+    instructions = {
+        start: "Search for matches in your code.",
+        none: "No matches",
+        oneFound: "1 match found.",
+        matchIndex: (index, count) => `${index} of ${count} matches.`,
+        error: (message) => `Error: ${message}`,
+        infiniteLoopError: "Causes an infinite loop",
+        closeDialog: "Close Dialog and Return to Editor",
+        findPlaceholder: "Find",
+        findCaseSensitive: "Match Case Sensitive",
+        findRegExp: "Use JavaScript Regular Expression",
+        replaceTitle: "Replace",
+        replacePlaceholder: "Replace with",
+        findNext: "Find Next Occurrence",
+        findPrevious: "Find Previous Occurrence",
+        replaceActionShort: "Replace",
+        replaceAction: "Replace This Occurrence",
+        replaceAllActionShort: "Replace All",
+        replaceAllAction: "Replace All Occurrences"
+    };
+
     /**
      * Create a find-and-replace command plugin to pass into a template
      * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
      * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
+     * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the find-and-replace.js source code for the English text and available keys.
      */
-    constructor(useCtrlF = true, useCtrlH = true) {
+    constructor(useCtrlF = true, useCtrlH = true, instructionTranslations = {}) {
         super([]); // No observed attributes
         this.useCtrlF = useCtrlF;
         this.useCtrlH = useCtrlH;
+        this.addTranslations(this.instructions, instructionTranslations);
     }
 
     /* Add keystroke events */
@@ -56,13 +79,13 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
     updateMatchDescription(dialog) {
         // 1-indexed
         if(dialog.findInput.value.length == 0) {
-            dialog.matchDescription.textContent = "Search for matches in your code.";
+            dialog.matchDescription.textContent = this.instructions.start;
         } else if(dialog.findMatchState.numMatches <= 0) {
-            dialog.matchDescription.textContent = "No matches.";
+            dialog.matchDescription.textContent = this.instructions.none;
         } else if(dialog.findMatchState.numMatches == 1) {
-            dialog.matchDescription.textContent = "1 match found.";
+            dialog.matchDescription.textContent = this.instructions.oneFound;
         } else {
-            dialog.matchDescription.textContent = `${dialog.findMatchState.focusedMatchID+1} of ${dialog.findMatchState.numMatches} matches.`;
+            dialog.matchDescription.textContent = this.instructions.matchIndex(dialog.findMatchState.focusedMatchID+1, dialog.findMatchState.numMatches);
         }
     }
 
@@ -83,7 +106,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
                             dialog.findInput.classList.add('code-input_find-and-replace_error');
                             // Only show last part of error message
                             let messageParts = err.message.split(": ");
-                            dialog.matchDescription.textContent = "Error: " + messageParts[messageParts.length-1]; // Show only last part of error.
+                            dialog.matchDescription.textContent = this.instructions.error(messageParts[messageParts.length-1]); // Show only last part of error.
                             return;
                         } else {
                             throw err;
@@ -183,7 +206,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             const replaceAllButton = document.createElement('button');
             const cancel = document.createElement('span');
             cancel.setAttribute("tabindex", 0); // Visible to keyboard navigation
-            cancel.setAttribute("title", "Close Dialog and Return to Editor");
+            cancel.setAttribute("title", this.instructions.closeDialog);
 
             buttonContainer.appendChild(findNextButton);
             buttonContainer.appendChild(findPreviousButton);
@@ -203,35 +226,35 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
 
             dialog.className = 'code-input_find-and-replace_dialog';
             findInput.spellcheck = false;
-            findInput.placeholder = "Find";
+            findInput.placeholder = this.instructions.findPlaceholder;
             findCaseSensitiveCheckbox.setAttribute("type", "checkbox");
-            findCaseSensitiveCheckbox.title = "Match Case Sensitive";
+            findCaseSensitiveCheckbox.title = this.instructions.findCaseSensitive;
             findCaseSensitiveCheckbox.classList.add("code-input_find-and-replace_case-sensitive-checkbox");
             findRegExpCheckbox.setAttribute("type", "checkbox");
-            findRegExpCheckbox.title = "Use JavaScript Regular Expression";
+            findRegExpCheckbox.title = this.instructions.findRegExp;
             findRegExpCheckbox.classList.add("code-input_find-and-replace_reg-exp-checkbox");
 
             matchDescription.textContent = "Search for matches in your code.";
             matchDescription.classList.add("code-input_find-and-replace_match-description");
             
 
-            replaceSummary.innerText = "Replace";
+            replaceSummary.innerText = this.instructions.replaceTitle;
             replaceInput.spellcheck = false;
-            replaceInput.placeholder = "Replace with";
+            replaceInput.placeholder = this.instructions.replacePlaceholder;
             findNextButton.innerText = "↓";
-            findNextButton.title = "Find Next Occurence";
+            findNextButton.title = this.instructions.findNext;
             findPreviousButton.innerText = "↑";
-            findPreviousButton.title = "Find Previous Occurence";
+            findPreviousButton.title = this.instructions.findPrevious;
             replaceButton.className = 'code-input_find-and-replace_button-hidden';
-            replaceButton.innerText = "Replace";
-            replaceButton.title = "Replace This Occurence";
+            replaceButton.innerText = this.instructions.replaceActionShort;
+            replaceButton.title = this.instructions.replaceAction;
             replaceButton.addEventListener("focus", () => {
                 // Show replace section
                 replaceDropdown.setAttribute("open", true);
             });
             replaceAllButton.className = 'code-input_find-and-replace_button-hidden';
-            replaceAllButton.innerText = "Replace All";
-            replaceAllButton.title = "Replace All Occurences";
+            replaceAllButton.innerText = this.instructions.replaceAllActionShort;
+            replaceAllButton.title = this.instructions.replaceAllAction;
             replaceAllButton.addEventListener("focus", () => {
                 // Show replace section
                 replaceDropdown.setAttribute("open", true);
@@ -470,7 +493,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
         while ((match = searchRegexp.exec(this.codeInput.value)) !== null) {
             let matchText = match[0];
             if(matchText.length == 0) {
-                throw SyntaxError("Causes an infinite loop");
+                throw SyntaxError(this.instructions.infiniteLoopError);
             }
 
             // Add next match block if needed

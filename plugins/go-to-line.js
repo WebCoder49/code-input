@@ -5,13 +5,20 @@
 codeInput.plugins.GoToLine = class extends codeInput.Plugin {
     useCtrlG = false;
 
+    instructions = {
+        closeDialog: "Close Dialog and Return to Editor",
+        input: "Line:Column / Line no. then Enter",
+    };
+
     /**
      * Create a go-to-line command plugin to pass into a template
      * @param {boolean} useCtrlG Should Ctrl+G be overriden for go-to-line functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
+     * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the available keys and English text.
      */
-    constructor(useCtrlG = true) {
+    constructor(useCtrlG = true, instructionTranslations = {}) {
         super([]); // No observed attributes
         this.useCtrlG = useCtrlG;
+        this.addTranslations(this.instructions, instructionTranslations);
     }
 
     /* Add keystroke events */
@@ -85,14 +92,14 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             const input = document.createElement('input');
             const cancel = document.createElement('span');
             cancel.setAttribute("tabindex", 0); // Visible to keyboard navigation
-            cancel.setAttribute("title", "Close Dialog and Return to Editor");
+            cancel.setAttribute("title", this.instructions.closeDialog);
 
             dialog.appendChild(input);
             dialog.appendChild(cancel);
 
             dialog.className = 'code-input_go-to-line_dialog';
             input.spellcheck = false;
-            input.placeholder = "Line:Column / Line no. then Enter";
+            input.placeholder = this.instructions.input;
             dialog.codeInput = codeInput;
             dialog.textarea = textarea;
             dialog.input = input;
