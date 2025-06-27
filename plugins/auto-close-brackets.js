@@ -19,13 +19,15 @@ codeInput.plugins.AutoCloseBrackets = class extends codeInput.Plugin {
 
     /* Add keystroke events */
     afterElementsAdded(codeInput) {
-        codeInput.textareaElement.addEventListener('keydown', (event) => { this.checkBackspace(codeInput, event) });
+        codeInput.pluginData.autoCloseBrackets = { automatedKeypresses: false};
+        codeInput.textareaElement.addEventListener('keydown', (event) => { this.checkBackspace(codeInput, event); });
         codeInput.textareaElement.addEventListener('beforeinput', (event) => { this.checkBrackets(codeInput, event); });
     }
 
     /* Deal with the automatic creation of closing bracket when opening brackets are typed, and the ability to "retype" a closing
     bracket where one has already been placed. */
     checkBrackets(codeInput, event) {
+        if(codeInput.pluginData.autoCloseBrackets.automatedKeypresses) return;
         if(event.data == codeInput.textareaElement.value[codeInput.textareaElement.selectionStart]) {
             // Check if a closing bracket is typed
             for(let openingBracket in this.bracketPairs) {
@@ -41,7 +43,12 @@ codeInput.plugins.AutoCloseBrackets = class extends codeInput.Plugin {
             // Opening bracket typed; Create bracket pair
             let closingBracket = this.bracketPairs[event.data];
             // Insert the closing bracket
+            // automatedKeypresses property to prevent keypresses being captured
+            // by this plugin during automated input as some browsers
+            // (e.g. GNOME Web) do.
+            codeInput.pluginData.autoCloseBrackets.automatedKeypresses = true;
             document.execCommand("insertText", false, closingBracket);
+            codeInput.pluginData.autoCloseBrackets.automatedKeypresses = false;
             // Move caret before the inserted closing bracket
             codeInput.textareaElement.selectionStart = codeInput.textareaElement.selectionEnd -= 1;
         }
@@ -49,6 +56,7 @@ codeInput.plugins.AutoCloseBrackets = class extends codeInput.Plugin {
 
     /* Deal with cases where a backspace deleting an opening bracket deletes the closing bracket straight after it as well */
     checkBackspace(codeInput, event) {
+        if(codeInput.pluginData.autoCloseBrackets.automatedKeypresses) return;
         if(event.key == "Backspace" && codeInput.textareaElement.selectionStart == codeInput.textareaElement.selectionEnd) {
             let closingBracket = this.bracketPairs[codeInput.textareaElement.value[codeInput.textareaElement.selectionStart-1]];
             if(closingBracket != undefined && codeInput.textareaElement.value[codeInput.textareaElement.selectionStart] == closingBracket) {
