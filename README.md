@@ -54,8 +54,8 @@ From JSDelivr CDN (click)
 
 ```html
 <!--In the <head>-->
-<script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.4/code-input.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.4/code-input.min.css">
+<script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.5/code-input.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.5/code-input.min.css">
 ```
 </details>
 
