@@ -15,7 +15,7 @@
     "./plugins/indent": "esm/plugins/indent.mjs",
     "./plugins/select-token-callbacks": "esm/plugins/select-token-callbacks.mjs",
     "./plugins/special-chars": "esm/plugins/special-chars.mjs",
-    "./plugins/test": "esm/plugins/test.mjs",
+    "./plugins/test": "esm/plugins/test.mjs"
   },
   "scripts": {
     "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1",
