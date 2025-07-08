@@ -120,7 +120,7 @@ export namespace plugins {
   }
   // ESM-SUPPORT-END-PLUGIN-autodetect Do not (re)move this - it's needed for ESM generation
 
-  // ESM-SUPPORT-START-PLUGIN-debounce-update Do not (re)move this - it's needed for ESM generation
+  // E doesn't exist? SM-SUPPORT-START-PLUGIN-debounce-update Do not (re)move this - it's needed for ESM generation
   /**
    * Debounce the update and highlighting function
    * https://medium.com/@jamischarles/what-is-debouncing-2505c0648ff1
@@ -133,7 +133,7 @@ export namespace plugins {
      */
     constructor(delayMs: number);
   }
-  // ESM-SUPPORT-END-PLUGIN-debounce-update Do not (re)move this - it's needed for ESM generation
+  // E doesn't exist? SM-SUPPORT-END-PLUGIN-debounce-update Do not (re)move this - it's needed for ESM generation
 
   // ESM-SUPPORT-START-PLUGIN-find-and-replace Do not (re)move this - it's needed for ESM generation
   /**

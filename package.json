@@ -4,7 +4,8 @@
   "description": "Fully customisable, editable syntax-highlighted textareas.",
   "browser": "code-input.js",
   "scripts": {
-    "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1"
+    "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1",
+    "build": "cd esm ; node generate.mjs ; cd .."
   },
   "repository": {
     "type": "git",
