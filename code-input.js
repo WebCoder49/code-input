@@ -209,6 +209,7 @@ var codeInput = {
         plugins = [];
     },
 
+    // ESM-SUPPORT-START-TEMPLATES Do not (re)move this - it's needed for ESM generation!
     /**
      * For creating a custom template from scratch, please 
      * use `new codeInput.Template(...)`
@@ -223,19 +224,23 @@ var codeInput = {
      */
     templates: {
         // (Source code for class templates after var codeInput = ... so they can extend the codeInput.Template class)
+        // ESM-SUPPORT-START-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
         /**
          * @deprecated Please use `new codeInput.templates.Prism(...)`
          */
         prism(prism, plugins = []) { // Dependency: Prism.js (https://prismjs.com/)
             return new codeInput.templates.Prism(prism, plugins);
         },
+        // ESM-SUPPORT-END-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
 
+        // ESM-SUPPORT-START-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
         /**
          * @deprecated Please use `new codeInput.templates.Hljs(...)`
          */
         hljs(hljs, plugins = []) { // Dependency: Highlight.js (https://highlightjs.org/)
             return new codeInput.templates.Hljs(hljs, plugins);
         },
+        // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
 
         /**
          * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
@@ -311,6 +316,7 @@ var codeInput = {
             };
         },
     },
+    // ESM-SUPPORT-END-TEMPLATES Do not (re)move this - it's needed for ESM generation!
 
     /* ------------------------------------
     *  ------------Plugins-----------------

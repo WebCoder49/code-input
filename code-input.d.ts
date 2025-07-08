@@ -1,4 +1,5 @@
 export as namespace codeInput;
+// ESM-SUPPORT-END-NOESM-SPECIFIC Do not (re)move this - it's needed for ESM generation
 
 /**
  * Plugins are imported from the plugins folder. They will then
@@ -47,6 +48,7 @@ export abstract class Plugin {
   observedAttributes: Array<string>
 }
 
+// ESM-SUPPORT-START-NAMESPACE-1 Do not (re)move this - it's needed for ESM generation
 /**
  * Before using any plugin in this namespace, please ensure you import its JavaScript
  * files (in the plugins folder), or continue to get a more detailed error in the developer
@@ -62,6 +64,7 @@ export abstract class Plugin {
  * @type {Object}
  */
 export namespace plugins {
+  // ESM-SUPPORT-START-PLUGIN-test Do not (re)move this - it's needed for ESM generation
   /**
    * JavaScript example of a plugin, which brings extra,
    * non-central optional functionality to code-input.
@@ -75,7 +78,9 @@ export namespace plugins {
   class Test extends Plugin {
     constructor();
   }
+  // ESM-SUPPORT-END-PLUGIN-test Do not (re)move this - it's needed for ESM generation
 
+  // ESM-SUPPORT-START-PLUGIN-auto-close-brackets Do not (re)move this - it's needed for ESM generation
   /**
    * Automatically closes pairs of brackets/quotes/other syntaxes in code, but also lets you choose the brackets this
    * is activated for.
@@ -88,7 +93,9 @@ export namespace plugins {
      */
     constructor(bracketPairs: Object);
   }
+  // ESM-SUPPORT-END-PLUGIN-auto-close-brackets Do not (re)move this - it's needed for ESM generation
 
+  // ESM-SUPPORT-START-PLUGIN-autocomplete Do not (re)move this - it's needed for ESM generation
   /**
    * Display a popup under the caret using the text in the code-input element. This works well with autocomplete suggestions.
    * Files: autocomplete.js / autocomplete.css
@@ -100,7 +107,9 @@ export namespace plugins {
      */
     constructor(updatePopupCallback: (popupElem: HTMLElement, textarea: HTMLTextAreaElement, selectionEnd: number) => void);
   }
+  // ESM-SUPPORT-END-PLUGIN-autocomplete Do not (re)move this - it's needed for ESM generation
 
+  // ESM-SUPPORT-START-PLUGIN-autodetect Do not (re)move this - it's needed for ESM generation
   /**
    * Autodetect the language live and change the `lang` attribute using the syntax highlighter's 
    * autodetect capabilities. Works with highlight.js only.
@@ -109,7 +118,9 @@ export namespace plugins {
   class Autodetect extends Plugin {
     constructor();
   }
+  // ESM-SUPPORT-END-PLUGIN-autodetect Do not (re)move this - it's needed for ESM generation
 
+  // ESM-SUPPORT-START-PLUGIN-debounce-update Do not (re)move this - it's needed for ESM generation
   /**
    * Debounce the update and highlighting function
    * https://medium.com/@jamischarles/what-is-debouncing-2505c0648ff1
@@ -122,7 +133,9 @@ export namespace plugins {
      */
     constructor(delayMs: number);
   }
+  // ESM-SUPPORT-END-PLUGIN-debounce-update Do not (re)move this - it's needed for ESM generation
 
+  // ESM-SUPPORT-START-PLUGIN-find-and-replace Do not (re)move this - it's needed for ESM generation
   /**
    * Add Find-and-Replace (Ctrl+F for find, Ctrl+H for replace by default) functionality to the code editor.
    * Files: find-and-replace.js / find-and-replace.css
@@ -163,7 +176,9 @@ export namespace plugins {
      */
     showPrompt(codeInputElement: CodeInput, replacePartExpanded: boolean): void;
   }
+  // ESM-SUPPORT-END-PLUGIN-find-and-replace Do not (re)move this - it's needed for ESM generation
   
+  // ESM-SUPPORT-START-PLUGIN-go-to-line Do not (re)move this - it's needed for ESM generation
   /**
    * Add basic Go-To-Line (ctrl-G by default) functionality to the code editor.
    * Files: go-to-line.js / go-to-line.css
@@ -185,7 +200,9 @@ export namespace plugins {
     */
     showPrompt(codeInput: CodeInput): void;
   }
+  // ESM-SUPPORT-END-PLUGIN-go-to-line Do not (re)move this - it's needed for ESM generation
 
+  // ESM-SUPPORT-START-PLUGIN-indent Do not (re)move this - it's needed for ESM generation
   /**
    * Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it 
    * possible to indent/unindent multiple lines using Tab/Shift+Tab
@@ -205,7 +222,9 @@ export namespace plugins {
       tabForNavigation?: string;
     });
   }
+  // ESM-SUPPORT-END-PLUGIN-indent Do not (re)move this - it's needed for ESM generation
 
+  // ESM-SUPPORT-START-PLUGIN-select-token-callbacks Do not (re)move this - it's needed for ESM generation
   /**
    * Make tokens in the <pre><code> element that are included within the selected text of the <code-input>
    * gain a CSS class while selected, or trigger JavaScript callbacks.
@@ -254,7 +273,9 @@ export namespace plugins {
       static createClassSynchronisation(selectedClass: string): codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks;
     }
   }
+  // ESM-SUPPORT-END-PLUGIN-select-token-callbacks Do not (re)move this - it's needed for ESM generation
 
+  // ESM-SUPPORT-START-PLUGIN-special-chars Do not (re)move this - it's needed for ESM generation
   /**
    * Render special characters and control characters as a symbol with their hex code.
    * Files: special-chars.js, special-chars.css
@@ -269,14 +290,9 @@ export namespace plugins {
      */
     constructor(colorInSpecialChars?: boolean, inheritTextColor?: boolean, specialCharRegExp?: RegExp);
   }
+  // ESM-SUPPORT-END-PLUGIN-special-chars Do not (re)move this - it's needed for ESM generation
 }
-
-/**
- * Register a plugin class under `codeInput.plugins`.
- * @param {string} pluginName The identifier of the plugin: if it is `"foo"`, `new codeInput.plugins.foo(`...`)` will instantiate it, etc.
- * @param {Object} pluginClass The class of the plugin, created with `class extends codeInput.plugin {`...`}`
- */
-export function registerPluginClass(pluginName: string, pluginClass: Object): void;
+// ESM-SUPPORT-END-NAMESPACE-1 Do not (re)move this - it's needed for ESM generation
 
 /**
  * Please see `codeInput.templates.prism` or `codeInput.templates.hljs`.
@@ -330,6 +346,7 @@ export class Template {
   constructor(highlight?: (code: HTMLElement, codeInput: CodeInput) => void, preElementStyled?: boolean, isCode?: boolean, includeCodeInputInHighlightFunc?: true, plugins?: Plugin[])
 }
 
+// ESM-SUPPORT-START-NAMESPACE-2 Do not (re)move this - it's needed for ESM generation
 /** 
  * Shortcut functions for creating templates.
  * Each code-input element has a template attribute that 
@@ -344,6 +361,7 @@ export class Template {
  * For adding small pieces of functionality, please see `codeInput.plugins`.
  */
 export namespace templates {
+  // ESM-SUPPORT-START-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation
   /**
    * A template that uses Prism.js syntax highlighting (https://prismjs.com/).
    */
@@ -360,6 +378,8 @@ export namespace templates {
    * @deprecated Please use `new codeInput.templates.Prism(...)`
    */
   function prism(prism: Object, plugins?: Plugin[]): Template
+  // ESM-SUPPORT-END-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation
+  // ESM-SUPPORT-START-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation
   /**
    * A template that uses highlight.js syntax highlighting (https://highlightjs.org/).
    */
@@ -376,6 +396,7 @@ export namespace templates {
    * @deprecated Please use `new codeInput.templates.Hljs(...)`
    */
   function hljs(hljs: Object, plugins?: Plugin[]): Template
+  // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation
   /**
    * Constructor to create a proof-of-concept template that gives a message if too many characters are typed.
    * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
@@ -391,6 +412,7 @@ export namespace templates {
    */
   function rainbowText(rainbowColors?: string[], delimiter?: string, plugins?: Plugin[]): Template
 }
+// ESM-SUPPORT-END-NAMESPACE-2 Do not (re)move this - it's needed for ESM generation
 
 /**
  * A `<code-input>` element, an instance of an `HTMLElement`, and the result
