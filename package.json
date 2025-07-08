@@ -3,9 +3,23 @@
   "version": "2.5.0",
   "description": "Fully customisable, editable syntax-highlighted textareas.",
   "browser": "code-input.js",
+  "exports": {
+    ".": "esm/code-input.mjs",
+    "./templates/hljs": "esm/templates/hljs.mjs",
+    "./templates/prism": "esm/templates/prism.mjs",
+    "./plugins/auto-close-brackets": "esm/plugins/auto-close-brackets.mjs",
+    "./plugins/autocomplete": "esm/plugins/autocomplete.mjs",
+    "./plugins/autodetect": "esm/plugins/autodetect.mjs",
+    "./plugins/find-and-replace": "esm/plugins/find-and-replace.mjs",
+    "./plugins/go-to-line": "esm/plugins/go-to-line.mjs",
+    "./plugins/indent": "esm/plugins/indent.mjs",
+    "./plugins/select-token-callbacks": "esm/plugins/select-token-callbacks.mjs",
+    "./plugins/special-chars": "esm/plugins/special-chars.mjs",
+    "./plugins/test": "esm/plugins/test.mjs",
+  },
   "scripts": {
     "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1",
-    "build": "cd esm ; node generate.mjs ; cd .."
+    "postinstall": "cd esm ; node generate.mjs ; cd .."
   },
   "repository": {
     "type": "git",
