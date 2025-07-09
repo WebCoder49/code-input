@@ -374,11 +374,11 @@ export namespace templates {
     */
     constructor(prism: Object, plugins?: Plugin[])
   }
+  // ESM-SUPPORT-END-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation
   /**
    * @deprecated Please use `new codeInput.templates.Prism(...)`
    */
   function prism(prism: Object, plugins?: Plugin[]): Template
-  // ESM-SUPPORT-END-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation
   // ESM-SUPPORT-START-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation
   /**
    * A template that uses highlight.js syntax highlighting (https://highlightjs.org/).
@@ -392,11 +392,11 @@ export namespace templates {
     */
     constructor(hljs: Object, plugins?: Plugin[])
   }
+  // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation
   /**
    * @deprecated Please use `new codeInput.templates.Hljs(...)`
    */
   function hljs(hljs: Object, plugins?: Plugin[]): Template
-  // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation
   /**
    * Constructor to create a proof-of-concept template that gives a message if too many characters are typed.
    * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`

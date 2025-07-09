@@ -232,15 +232,27 @@ var codeInput = {
             return new codeInput.templates.Prism(prism, plugins);
         },
         // ESM-SUPPORT-END-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
+        /**
+         * @deprecated Please use `new codeInput.templates.Prism(...)`
+         */
+        prism(prism, plugins = []) { // Dependency: Prism.js (https://prismjs.com/)
+            return new codeInput.templates.Prism(prism, plugins);
+        },
 
         // ESM-SUPPORT-START-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
         /**
          * @deprecated Please use `new codeInput.templates.Hljs(...)`
          */
         hljs(hljs, plugins = []) { // Dependency: Highlight.js (https://highlightjs.org/)
-            return new codeInput.templates.Hljs(hljs, plugins);
+            return new codeInput.templates.Hljs(hljs, plugins)
         },
         // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
+        /**
+         * @deprecated Please use `new codeInput.templates.Hljs(...)`
+         */
+        hljs(hljs, plugins = []) { // Dependency: Highlight.js (https://highlightjs.org/)
+            return new codeInput.templates.Hljs(hljs, plugins);
+        },
 
         /**
          * @deprecated Make your own version of this template if you need it - we think it isn't widely used so will remove it from the next version of code-input.
