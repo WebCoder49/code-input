@@ -224,14 +224,6 @@ var codeInput = {
      */
     templates: {
         // (Source code for class templates after var codeInput = ... so they can extend the codeInput.Template class)
-        // ESM-SUPPORT-START-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
-        /**
-         * @deprecated Please use `new codeInput.templates.Prism(...)`
-         */
-        prism(prism, plugins = []) { // Dependency: Prism.js (https://prismjs.com/)
-            return new codeInput.templates.Prism(prism, plugins);
-        },
-        // ESM-SUPPORT-END-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
         /**
          * @deprecated Please use `new codeInput.templates.Prism(...)`
          */
@@ -239,14 +231,6 @@ var codeInput = {
             return new codeInput.templates.Prism(prism, plugins);
         },
 
-        // ESM-SUPPORT-START-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
-        /**
-         * @deprecated Please use `new codeInput.templates.Hljs(...)`
-         */
-        hljs(hljs, plugins = []) { // Dependency: Highlight.js (https://highlightjs.org/)
-            return new codeInput.templates.Hljs(hljs, plugins)
-        },
-        // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
         /**
          * @deprecated Please use `new codeInput.templates.Hljs(...)`
          */
@@ -1060,6 +1044,7 @@ var codeInput = {
 {
     // Templates are defined here after the codeInput variable is set, because they reference it by extending codeInput.Template.
 
+    // ESM-SUPPORT-START-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
     /**
     * A template that uses Prism.js syntax highlighting (https://prismjs.com/).
     */
@@ -1080,8 +1065,10 @@ var codeInput = {
             );
         }
     };
+    // ESM-SUPPORT-END-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
     codeInput.templates.Prism = Prism;
 
+    // ESM-SUPPORT-START-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
     /**
      * A template that uses highlight.js syntax highlighting (https://highlightjs.org/).
      */
@@ -1105,6 +1092,7 @@ var codeInput = {
             );
         }
     };
+    // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
     codeInput.templates.Hljs = Hljs;
 }
 
