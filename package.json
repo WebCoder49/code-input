@@ -5,76 +5,40 @@
   "browser": "code-input.js",
   "exports": {
     ".": {
-      "import": {
-        "default": "esm/code-input.mjs",
-        "types": "esm/code-input.d.mts"
-      }
+      "import": "./esm/code-input.mjs"
     },
     "./templates/hljs": {
-      "import": {
-        "default": "esm/templates/hljs.mjs",
-        "types": "esm/templates/hljs.d.mts"
-      }
+      "import": "./esm/templates/hljs.mjs"
     },
     "./templates/prism": {
-      "import": {
-        "default": "esm/templates/prism.mjs",
-        "types": "esm/templates/prism.d.mts"
-      }
+      "import": "./esm/templates/prism.mjs"
     },
     "./plugins/auto-close-brackets": {
-      "import": {
-        "default": "esm/plugins/auto-close-brackets.mjs",
-        "types": "esm/plugins/auto-close-brackets.d.mts"
-      }
+      "import": "./esm/plugins/auto-close-brackets.mjs"
     },
     "./plugins/autocomplete": {
-      "import": {
-        "default": "esm/plugins/autocomplete.mjs",
-        "types": "esm/plugins/autocomplete.d.mts"
-      }
+      "import": "./esm/plugins/autocomplete.mjs"
     },
     "./plugins/autodetect": {
-      "import": {
-        "default": "esm/plugins/autodetect.mjs",
-        "types": "esm/plugins/autodetect.d.mts"
-      }
+      "import": "./esm/plugins/autodetect.mjs"
     },
     "./plugins/find-and-replace": {
-      "import": {
-        "default": "esm/plugins/find-and-replace.mjs",
-        "types": "esm/plugins/find-and-replace.d.mts"
-      }
+      "import": "./esm/plugins/find-and-replace.mjs"
     },
     "./plugins/go-to-line": {
-      "import": {
-        "default": "esm/plugins/go-to-line.mjs",
-        "types": "esm/plugins/go-to-line.d.mts"
-      }
+      "import": "./esm/plugins/go-to-line.mjs"
     },
     "./plugins/indent": {
-      "import": {
-        "default": "esm/plugins/indent.mjs",
-        "types": "esm/plugins/indent.d.mts"
-      }
+      "import": "./esm/plugins/go-to-line.mjs"
     },
     "./plugins/select-token-callbacks": {
-      "import": {
-        "default": "esm/plugins/select-token-callbacks.mjs",
-        "types": "esm/plugins/select-token-callbacks.d.mts"
-      }
+      "import": "./esm/plugins/select-token-callbacks.mjs"
     },
     "./plugins/special-chars": {
-      "import": {
-        "default": "esm/plugins/special-chars.mjs",
-        "types": "esm/plugins/special-chars.d.mts"
-      }
+      "import": "./esm/plugins/special-chars.mjs"
     },
     "./plugins/test": {
-      "import": {
-        "default": "esm/plugins/test.mjs",
-        "types": "esm/plugins/test.d.mts"
-      }
+      "import": "./esm/plugins/test.mjs"
     }
   },
   "scripts": {
