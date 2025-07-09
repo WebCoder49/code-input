@@ -29,7 +29,7 @@
       "import": "./esm/plugins/go-to-line.mjs"
     },
     "./plugins/indent": {
-      "import": "./esm/plugins/go-to-line.mjs"
+      "import": "./esm/plugins/indent.mjs"
     },
     "./plugins/select-token-callbacks": {
       "import": "./esm/plugins/select-token-callbacks.mjs"
