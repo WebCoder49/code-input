@@ -4,18 +4,78 @@
   "description": "Fully customisable, editable syntax-highlighted textareas.",
   "browser": "code-input.js",
   "exports": {
-    ".": "esm/code-input.mjs",
-    "./templates/hljs": "esm/templates/hljs.mjs",
-    "./templates/prism": "esm/templates/prism.mjs",
-    "./plugins/auto-close-brackets": "esm/plugins/auto-close-brackets.mjs",
-    "./plugins/autocomplete": "esm/plugins/autocomplete.mjs",
-    "./plugins/autodetect": "esm/plugins/autodetect.mjs",
-    "./plugins/find-and-replace": "esm/plugins/find-and-replace.mjs",
-    "./plugins/go-to-line": "esm/plugins/go-to-line.mjs",
-    "./plugins/indent": "esm/plugins/indent.mjs",
-    "./plugins/select-token-callbacks": "esm/plugins/select-token-callbacks.mjs",
-    "./plugins/special-chars": "esm/plugins/special-chars.mjs",
-    "./plugins/test": "esm/plugins/test.mjs"
+    ".": {
+      "import": {
+        "default": "esm/code-input.mjs",
+        "types": "esm/code-input.d.mts"
+      }
+    },
+    "./templates/hljs": {
+      "import": {
+        "default": "esm/templates/hljs.mjs",
+        "types": "esm/templates/hljs.d.mts"
+      }
+    },
+    "./templates/prism": {
+      "import": {
+        "default": "esm/templates/prism.mjs",
+        "types": "esm/templates/prism.d.mts"
+      }
+    },
+    "./plugins/auto-close-brackets": {
+      "import": {
+        "default": "esm/plugins/auto-close-brackets.mjs",
+        "types": "esm/plugins/auto-close-brackets.d.mts"
+      }
+    },
+    "./plugins/autocomplete": {
+      "import": {
+        "default": "esm/plugins/autocomplete.mjs",
+        "types": "esm/plugins/autocomplete.d.mts"
+      }
+    },
+    "./plugins/autodetect": {
+      "import": {
+        "default": "esm/plugins/autodetect.mjs",
+        "types": "esm/plugins/autodetect.d.mts"
+      }
+    },
+    "./plugins/find-and-replace": {
+      "import": {
+        "default": "esm/plugins/find-and-replace.mjs",
+        "types": "esm/plugins/find-and-replace.d.mts"
+      }
+    },
+    "./plugins/go-to-line": {
+      "import": {
+        "default": "esm/plugins/go-to-line.mjs",
+        "types": "esm/plugins/go-to-line.d.mts"
+      }
+    },
+    "./plugins/indent": {
+      "import": {
+        "default": "esm/plugins/indent.mjs",
+        "types": "esm/plugins/indent.d.mts"
+      }
+    },
+    "./plugins/select-token-callbacks": {
+      "import": {
+        "default": "esm/plugins/select-token-callbacks.mjs",
+        "types": "esm/plugins/select-token-callbacks.d.mts"
+      }
+    },
+    "./plugins/special-chars": {
+      "import": {
+        "default": "esm/plugins/special-chars.mjs",
+        "types": "esm/plugins/special-chars.d.mts"
+      }
+    },
+    "./plugins/test": {
+      "import": {
+        "default": "esm/plugins/test.mjs",
+        "types": "esm/plugins/test.d.mts"
+      }
+    }
   },
   "scripts": {
     "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1",
