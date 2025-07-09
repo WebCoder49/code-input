@@ -209,7 +209,7 @@ var codeInput = {
         plugins = [];
     },
 
-    // ESM-SUPPORT-START-TEMPLATES Do not (re)move this - it's needed for ESM generation!
+    // ESM-SUPPORT-START-TEMPLATES-BLOCK-1 Do not (re)move this - it's needed for ESM generation!
     /**
      * For creating a custom template from scratch, please 
      * use `new codeInput.Template(...)`
@@ -312,7 +312,7 @@ var codeInput = {
             };
         },
     },
-    // ESM-SUPPORT-END-TEMPLATES Do not (re)move this - it's needed for ESM generation!
+    // ESM-SUPPORT-END-TEMPLATES-BLOCK-1 Do not (re)move this - it's needed for ESM generation!
 
     /* ------------------------------------
     *  ------------Plugins-----------------
@@ -1041,6 +1041,7 @@ var codeInput = {
     }
 }
 
+// ESM-SUPPORT-START-TEMPLATES-BLOCK-2 Do not (re)move this - it's needed for ESM generation!
 {
     // Templates are defined here after the codeInput variable is set, because they reference it by extending codeInput.Template.
 
@@ -1095,5 +1096,6 @@ var codeInput = {
     // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
     codeInput.templates.Hljs = Hljs;
 }
+// ESM-SUPPORT-END-TEMPLATES-BLOCK-2 Do not (re)move this - it's needed for ESM generation!
 
 customElements.define("code-input", codeInput.CodeInput);
