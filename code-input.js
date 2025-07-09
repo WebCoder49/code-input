@@ -222,38 +222,19 @@ var codeInput = {
      * For adding small pieces of functionality, please see `codeInput.plugins`.
      */
     templates: {
+        // (Source code for class templates after var codeInput = ... so they can extend the codeInput.Template class)
         /**
-         * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
-         * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
-         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-         * @returns {codeInput.Template} template object
+         * @deprecated Please use `new codeInput.templates.Prism(...)`
          */
         prism(prism, plugins = []) { // Dependency: Prism.js (https://prismjs.com/)
-            return new codeInput.Template(
-                prism.highlightElement, // highlight
-                true, // preElementStyled
-                true, // isCode
-                false, // includeCodeInputInHighlightFunc
-                plugins
-            );
+            return new codeInput.templates.Prism(prism, plugins);
         },
+
         /**
-         * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
-         * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
-         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-         * @returns {codeInput.Template} template object
+         * @deprecated Please use `new codeInput.templates.Hljs(...)`
          */
         hljs(hljs, plugins = []) { // Dependency: Highlight.js (https://highlightjs.org/)
-            return new codeInput.Template(
-                function(codeElement) {
-                    codeElement.removeAttribute("data-highlighted");
-                    hljs.highlightElement(codeElement);
-                }, // highlight
-                false, // preElementStyled
-                true, // isCode
-                false, // includeCodeInputInHighlightFunc
-                plugins
-            );
+            return new codeInput.templates.Hljs(hljs, plugins);
         },
 
         /**
@@ -318,7 +299,7 @@ var codeInput = {
         },
         
         /**
-         * @deprecated Please use `new codeInput.Template()`
+         * @deprecated Please use `new codeInput.Template(...)`
          */
         custom(highlight = function () { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
             return {
@@ -1056,6 +1037,61 @@ var codeInput = {
             window.addEventListener("load", callback);
         }
     }
+}
+
+{
+    // Templates are defined here after the codeInput variable is set, because they reference it by extending codeInput.Template.
+
+    // ESM-SUPPORT-START-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
+    /**
+    * A template that uses Prism.js syntax highlighting (https://prismjs.com/).
+    */
+    class Prism extends codeInput.Template { // Dependency: Prism.js (https://prismjs.com/)
+        /**
+        * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
+        * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
+        * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+        * @returns {codeInput.Template} template object
+        */
+        constructor(prism, plugins = []) {
+            super(
+                prism.highlightElement, // highlight
+                true, // preElementStyled
+                true, // isCode
+                false, // includeCodeInputInHighlightFunc
+                plugins
+            );
+        }
+    };
+    // ESM-SUPPORT-END-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
+    codeInput.templates.Prism = Prism;
+
+    // ESM-SUPPORT-START-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
+    /**
+     * A template that uses highlight.js syntax highlighting (https://highlightjs.org/).
+     */
+    class Hljs extends codeInput.Template { // Dependency: Highlight.js (https://highlightjs.org/)
+        /**
+         * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
+         * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
+         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+         * @returns {codeInput.Template} template object
+         */
+        constructor(hljs, plugins = []) {
+            super(
+                function(codeElement) {
+                    codeElement.removeAttribute("data-highlighted");
+                    hljs.highlightElement(codeElement);
+                }, // highlight
+                false, // preElementStyled
+                true, // isCode
+                false, // includeCodeInputInHighlightFunc
+                plugins
+            );
+        }
+    };
+    // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
+    codeInput.templates.Hljs = Hljs;
 }
 
 customElements.define("code-input", codeInput.CodeInput);
