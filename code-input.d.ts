@@ -345,17 +345,35 @@ export class Template {
  */
 export namespace templates {
   /**
-   * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
-   * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
-   * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-   * @returns template object
+   * A template that uses Prism.js syntax highlighting (https://prismjs.com/).
+   */
+  class Prism extends Template {
+    /**
+    * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
+    * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
+    * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+    * @returns template object
+    */
+    constructor(prism: Object, plugins?: Plugin[])
+  }
+  /**
+   * @deprecated Please use `new codeInput.templates.Prism(...)`
    */
   function prism(prism: Object, plugins?: Plugin[]): Template
   /**
-   * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
-   * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
-   * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-   * @returns template object
+   * A template that uses highlight.js syntax highlighting (https://highlightjs.org/).
+   */
+  class Hljs extends Template {
+    /**
+    * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
+    * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
+    * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+    * @returns template object
+    */
+    constructor(hljs: Object, plugins?: Plugin[])
+  }
+  /**
+   * @deprecated Please use `new codeInput.templates.Hljs(...)`
    */
   function hljs(hljs: Object, plugins?: Plugin[]): Template
   /**
