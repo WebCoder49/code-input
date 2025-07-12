@@ -7,39 +7,48 @@
     ".": {
       "import": "./esm/code-input.mjs"
     },
-    "./templates/hljs": {
+    "./code-input.mjs": {
+      "import": "./esm/code-input.mjs"
+    },
+    "./templates/hljs.mjs": {
       "import": "./esm/templates/hljs.mjs"
     },
-    "./templates/prism": {
+    "./templates/prism.mjs": {
       "import": "./esm/templates/prism.mjs"
     },
-    "./plugins/auto-close-brackets": {
+    "./plugins/auto-close-brackets.mjs": {
       "import": "./esm/plugins/auto-close-brackets.mjs"
     },
-    "./plugins/autocomplete": {
+    "./plugins/autocomplete.mjs": {
       "import": "./esm/plugins/autocomplete.mjs"
     },
-    "./plugins/autodetect": {
+    "./plugins/autodetect.mjs": {
       "import": "./esm/plugins/autodetect.mjs"
     },
-    "./plugins/find-and-replace": {
+    "./plugins/find-and-replace.mjs": {
       "import": "./esm/plugins/find-and-replace.mjs"
     },
-    "./plugins/go-to-line": {
+    "./plugins/go-to-line.mjs": {
       "import": "./esm/plugins/go-to-line.mjs"
     },
-    "./plugins/indent": {
+    "./plugins/indent.mjs": {
       "import": "./esm/plugins/indent.mjs"
     },
-    "./plugins/select-token-callbacks": {
+    "./plugins/select-token-callbacks.mjs": {
       "import": "./esm/plugins/select-token-callbacks.mjs"
     },
-    "./plugins/special-chars": {
+    "./plugins/special-chars.mjs": {
       "import": "./esm/plugins/special-chars.mjs"
     },
-    "./plugins/test": {
+    "./plugins/test.mjs": {
       "import": "./esm/plugins/test.mjs"
-    }
+    },
+    "./code-input.css": "./code-input.css",
+    "./plugins/autocomplete.css": "./plugins/autocomplete.css",
+    "./plugins/find-and-replace.css": "./plugins/find-and-replace.css",
+    "./plugins/go-to-line.css": "./plugins/go-to-line.css",
+    "./plugins/prism-line-numbers.css": "./plugins/prism-line-numbers.css",
+    "./plugins/special-chars.css": "./plugins/special-chars.css",
   },
   "scripts": {
     "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1",
