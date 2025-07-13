@@ -133,7 +133,6 @@ var codeInput = {
                 // Bind sets elem as first parameter of function 
                 // So innerHTML can be read
             }
-            console.log(`code-input: template: Added existing elements with template ${templateName}`);
         }
 
         if (codeInput.defaultTemplate == undefined) {
@@ -148,9 +147,7 @@ var codeInput = {
                     // So innerHTML can be read
                 }
             }
-            console.log(`code-input: template: Set template ${templateName} as default`);
         }
-        console.log(`code-input: template: Created template ${templateName}`);
     },
 
     /**
@@ -359,7 +356,6 @@ var codeInput = {
          * modifications to the `codeInput.Plugin.attributeChanged` method.
          */
         constructor(observedAttributes) {
-            console.log("code-input: plugin: Created plugin");
 
             observedAttributes.forEach((attribute) => {
                 codeInput.observedAttributes.push(attribute);
