@@ -3,6 +3,8 @@
  * is activated for.
  * Files: auto-close-brackets.js
  */
+"use strict";
+
 codeInput.plugins.AutoCloseBrackets = class extends codeInput.Plugin {
     bracketPairs = [];
     bracketsOpenedStack = []; // Each item [closing bracket string, opening bracket location] Innermost at right so can know which brackets should be ignored when retyped

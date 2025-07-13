@@ -2,6 +2,8 @@
  * Display a popup under the caret using the text in the code-input element. This works well with autocomplete suggestions.
  * Files: autocomplete.js / autocomplete.css
  */
+"use strict";
+
 codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
     /**
      * Pass in a function to create a plugin that displays the popup that takes in (popup element, textarea, textarea.selectionEnd).

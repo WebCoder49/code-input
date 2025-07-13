@@ -1,10 +1,16 @@
 /**
  * **code-input** is a library which lets you create custom HTML `<code-input>`
  * elements that act like `<textarea>` elements but support syntax-highlighted
- * code, implemented using any typical syntax highlighting library. [MIT-Licensed]
- * 
+ * code, implemented using any typical syntax highlighting library.
+ *
+ * License of whole library for bundlers:
+ *
+ * Copyright 2021-2025 Oliver Geer and contributors
+ * @license MIT
+ *
  * **<https://github.com/WebCoder49/code-input>**
  */
+"use strict";
 
 
 var codeInput = {
@@ -121,7 +127,7 @@ var codeInput = {
         // Add waiting code-input elements wanting this template from queue
         if (templateName in codeInput.templateNotYetRegisteredQueue) {
             for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
-                elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
+                const elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.template = template;
                 codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
                 // Bind sets elem as first parameter of function 
@@ -135,7 +141,7 @@ var codeInput = {
             // Add elements with default template from queue
             if (undefined in codeInput.templateNotYetRegisteredQueue) {
                 for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
-                    elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
+                    const elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.template = template;
                     codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
                     // Bind sets elem as first parameter of function

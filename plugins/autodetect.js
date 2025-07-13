@@ -3,6 +3,8 @@
  * autodetect capabilities. Works with highlight.js only.
  * Files: autodetect.js
  */
+"use strict";
+
 codeInput.plugins.Autodetect = class extends codeInput.Plugin {
     constructor() {
         super([]); // No observed attributes

@@ -3,6 +3,8 @@
  * possible to indent/unindent multiple lines using Tab/Shift+Tab
  * Files: indent.js
  */
+"use strict";
+
 codeInput.plugins.Indent = class extends codeInput.Plugin {
 
     bracketPairs = {}; // No bracket-auto-indentation used when {}
