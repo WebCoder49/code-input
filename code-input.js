@@ -129,7 +129,7 @@ var codeInput = {
             for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
                 const elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.template = template;
-                codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
+                elem.connectedCallback();
                 // Bind sets elem as first parameter of function 
                 // So innerHTML can be read
             }
@@ -143,7 +143,7 @@ var codeInput = {
                 for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
                     const elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.template = template;
-                    codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
+                    elem.connectedCallback();
                     // Bind sets elem as first parameter of function
                     // So innerHTML can be read
                 }
@@ -739,10 +739,8 @@ var codeInput = {
             this.template = this.getTemplate();
             if (this.template != undefined) {
                 this.classList.add("code-input_registered");
-                codeInput.runOnceWindowLoaded(() => { 
-                    this.setup();
-                    this.classList.add("code-input_loaded");
-                }, this);
+                this.setup();
+                this.classList.add("code-input_loaded");
             }
             this.mutationObserver = new MutationObserver(this.mutationObserverCallback.bind(this));
             this.mutationObserver.observe(this, {
@@ -1032,18 +1030,6 @@ var codeInput = {
         formResetCallback() {
             this.value = this.initialValue;
         };
-    },
-
-    /** 
-     * To ensure the DOM is ready, run this callback after the window 
-     * has loaded (or now if it has already loaded)
-     */
-    runOnceWindowLoaded(callback, codeInputElem) {
-        if(document.readyState == "complete") {
-            callback(); // Fully loaded
-        } else {
-            window.addEventListener("load", callback);
-        }
     }
 }
 
