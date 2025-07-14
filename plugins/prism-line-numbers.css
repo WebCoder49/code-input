@@ -14,3 +14,8 @@ code-input.line-numbers textarea, code-input.line-numbers.code-input_pre-element
 code-input.line-numbers, .line-numbers code-input {
   grid-template-columns: calc(100% - max(0em, calc(3.8em - var(--padding, 16px))));
 }
+
+/* Make keyboard navigation still fill width */
+code-input .code-input_dialog-container .code-input_keyboard-navigation-instructions {
+  width: calc(100% + max(3.8em, var(--padding, 16px)))!important;
+}

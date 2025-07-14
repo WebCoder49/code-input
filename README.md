@@ -54,8 +54,8 @@ From JSDelivr CDN (click)
 
 ```html
 <!--In the <head>-->
-<script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.3/code-input.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.3/code-input.min.css">
+<script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.5/code-input.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.5/code-input.min.css">
 ```
 </details>
 
@@ -64,12 +64,12 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 
 - *Highlight.js:*
   ```js
-  codeInput.registerTemplate("syntax-highlighted", codeInput.templates.hljs(hljs, [] /* Array of plugins (see below) */));
+  codeInput.registerTemplate("syntax-highlighted", new codeInput.templates.Hljs(hljs, [] /* Array of plugins (see below) */));
   ```
 
 - *Prism.js:*
   ```js
-  codeInput.registerTemplate("syntax-highlighted", codeInput.templates.prism(Prism, [] /* Array of plugins (see below) */));
+  codeInput.registerTemplate("syntax-highlighted", new codeInput.templates.Prism(Prism, [] /* Array of plugins (see below) */));
   ```
 
 - *Custom:*
@@ -106,7 +106,7 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 <!--...-->
 <script>
   codeInput.registerTemplate("syntax-highlighted", 
-    codeInput.templates.hljs(
+    new codeInput.templates.Hljs(
       hljs, 
       [
         new codeInput.plugins.Autodetect(), 

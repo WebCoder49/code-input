@@ -132,14 +132,36 @@ export namespace plugins {
      * Create a find-and-replace command plugin to pass into a template
      * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
      * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
+     * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the find-and-replace.js source code for the English text.
      */
-    constructor(useCtrlF?: boolean, useCtrlH?: boolean);
+    constructor(useCtrlF?: boolean, useCtrlH?: boolean,
+                instructionTranslations?: {
+                  start?: string;
+                  none?: string;
+                  oneFound?: string;
+                  matchIndex?: (index: Number, count: Number) => string;
+                  error?: (message: string) => string;
+                  infiniteLoopError?: string;
+                  closeDialog?: string;
+                  findPlaceholder?: string;
+                  findCaseSensitive?: string;
+                  findRegExp?: string;
+                  replaceTitle?: string;
+                  replacePlaceholder?: string;
+                  findNext?: string;
+                  findPrevious?: string;
+                  replaceActionShort?: string;
+                  replaceAction?: string;
+                  replaceAllActionShort?: string;
+                  replaceAllAction?: string
+                }
+              );
     /**
      * Show a find-and-replace dialog.
      * @param {codeInput.CodeInput} codeInputElement the `<code-input>` element.
      * @param {boolean} replacePartExpanded whether the replace part of the find-and-replace dialog should be expanded
      */
-    showPrompt(codeInput: CodeInput, replacePartExpanded: boolean): void;
+    showPrompt(codeInputElement: CodeInput, replacePartExpanded: boolean): void;
   }
   
   /**
@@ -150,8 +172,13 @@ export namespace plugins {
     /**
      * Create a go-to-line command plugin to pass into a template
      * @param {boolean} useCtrlG Should Ctrl+G be overriden for go-to-line functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
+     * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the English text.
      */
-    constructor(useCtrlG: boolean);
+    constructor(useCtrlG: boolean,
+                instructionTranslations?: {
+                  closeDialog?: string;
+                  input?: string;
+                });
     /**
      * Show a search-like dialog prompting line number.
      * @param {codeInput.CodeInput} codeInput the `<code-input>` element.
@@ -171,8 +198,12 @@ export namespace plugins {
      * @param {Number} numSpaces How many spaces is each tab character worth? Defaults to 4.
      * @param {Object} bracketPairs Opening brackets mapped to closing brackets, default and example {"(": ")", "[": "]", "{": "}"}. All brackets must only be one character, and this can be left as null to remove bracket-based indentation behaviour.
      * @param {boolean} escTabToChangeFocus Whether pressing the Escape key before (Shift+)Tab should make this keypress focus on a different element (Tab's default behaviour). You should always either enable this or use this plugin's disableTabIndentation and enableTabIndentation methods linked to other keyboard shortcuts, for accessibility.
+     * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the English text.
      */
-    constructor(defaultSpaces?: boolean, numSpaces?: Number, bracketPairs?: Object, escTabToChangeFocus?: boolean);
+    constructor(defaultSpaces?: boolean, numSpaces?: Number, bracketPairs?: Object, escTabToChangeFocus?: boolean, instructionTranslations?: {
+      tabForIndentation?: string;
+      tabForNavigation?: string;
+    });
   }
 
   /**
@@ -314,17 +345,35 @@ export class Template {
  */
 export namespace templates {
   /**
-   * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
-   * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
-   * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-   * @returns template object
+   * A template that uses Prism.js syntax highlighting (https://prismjs.com/).
+   */
+  class Prism extends Template {
+    /**
+    * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
+    * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
+    * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+    * @returns template object
+    */
+    constructor(prism: Object, plugins?: Plugin[])
+  }
+  /**
+   * @deprecated Please use `new codeInput.templates.Prism(...)`
    */
   function prism(prism: Object, plugins?: Plugin[]): Template
   /**
-   * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
-   * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
-   * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
-   * @returns template object
+   * A template that uses highlight.js syntax highlighting (https://highlightjs.org/).
+   */
+  class Hljs extends Template {
+    /**
+    * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
+    * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
+    * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+    * @returns template object
+    */
+    constructor(hljs: Object, plugins?: Plugin[])
+  }
+  /**
+   * @deprecated Please use `new codeInput.templates.Hljs(...)`
    */
   function hljs(hljs: Object, plugins?: Plugin[]): Template
   /**

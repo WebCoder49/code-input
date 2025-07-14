@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>code-input should be global</title>
+
+        <meta charset="utf-8"/>
+
+        <!--Import Prism-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+        <script src="prism-match-braces-compatibility.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/match-braces/prism-match-braces.min.css">
+
+        <!--Import Highlight.JS-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+
+        <!--Import code-input-->
+        <link rel="stylesheet" href="../code-input.css">
+        <script src="../code-input.js"></script>
+
+        <!--Import code-input plugins-->
+        <script src="../plugins/auto-close-brackets.js"></script>
+        <script src="../plugins/autocomplete.js"></script>
+        <script src="../plugins/autodetect.js"></script>
+        <link rel="stylesheet" href="../plugins/autocomplete.css">
+        <script src="../plugins/find-and-replace.js"></script>
+        <link rel="stylesheet" href="../plugins/find-and-replace.css">
+        <script src="../plugins/go-to-line.js"></script>
+        <link rel="stylesheet" href="../plugins/go-to-line.css">
+        <script src="../plugins/indent.js"></script>
+        <link rel="stylesheet" href="../plugins/prism-line-numbers.css">
+        <script src="../plugins/select-token-callbacks.js"></script>
+        <script src="../plugins/special-chars.js"></script>
+        <link rel="stylesheet" href="../plugins/special-chars.css">
+
+        <!--Register templates-->
+        <script>
+            codeInput.registerTemplate("hljs", codeInput.templates.hljs(hljs, [
+                /*new codeInput.plugins.AutoCloseBrackets(),
+                new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+                    if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+                        // Show popup
+                        popupElem.style.display = "block";
+                        popupElem.innerHTML = "Here's your popup!";
+                    } else {
+                        popupElem.style.display = "none";
+                    }
+                }),
+                new codeInput.plugins.Autodetect(),
+                new codeInput.plugins.FindAndReplace(),
+                new codeInput.plugins.GoToLine(),
+                new codeInput.plugins.Indent(true, 2),
+                new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
+                new codeInput.plugins.SpecialChars(true),*/
+            ]));
+            codeInput.registerTemplate("prism", codeInput.templates.prism(Prism, [
+                /*new codeInput.plugins.AutoCloseBrackets(),
+                new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+                    if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+                        // Show popup
+                        popupElem.style.display = "block";
+                        popupElem.innerHTML = "Here's your popup!";
+                    } else {
+                        popupElem.style.display = "none";
+                    }
+                }),
+                new codeInput.plugins.FindAndReplace(),
+                new codeInput.plugins.GoToLine(),
+                new codeInput.plugins.Indent(true, 2),
+                new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
+                new codeInput.plugins.SpecialChars(true),*/
+            ]));
+
+            // Attribution: Translated by Oliver Geer with some help from English Wiktionary
+            let findAndReplaceTranslations = {
+                start: "Buscar términos en su código.",
+                none: "No hay sucesos",
+                oneFound: "1 suceso encontrado.",
+                matchIndex: (index, count) => `${index} de ${count} sucesos.`,
+                error: (message) => `Error: ${message}`,
+                infiniteLoopError: "Causa un ciclo infinito",
+                closeDialog: "Cerrar el Diálogo y Regresar al Editor",
+                findPlaceholder: "Buscar",
+                findCaseSensitive: "Prestar atención a las minúsculas/mayúsculas",
+                findRegExp: "Utilizar expresión regular de JavaScript",
+                replaceTitle: "Reemplazar",
+                replacePlaceholder: "Reemplazar con",
+                findNext: "Buscar Suceso Próximo",
+                findPrevious: "Buscar Suceso Previo",
+                replaceActionShort: "Reemplazar",
+                replaceAction: "Reemplazar este Suceso",
+                replaceAllActionShort: "Reemplazar Todos",
+                replaceAllAction: "Reemplazar Todos los Sucesos"
+            };
+            let goToLineTranslations = {
+                closeDialog: "Cerrar el Diálogo y Regresar al Editor",
+                input: "Línea:Columno o Línea luego Retorno",
+            };
+            let indentTranslations = {
+                tabForIndentation: "Tabulador y Mayús-Tabulador actualmente para la indentación. Tecla Escape para activar la navegación por el teclado.",
+                tabForNavigation: "Tabulador y Mayús-Tabulador actualmente para la navegación por el teclado. Tecla para activar la indentación.",
+            };
+
+            codeInput.registerTemplate("hljs+", codeInput.templates.hljs(hljs, [
+                new codeInput.plugins.AutoCloseBrackets(),
+                new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+                    if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+                        // Show popup
+                        popupElem.style.display = "block";
+                        popupElem.innerHTML = "Here's your popup!";
+                    } else {
+                        popupElem.style.display = "none";
+                    }
+                }),
+                new codeInput.plugins.Autodetect(),
+                new codeInput.plugins.FindAndReplace(true, true, findAndReplaceTranslations),
+                new codeInput.plugins.GoToLine(true, goToLineTranslations),
+                new codeInput.plugins.Indent(true, 2, {"(": ")", "[": "]", "{": "}"}, true, indentTranslations),
+                new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
+                //new codeInput.plugins.SpecialChars(true),
+            ]));
+            codeInput.registerTemplate("prism+", codeInput.templates.prism(Prism, [
+                new codeInput.plugins.AutoCloseBrackets(),
+                new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+                    if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+                        // Show popup
+                        popupElem.style.display = "block";
+                        popupElem.innerHTML = "Here's your popup!";
+                    } else {
+                        popupElem.style.display = "none";
+                    }
+                }),
+                new codeInput.plugins.FindAndReplace(true, true, findAndReplaceTranslations),
+                new codeInput.plugins.GoToLine(true, goToLineTranslations),
+                new codeInput.plugins.Indent(true, 2, {"(": ")", "[": "]", "{": "}"}, true, indentTranslations),
+                new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
+                //new codeInput.plugins.SpecialChars(true),
+            ]));
+        </script>
+    </head>
+    <body>
+        <textarea dir="rtl" placeholder="textarea rtl"></textarea>
+        <textarea dir="ltr" placeholder="textarea ltr"></textarea>
+        <code-input dir="rtl" template="prism" language="markdown" placeholder="prism rtl"></code-input>
+        <code-input dir="ltr" template="prism" language="markdown" placeholder="prism ltr"></code-input>
+        <code-input dir="rtl" template="hljs" language="markdown" placeholder="hljs rtl"></code-input>
+        <code-input dir="ltr" template="hljs" language="markdown" placeholder="hljs ltr"></code-input>
+        <code-input dir="rtl" template="prism+" language="markdown" placeholder="prism rtl" class="line-numbers"></code-input>
+        <code-input dir="ltr" template="prism+" language="markdown" placeholder="prism ltr" class="line-numbers"></code-input>
+        <code-input dir="rtl" template="hljs+" language="markdown" placeholder="hljs rtl"></code-input>
+        <code-input dir="ltr" template="hljs+" language="markdown" placeholder="hljs ltr"></code-input>
+
+        <script>
+            rtl = `# ערך מומלץ ערך מומלץ
+
+**לוטרת** הים היא יונק ימי קטן יחסית, חבר במשפחת הסמורים, שחי לחופיו הצפוניים והמזרחיים של האוקיינוס השקט.
+
+ההגנה מפני קור אצל לוטרת הים מבוססת על שכבה עבה של פרווה, שהיא מהצפופות בעולם החי,
+וזאת בשונה ממרבית היונקים הימיים הנסמכים על שכבת שומן.  CC-BY-SA he.wikipedia.org אף שהיא מסוגלת להלך על היבשה, מבלה לוטרת הים את מרבית זמנה באוקיינוס הפתוח.
+
+# مقالة اليوم المختارة
+
+**الواقعية في الأدب الإسبا**ني هي حركة أدبية شكلت جزءًا من الواقعية، وهو تيار ثقافي ظهر في أوروبا في منتصف القرن التاسع عشر عقب اضمحلال اتجاهات الرومانسية.
+
+ظهر سابقًا في فرنسا سنة 1850 حيث تطورت أصوله التي كانت موجودة بالفعل في الرومانسية، وخصوصًا في الأدب الذي يتناول العادات والتقاليد. CC-BY-SA ar.wikipedia.org التي كانت تعج بكل ما هو خيالي وجمالي خلاب، وعمدوا إلى الملاحظة الموضوعية للأشخاص والمجتمع والأحداث المعاصرة في محاولة منهم إلى تقديم صورة واضحة للمجتمع آنذاك.`;
+            ltr = `# From today's featured article
+
+CC-BY-SA en.wikipedia.org: History is the systematic study of the past with its main focus on the human past.
+
+Historians analyse and interpret primary and secondary sources to construct narratives about what happened and explain why it happened. RTL: مقالة اليوم المختارة They engage in source criticism to assess the authenticity, content, and reliability of these sources.
+
+# निर्वाचित लेख
+
+CC-BY-SA hi.wikipedia.org: **ग्लेशियर नेशनल पार्क** अमेरिकी राष्ट्रीय उद्यान है, जो कि कनाडा-संयुक्त राज्य अमेरिका की सीमा पर स्थित है। उद्यान संयुक्त राज्य के उत्तर-पश्चिमी मोंटाना राज्य
+
+में स्थित है और कनाडा की ओर अल्बर्टा और ब्रिटिश कोलम्बिया प्रांतों से सटा हुआ है। उद्यान दस लाख एकड़ RTL: ערך מומלץ ערך מומלץ (4,000 किमी2) से अधिक क्षेत्र में फैला हुआ है और इसमें दो पर्वत श्रृंखला (रॉकी पर्वत की उप-श्रेणियाँ), 130 से अधिक नामित झीलें...`;
+            window.addEventListener("load", function() {
+
+                const elems = document.querySelectorAll("body > code-input, body > textarea");
+                for(let i = 0; i < elems.length; i++) {
+                    let dir = elems[i].getAttribute("dir");
+                    if(dir == "rtl") elems[i].value = rtl;
+                    else elems[i].value = ltr;
+                }
+            });
+        </script>
+    </body>
+</html>
