@@ -81,11 +81,12 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         let indentationWidthPx = testIndentationWidthSpan.offsetWidth;
         codeInput.removeChild(testIndentationWidthPre);
 
-        codeInput.pluginData.indent = {indentationWidthPx: indentationWidthPx};
+        codeInput.pluginData.indent = {automatedKeypresses: false, indentationWidthPx: indentationWidthPx};
     }
 
     /* Deal with the Tab key causing indentation, and Tab+Selection indenting / Shift+Tab+Selection unindenting lines, and the mechanism through which Tab can be used to switch focus instead (accessibility). */
     checkTab(codeInput, event) {
+        if(codeInput.pluginData.indent.automatedKeypresses) return;
         if(!this.tabIndentationEnabled) return;
         if(this.escTabToChangeFocus) {
             // Accessibility - allow Tab for keyboard navigation when Esc pressed right before it.
@@ -116,7 +117,12 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         
         if(!event.shiftKey && inputElement.selectionStart == inputElement.selectionEnd) {
             // Just place a tab/spaces here.
+            // automatedKeypresses property to prevent keypresses being captured
+            // by this plugin during automated input as some browsers
+            // (e.g. GNOME Web) do.
+            codeInput.pluginData.indent.automatedKeypresses = true;
             document.execCommand("insertText", false, this.indentation);
+            codeInput.pluginData.indent.automatedKeypresses = false;
 
         } else {
             let lines = inputElement.value.split("\n");
@@ -147,7 +153,12 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
                         // Add tab at start
                         inputElement.selectionStart = letterI;
                         inputElement.selectionEnd = letterI;
+                        // automatedKeypresses property to prevent keypresses being captured
+                        // by this plugin during automated input as some browsers
+                        // (e.g. GNOME Web) do.
+                        codeInput.pluginData.indent.f = true;
                         document.execCommand("insertText", false, this.indentation);
+                        codeInput.pluginData.indent.automatedKeypresses = false;
 
                         // Change selection
                         if(selectionStartI > letterI) { // Indented outside selection
@@ -191,6 +202,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
 
     /* Deal with new lines retaining indentation */
     checkEnter(codeInput, event) {
+        if(codeInput.pluginData.indent.automatedKeypresses) return;
         if(event.key != "Enter") {
             return;
         }
@@ -263,6 +275,10 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         }
 
         // insert our indents and any text from the previous line that might have been after the line break
+        // negative indents shouldn't exist and would only break future calculations.
+        if(numberIndents < 0) {
+            numberIndents = 0;
+        }
         for (let i = 0; i < numberIndents; i++) {
             newLine += this.indentation;
         }
@@ -270,11 +286,16 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         // save the current cursor position
         let selectionStartI = inputElement.selectionStart;
 
+        // automatedKeypresses property to prevent keypresses being captured
+        // by this plugin during automated input as some browsers
+        // (e.g. GNOME Web) do.
+        codeInput.pluginData.indent.automatedKeypresses = true;
         if(bracketThreeLinesTriggered) {
             document.execCommand("insertText", false, "\n" + furtherIndentation); // Write indented line
             numberIndents += 1; // Reflects the new indent
         }
         document.execCommand("insertText", false, "\n" + newLine); // Write new line, including auto-indentation
+        codeInput.pluginData.indent.automatedKeypresses = false;
 
         // move cursor to new position
         inputElement.selectionStart = selectionStartI + numberIndents*this.indentationNumChars + 1;  // count the indent level and the newline character
@@ -294,6 +315,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
 
     /* Deal with one 'tab' of spaces-based-indentation being deleted by each backspace, rather than one space */
     checkBackspace(codeInput, event) {
+        if(codeInput.pluginData.indent.automatedKeypresses) return;
         if(event.key != "Backspace" || this.indentationNumChars == 1) {
             return; // Normal backspace when indentation of 1
         }
@@ -321,7 +343,8 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
                 if(codeInput.value.substring(codeInput.textareaElement.selectionStart - this.indentationNumChars, codeInput.textareaElement.selectionStart) == this.indentation) {
                     // Indentation before cursor = delete it
                     codeInput.textareaElement.selectionStart -= this.indentationNumChars;
-                    document.execCommand("delete", false, "");
+                    // document.execCommand("delete", false, "");
+                    // event.preventDefault();
                 }
             }
         }

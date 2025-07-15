@@ -162,12 +162,17 @@ function startLoad(codeInputElem, isHLJS) {
 }
 
 /* Make input events work and be trusted in the inputElement - thanks for this SO answer: https://stackoverflow.com/a/49519772/21785620 */
-function allowInputEvents(inputElement) {
+function allowInputEvents(inputElement, codeInputElement=undefined) {
     inputElement.addEventListener('input', function(e){
         if(!e.isTrusted){
             e.preventDefault();
             // Manually trigger
+            // Prevent auto-close-brackets plugin recapturing the event
+            // Needed because this interception is hacky.
+            // TODO: Potentially plugin-agnostic way, probably automatedKeypresses var in core, won't be needed much but may be helpful extra feature.
+            if(codeInputElement !== undefined) codeInputElement.pluginData.autoCloseBrackets.automatedKeypresses = true;
             document.execCommand("insertText", false, e.data);
+            if(codeInputElement !== undefined) codeInputElement.pluginData.autoCloseBrackets.automatedKeypresses = false;
         }
     }, false);
 }
@@ -175,9 +180,9 @@ function allowInputEvents(inputElement) {
 /* Start the tests using the textarea inside the code-input element and whether highlight.js is being used (as the Autodetect plugin only works with highlight.js, for example) */
 async function startTests(textarea, isHLJS) {
     textarea.focus();
-    allowInputEvents(textarea);
 
     codeInputElement = textarea.parentElement;
+    allowInputEvents(textarea, codeInputElement);
 
     /*--- Tests for core functionality ---*/
 
@@ -438,7 +443,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     findInput.focus();
     allowInputEvents(findInput);
     addText(findInput, "hello");
-    await waitAsync(150); // Wait for highlighting so matches update
+    await waitAsync(200); // Wait for highlighting so matches update
 
     replaceInput.value = "hi";
     replaceAllButton.click();
@@ -525,8 +530,10 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     backspace(textarea);
 
     testAddingText("Indent-AutoCloseBrackets", textarea, function(textarea) {
-        addText(textarea, `function printTriples(max) {\nfor(let i = 0; i < max-2; i++) {\nfor(let j = 0; j < max-1; j++) {\nfor(let k = 0; k < max; k++) {\nconsole.log(i,j,k);\n}\n//Hmmm...`, true);
-    }, 'function printTriples(max) {\n  for(let i = 0; i < max-2; i++) {\n    for(let j = 0; j < max-1; j++) {\n      for(let k = 0; k < max; k++) {\n        console.log(i,j,k);\n      }\n      //Hmmm...\n      }\n    }\n  }\n}', 189, 189);
+        addText(textarea, `function printTriples(max) {\nfor(let i = 0; i < max-2; i++) {\nfor(let j = 0; j < max-1; j++) {\nfor(let k = 0; k < max; k++) {\nconsole.log(i,j,k);\n}\n//Hmmm...\n}//Test auto-unindent\n{`, true);
+        move(textarea, 1); // Move after created closing bracket
+        backspace(textarea); // Remove created closing bracket
+    }, 'function printTriples(max) {\n  for(let i = 0; i < max-2; i++) {\n    for(let j = 0; j < max-1; j++) {\n      for(let k = 0; k < max; k++) {\n        console.log(i,j,k);\n      }\n      //Hmmm...\n    }//Test auto-unindent\n    {\n      }\n    }\n  }\n}', 221, 211);
 
     // SelectTokenCallbacks
     if(isHLJS) {
