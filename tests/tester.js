@@ -59,7 +59,6 @@ function testAddingText(group, textarea, action, correctOutput, correctLengthToS
 /* Assuming the textarea is focused, add the given text to it, emitting 'input' and 'beforeinput' keyboard events (and 'keydown'/'keyup' Enter on newlines, if enterEvents is true) which plugins can handle */
 function addText(textarea, text, enterEvents=false) {
     for(let i = 0; i < text.length; i++) {
-        const selectionStartBefore = textarea.selectionStart;
         if(enterEvents && text[i] == "\n") {
             textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
             textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
