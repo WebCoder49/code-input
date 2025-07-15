@@ -275,6 +275,10 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         }
 
         // insert our indents and any text from the previous line that might have been after the line break
+        // negative indents shouldn't exist and would only break future calculations.
+        if(numberIndents < 0) {
+            numberIndents = 0;
+        }
         for (let i = 0; i < numberIndents; i++) {
             newLine += this.indentation;
         }
@@ -339,7 +343,8 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
                 if(codeInput.value.substring(codeInput.textareaElement.selectionStart - this.indentationNumChars, codeInput.textareaElement.selectionStart) == this.indentation) {
                     // Indentation before cursor = delete it
                     codeInput.textareaElement.selectionStart -= this.indentationNumChars;
-                    document.execCommand("delete", false, "");
+                    // document.execCommand("delete", false, "");
+                    // event.preventDefault();
                 }
             }
         }

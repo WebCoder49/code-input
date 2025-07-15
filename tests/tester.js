@@ -59,6 +59,7 @@ function testAddingText(group, textarea, action, correctOutput, correctLengthToS
 /* Assuming the textarea is focused, add the given text to it, emitting 'input' and 'beforeinput' keyboard events (and 'keydown'/'keyup' Enter on newlines, if enterEvents is true) which plugins can handle */
 function addText(textarea, text, enterEvents=false) {
     for(let i = 0; i < text.length; i++) {
+        const selectionStartBefore = textarea.selectionStart;
         if(enterEvents && text[i] == "\n") {
             textarea.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
             textarea.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
@@ -162,12 +163,17 @@ function startLoad(codeInputElem, isHLJS) {
 }
 
 /* Make input events work and be trusted in the inputElement - thanks for this SO answer: https://stackoverflow.com/a/49519772/21785620 */
-function allowInputEvents(inputElement) {
+function allowInputEvents(inputElement, codeInputElement=undefined) {
     inputElement.addEventListener('input', function(e){
         if(!e.isTrusted){
             e.preventDefault();
             // Manually trigger
+            // Prevent auto-close-brackets plugin recapturing the event
+            // Needed because this interception is hacky.
+            // TODO: Potentially plugin-agnostic way, probably automatedKeypresses var in core, won't be needed much but may be helpful extra feature.
+            if(codeInputElement !== undefined) codeInputElement.pluginData.autoCloseBrackets.automatedKeypresses = true;
             document.execCommand("insertText", false, e.data);
+            if(codeInputElement !== undefined) codeInputElement.pluginData.autoCloseBrackets.automatedKeypresses = false;
         }
     }, false);
 }
@@ -175,9 +181,9 @@ function allowInputEvents(inputElement) {
 /* Start the tests using the textarea inside the code-input element and whether highlight.js is being used (as the Autodetect plugin only works with highlight.js, for example) */
 async function startTests(textarea, isHLJS) {
     textarea.focus();
-    allowInputEvents(textarea);
 
     codeInputElement = textarea.parentElement;
+    allowInputEvents(textarea, codeInputElement);
 
     /*--- Tests for core functionality ---*/
 
@@ -438,7 +444,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     findInput.focus();
     allowInputEvents(findInput);
     addText(findInput, "hello");
-    await waitAsync(150); // Wait for highlighting so matches update
+    await waitAsync(200); // Wait for highlighting so matches update
 
     replaceInput.value = "hi";
     replaceAllButton.click();

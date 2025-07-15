@@ -21,12 +21,14 @@ codeInput.plugins.AutoCloseBrackets = class extends codeInput.Plugin {
     afterElementsAdded(codeInput) {
         codeInput.pluginData.autoCloseBrackets = { automatedKeypresses: false};
         codeInput.textareaElement.addEventListener('keydown', (event) => { this.checkBackspace(codeInput, event); });
-        codeInput.textareaElement.addEventListener('beforeinput', (event) => { this.checkBrackets(codeInput, event); });
+        codeInput.textareaElement.addEventListener('beforeinput', (event) => { this.checkClosingBracket(codeInput, event); });
+        codeInput.textareaElement.addEventListener('input', (event) => { this.checkOpeningBracket(codeInput, event); });
     }
 
-    /* Deal with the automatic creation of closing bracket when opening brackets are typed, and the ability to "retype" a closing
-    bracket where one has already been placed. */
-    checkBrackets(codeInput, event) {
+    /* Deal with the ability to "retype" a closing bracket where one has already
+    been placed. Runs before input so newly typing a closing bracket can be
+    prevented.*/
+    checkClosingBracket(codeInput, event) {
         if(codeInput.pluginData.autoCloseBrackets.automatedKeypresses) return;
         if(event.data == codeInput.textareaElement.value[codeInput.textareaElement.selectionStart]) {
             // Check if a closing bracket is typed
@@ -39,7 +41,13 @@ codeInput.plugins.AutoCloseBrackets = class extends codeInput.Plugin {
                     break;
                 }
             }
-        } else if(event.data in this.bracketPairs) {
+        }
+    }
+
+    /* Deal with the automatic creation of closing bracket when opening brackets are typed. Runs after input for consistency between browsers. */
+    checkOpeningBracket(codeInput, event) {
+        if(codeInput.pluginData.autoCloseBrackets.automatedKeypresses) return;
+        if(event.data in this.bracketPairs) {
             // Opening bracket typed; Create bracket pair
             let closingBracket = this.bracketPairs[event.data];
             // Insert the closing bracket
