@@ -533,7 +533,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
         addText(textarea, `function printTriples(max) {\nfor(let i = 0; i < max-2; i++) {\nfor(let j = 0; j < max-1; j++) {\nfor(let k = 0; k < max; k++) {\nconsole.log(i,j,k);\n}\n//Hmmm...\n}//Test auto-unindent\n{`, true);
         move(textarea, 1); // Move after created closing bracket
         backspace(textarea); // Remove created closing bracket
-    }, 'function printTriples(max) {\n  for(let i = 0; i < max-2; i++) {\n    for(let j = 0; j < max-1; j++) {\n      for(let k = 0; k < max; k++) {\n        console.log(i,j,k);\n      }\n      //Hmmm...\n    }//Test auto-unindent\n    {\n      }\n    }\n  }\n}', 221, 211);
+    }, 'function printTriples(max) {\n  for(let i = 0; i < max-2; i++) {\n    for(let j = 0; j < max-1; j++) {\n      for(let k = 0; k < max; k++) {\n        console.log(i,j,k);\n      }\n      //Hmmm...\n    }//Test auto-unindent\n    {\n      }\n    }\n  }\n}', 221, 221);
 
     // SelectTokenCallbacks
     if(isHLJS) {

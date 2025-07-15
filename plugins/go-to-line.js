@@ -90,7 +90,11 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
 
             const dialog = document.createElement('div');
             const input = document.createElement('input');
+
+            // TODO: Make a button element (semantic HTML for accessibility) in next major version
             const cancel = document.createElement('span');
+            cancel.setAttribute("role", "button");
+            cancel.setAttribute("aria-label", this.instructions.closeDialog);
             cancel.setAttribute("tabindex", 0); // Visible to keyboard navigation
             cancel.setAttribute("title", this.instructions.closeDialog);
 
