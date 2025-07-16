@@ -6,7 +6,6 @@
  * **<https://github.com/WebCoder49/code-input>**
  */
 
-
 var codeInput = {
     /**
      * A list of attributes that will trigger the 
@@ -64,7 +63,8 @@ var codeInput = {
         "change",
         "selectionchange",
         "invalid",
-        "input"
+        "input",
+        "scroll"
     ],
 
     /* ------------------------------------
@@ -512,25 +512,7 @@ var codeInput = {
             if (this.template.includeCodeInputInHighlightFunc) this.template.highlight(resultElement, this);
             else this.template.highlight(resultElement);
 
-            this.syncSize();
-
             this.pluginEvt("afterHighlight");
-        }
-
-        /**
-         * Set the size of the textarea element to the size of the pre/code element.
-         */
-        syncSize() {
-            // Synchronise the size of the pre/code and textarea elements
-            if(this.template.preElementStyled) {
-                this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
-                this.textareaElement.style.height = getComputedStyle(this.preElement).height;
-                this.textareaElement.style.width = getComputedStyle(this.preElement).width;
-            } else {
-                this.style.backgroundColor = getComputedStyle(this.codeElement).backgroundColor;
-                this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
-                this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
-            }
         }
 
         /**
@@ -684,22 +666,64 @@ var codeInput = {
             this.value = value;
             this.animateFrame();
 
-            const resizeObserver = new ResizeObserver((elements) => {
-                // The only element that could be resized is this code-input element.
-                this.syncSize();
+            // Scrolling
+            this.textareaElement.addEventListener("scroll", () => {
+                this.syncScrollFromTextarea();
             });
-            resizeObserver.observe(this);
+            if(this.template.preElementStyled) {
+                this.preElement.addEventListener("scroll", () => {
+                    this.syncScrollFromHighlighted(this.preElement)
+                });
+            } else {
+                this.codeElement.addEventListener("scroll", () => {
+                     this.syncScrollFromHighlighted(this.codeElement)
+                });
+            }
+            // TODO: Make scrollTop etc. directly accessible from code-input.
         }
 
         /**
-         * @deprecated Please use `codeInput.CodeInput.escapeHtml`
+         * Synchronise the scroll position of the textarea element to that of the pre/code element.
+         * @param {HTMLElement} highlightedElement The pre/code element that has been scrolled (the styled one).
+         */
+        syncScrollFromHighlighted(highlightedElement) {
+            this.textareaElement.scrollTo(highlightedElement.scrollLeft, highlightedElement.scrollTop);
+        }
+
+        /**
+         * Synchronise the scroll position of the pre/code element to that of the textarea element.
+         */
+        syncScrollFromTextarea() {
+            if(this.template.preElementStyled) {
+                this.preElement.scrollTo(this.textareaElement.scrollLeft, this.textareaElement.scrollTop);
+            } else {
+                this.codeElement.scrollTo(this.textareaElement.scrollLeft, this.textareaElement.scrollTop);
+            }
+        }
+
+        /**
+         * @deprecated This is internal code used by code-input and it may change/be removed to improve the library. This function with its old name remains, though, because that wasn't made as clear in the past.
+         */
+        syncScroll() {
+            this.syncScrollFromTextarea();
+        }
+
+        /**
+         * @deprecated This is internal code used by code-input and it may change/be removed to improve the library. This function with its old name remains, though, because that wasn't made as clear in the past, and will remain until the next major version of code-inp.
+         */
+        sync_scroll() {
+            this.syncScroll();
+        }
+
+        /**
+         * @deprecated This is internal code used by code-input and it may change/be removed to improve the library. This function with its old name remains, though, because that wasn't made clear in the past.
          */
         escape_html(text) {
             return this.escapeHtml(text);
         }
 
         /**
-         * @deprecated Please use `codeInput.CodeInput.getTemplate`
+         * @deprecated This is internal code used by code-input and it may change/be removed to improve the library. This function with its old name remains, though, because that wasn't made clear in the past.
          */
         get_template() {
             return this.getTemplate();

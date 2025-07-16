@@ -6,8 +6,7 @@
 code-input {
   /* Allow other elements to be inside */
   display: block;
-  overflow-y: auto;
-  overflow-x: auto;
+  overflow: hidden;
   position: relative;
   top: 0;
   left: 0;
@@ -38,19 +37,14 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   margin: 0px!important;
   padding: var(--padding, 16px)!important;
   border: 0;
-  min-width: calc(100% - var(--padding) * 2);
-  min-height: calc(100% - var(--padding) * 2);
+  width: calc(100% - var(--padding) * 2);
+  height: calc(100% - var(--padding) * 2);
   box-sizing: content-box; /* Make height, width work consistently no matter the box-sizing of ancestors; dialogs can be styled as wanted so are excluded. */
-  overflow: hidden;
+  overflow: auto;
   resize: none;
   grid-row: 1;
   grid-column: 1;
   display: block;
-}
-
-code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
-  height: max-content;
-  width: max-content;
 }
 
 code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-element-styled pre code {
@@ -104,7 +98,7 @@ code-input pre {
 code-input textarea {
   color: transparent;
   background: transparent;
-  caret-color: inherit!important; /* Or choose your favourite color */
+  caret-color: inherit!important;
 }
 code-input textarea::placeholder {
   color: lightgrey;
@@ -187,7 +181,11 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
   position: absolute;
   background-color: black;
   color: white;
+
   padding: 2px;
+  line-height: 2em;
+  box-sizing: content-box; /* Make height, width work consistently no matter the box-sizing of ancestors; dialogs can be styled as wanted so are excluded. */
+
   padding-left: 10px;
   margin: 0;
   text-wrap: balance;
@@ -212,5 +210,6 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
 code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused) textarea,
 code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code,
 code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused).code-input_pre-element-styled pre {
-  padding-top: calc(var(--padding) + 3em)!important;
+  padding-top: calc(var(--padding) + 2em + 4px)!important;
+  height: calc(100% - var(--padding) * 2 - 2em - 4px)!important;
 }
