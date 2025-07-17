@@ -163,14 +163,17 @@ var codeInput = {
          * @param {boolean} isCode - is this for writing code? If true, the code-input's lang HTML attribute can be used, and the `<code>` element will be given the class name 'language-[lang attribute's value]'.
          * @param {boolean} includeCodeInputInHighlightFunc - Setting this to true passes the `<code-input>` element as a second argument to the highlight function.
          * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.Plugin`
+         * @param {boolean} addPlaceholderToLastEmptyLine - Setting this to true adds a space character to the end of the `<code>` element before highlighting when its last line is empty, ensuring that last line is displayed and aligns with the editing.
          * @returns {codeInput.Template} template object
          */
-        constructor(highlight = function (codeElement) { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = []) {
+        constructor(highlight = function (codeElement) { }, preElementStyled = true, isCode = true, includeCodeInputInHighlightFunc = false, plugins = [], addPlaceholderToLastEmptyLine = false) {
+
             this.highlight = highlight;
             this.preElementStyled = preElementStyled;
             this.isCode = isCode;
             this.includeCodeInputInHighlightFunc = includeCodeInputInHighlightFunc;
             this.plugins = plugins;
+            this.addPlaceholderToLastEmptyLine = addPlaceholderToLastEmptyLine;
         }
 
         /**
@@ -207,6 +210,13 @@ var codeInput = {
          * see `codeInput.Plugin`.
          */
         plugins = [];
+
+        /**
+         * Setting this to true adds a space character to the end of the
+         * `<code>` element before highlighting when its last line is empty, ensuring that last
+         * line is displayed and aligns with the editing.
+         */
+        addPlaceholderToLastEmptyLine = false;
     },
 
     /**
@@ -258,6 +268,7 @@ var codeInput = {
                 preElementStyled: true,
                 isCode: false,
                 plugins: plugins,
+                addPlaceholderToLastEmptyLine: false,
             }
         },
 
@@ -282,6 +293,7 @@ var codeInput = {
                 delimiter: delimiter,
 
                 plugins: plugins,
+                addPlaceholderToLastEmptyLine: false,
             }
         },
 
@@ -502,7 +514,9 @@ var codeInput = {
         update() {
             let resultElement = this.codeElement;
             let value = this.value;
-            value += "\n"; // Placeholder for next line
+            if(this.template.addPlaceholderToLastEmptyLine && (value[value.length-1] == "\n" || value.length == 0)) { // If last line empty
+                value += " "; // Add a placeholder space character to the final line
+            }
 
             // Update code
             resultElement.innerHTML = this.escapeHtml(value);
@@ -612,11 +626,6 @@ var codeInput = {
             });
             textarea.addEventListener("blur", () => {
                 this.classList.remove("code-input_mouse-focused");
-            });
-
-            // @deprecated Right now it's better to use the textarea element directly once it's loaded.
-            textarea.addEventListener("scroll", (evt) => {
-                this.dispatchEvent("scroll", evt);
             });
 
             this.innerHTML = ""; // Clear Content
@@ -1104,7 +1113,8 @@ var codeInput = {
                 true, // preElementStyled
                 true, // isCode
                 false, // includeCodeInputInHighlightFunc
-                plugins
+                plugins,
+                true // addPlaceholderToLastEmptyLine
             );
         }
     };
@@ -1131,7 +1141,8 @@ var codeInput = {
                 false, // preElementStyled
                 true, // isCode
                 false, // includeCodeInputInHighlightFunc
-                plugins
+                plugins,
+                true // addPlaceholderToLastEmptyLine
             );
         }
     };
