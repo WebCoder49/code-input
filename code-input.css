@@ -21,6 +21,10 @@ code-input {
   tab-size: 2;
   caret-color: darkgrey;
   white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+
   padding: 0!important; /* Use --padding to set the code-input element's padding */
   display: grid;
   grid-template-columns: 100%;
@@ -62,6 +66,11 @@ code-input textarea, code-input pre, code-input pre * {
   line-height: inherit!important;
   tab-size: inherit!important;
   text-align: inherit!important;
+
+  white-space: inherit!important;
+  word-spacing: inherit!important;
+  word-break: inherit!important;
+  word-wrap: inherit!important;
 }
 
 /* Make changing the text direction propogate */
@@ -78,7 +87,7 @@ code-input textarea[dir=rtl] + pre {
 }
 
 
-code-input textarea, code-input pre {
+code-input textarea, code-input pre, code-input pre code {
   /* In the same place */
   grid-column: 1;
   grid-row: 1;
@@ -102,14 +111,6 @@ code-input textarea {
 }
 code-input textarea::placeholder {
   color: lightgrey;
-}
-
-/* Can be scrolled */
-code-input textarea, code-input pre {
-  white-space: inherit;
-  word-spacing: normal;
-  word-break: normal;
-  word-wrap: normal;
 }
 
 /* No resize on textarea; transfer outline on focus to code-input element */
