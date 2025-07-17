@@ -614,6 +614,11 @@ var codeInput = {
                 this.classList.remove("code-input_mouse-focused");
             });
 
+            // @deprecated Right now it's better to use the textarea element directly once it's loaded.
+            textarea.addEventListener("scroll", (evt) => {
+                this.dispatchEvent("scroll", evt);
+            });
+
             this.innerHTML = ""; // Clear Content
 
             // Synchronise attributes to textarea
@@ -1036,6 +1041,33 @@ var codeInput = {
         */
         formResetCallback() {
             this.value = this.initialValue;
+        };
+
+        /* Pass scrolling to textarea, for backwards compatibility with when the code-input element scrolled.
+         @deprecated Right now it's better to use the textarea element directly once it's loaded. */
+        get scrollTop() { return this.textareaElement.scrollTop; };
+        set scrollTop(val) { this.textareaElement.scrollTop = val; };
+        get scrollLeft() { return this.textareaElement.scrollLeft; };
+        set scrollLeft(val) { this.textareaElement.scrollLeft = val; };
+        get scrollTopMax() { return this.textareaElement.scrollTopMax; };
+        set scrollTopMax(val) { this.textareaElement.scrollTopMax = val; };
+        get scrollLeftMax() { return this.textareaElement.scrollLeftMax; };
+        set scrollLeftMax(val) { this.textareaElement.scrollLeftMax = val; };
+        get scrollHeight() { return this.textareaElement.scrollHeight; };
+        set scrollHeight(val) { this.textareaElement.scrollHeight = val; };
+        get scrollWidth() { return this.textareaElement.scrollWidth; };
+        set scrollWidth(val) { this.textareaElement.scrollWidth = val; };
+        scroll(firstArg, secondArg=undefined) {
+            if(secondArg === undefined) this.textareaElement.scroll(firstArg);
+            else this.textareaElement.scroll(firstArg, secondArg);
+        };
+        scrollTo(firstArg, secondArg=undefined) {
+            if(secondArg === undefined) this.textareaElement.scrollTo(firstArg);
+            else this.textareaElement.scrollTo(firstArg, secondArg);
+        };
+        scrollBy(firstArg, secondArg=undefined) {
+            if(secondArg === undefined) this.textareaElement.scrollBy(firstArg);
+            else this.textareaElement.scrollBy(firstArg, secondArg);
         };
     },
 
