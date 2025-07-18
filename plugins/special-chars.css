@@ -37,6 +37,10 @@
     vertical-align: middle;
     outline: 0.1px solid currentColor;
 
+    /* Contain character for use by other plugins, but hide it */
+    color: transparent;
+    font-size: 0;
+
     --hex-0: var(
     --code-input_special-chars_0);
     --hex-1: var(
