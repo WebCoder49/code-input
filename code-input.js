@@ -474,7 +474,6 @@ var codeInput = {
         * to syntax-highlight it. */
 
         needsHighlight = false; // Just inputted
-        handleEventsFromTextarea = true; // Turn to false when unusual internal events are called on the textarea
         originalAriaDescription;
 
         /**
@@ -514,14 +513,6 @@ var codeInput = {
             else this.template.highlight(resultElement);
 
             this.syncSize();
-
-            // If editing here, scroll to the caret by focusing, though this shouldn't count as a focus event
-            if(this.textareaElement === document.activeElement) {
-                this.handleEventsFromTextarea = false;
-                this.textareaElement.blur();
-                this.textareaElement.focus();
-                this.handleEventsFromTextarea = true;
-            }
 
             this.pluginEvt("afterHighlight");
         }
@@ -638,9 +629,7 @@ var codeInput = {
                 this.classList.add("code-input_mouse-focused");
             });
             textarea.addEventListener("blur", () => {
-                if(this.handleEventsFromTextarea) {
-                    this.classList.remove("code-input_mouse-focused");
-                }
+                this.classList.remove("code-input_mouse-focused");
             });
 
             this.innerHTML = ""; // Clear Content
@@ -866,22 +855,20 @@ var codeInput = {
             this.boundEventCallbacks[listener] = boundCallback;
 
             if (codeInput.textareaSyncEvents.includes(type)) {
-                // Synchronise with textarea, only when handleEventsFromTextarea is true
-                // This callback is modified to only run when the handleEventsFromTextarea is set.
-                let conditionalBoundCallback = function(evt) { if(this.handleEventsFromTextarea) boundCallback(evt); }.bind(this);
-                this.boundEventCallbacks[listener] = conditionalBoundCallback;
+                // Synchronise with textarea
+                this.boundEventCallbacks[listener] = boundCallback;
 
                 if (options === undefined) {
                     if(this.textareaElement == null) {
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback); });
                     } else {
-                        this.textareaElement.addEventListener(type, conditionalBoundCallback);
+                        this.textareaElement.addEventListener(type, boundCallback);
                     }
                 } else {
                     if(this.textareaElement == null) {
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback, options); });
                     } else {
-                        this.textareaElement.addEventListener(type, conditionalBoundCallback, options);
+                        this.textareaElement.addEventListener(type, boundCallback, options);
                     }
                 }
             } else {
@@ -941,10 +928,12 @@ var codeInput = {
             if (val === null || val === undefined) {
                 val = "";
             }
+
             // Save in editable textarea element
             this.textareaElement.value = val;
             // Trigger highlight
             this.scheduleHighlight();
+
             return val;
         }
 
