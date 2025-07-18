@@ -218,7 +218,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         // find the index of the line our cursor is currently on
         for (let i = 0; i < lines.length; i++) {
             letterI += lines[i].length + 1;
-            if(inputElement.selectionEnd <= letterI) {
+            if(inputElement.selectionEnd < letterI) {
                 currentLineI = i;
                 break;
             }
