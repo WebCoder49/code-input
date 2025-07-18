@@ -1066,17 +1066,26 @@ var codeInput = {
         set scrollHeight(val) { this.textareaElement.scrollHeight = val; };
         get scrollWidth() { return this.textareaElement.scrollWidth; };
         set scrollWidth(val) { this.textareaElement.scrollWidth = val; };
-        scroll(firstArg, secondArg=undefined) {
-            if(secondArg === undefined) this.textareaElement.scroll(firstArg);
-            else this.textareaElement.scroll(firstArg, secondArg);
+        scroll(options) {
+            this.textareaElement.scroll(options);
+            this.textareaElement.scroll(x, y);
         };
-        scrollTo(firstArg, secondArg=undefined) {
-            if(secondArg === undefined) this.textareaElement.scrollTo(firstArg);
-            else this.textareaElement.scrollTo(firstArg, secondArg);
+        scroll(x, y) {
+            this.textareaElement.scroll(x, y);
         };
-        scrollBy(firstArg, secondArg=undefined) {
-            if(secondArg === undefined) this.textareaElement.scrollBy(firstArg);
-            else this.textareaElement.scrollBy(firstArg, secondArg);
+        scrollTo(options) {
+            this.textareaElement.scroll(options);
+            this.textareaElement.scroll(x, y);
+        };
+        scrollTo(x, y) {
+            this.textareaElement.scroll(x, y);
+        };
+        scrollBy(options) {
+            this.textareaElement.scroll(options);
+            this.textareaElement.scroll(x, y);
+        };
+        scrollBy(x, y) {
+            this.textareaElement.scroll(x, y);
         };
     },
 

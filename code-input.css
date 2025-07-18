@@ -190,7 +190,7 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
   padding-left: 10px;
   margin: 0;
   text-wrap: balance;
-  overflow: hidden;
+  overflow: auto;
   text-overflow: ellipsis;
   width: calc(100% - 12px);
   box-sizing: content-box; /* Make height, width work consistently no matter the box-sizing of ancestors. */

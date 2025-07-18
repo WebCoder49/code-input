@@ -323,6 +323,25 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");`);
 // A second line
 // A third line with &lt;html&gt; tags`);
 
+    codeInputElement.setAttribute("style", "width: 10em; height: 30em; white-space: pre-wrap; word-break: normal;");
+    textarea.selectionStart -= 1;
+    await waitAsync(50); // Wait for CSS to visibly change
+    testAssertion("Core", "CSS pre-wrap normal", confirm("Is the code wrapped, and the selected character aligned? (OK=Yes)"), "user-judged");
+    codeInputElement.setAttribute("style", "width: 10em; height: 30em; white-space: pre-wrap; word-break: break-word;");
+    await waitAsync(50); // Wait for CSS to visibly change
+    testAssertion("Core", "CSS pre-wrap break-word", confirm("Is the code wrapped, and the selected character aligned? (OK=Yes)"), "user-judged");
+    codeInputElement.setAttribute("style", "width: 10em; height: 30em; white-space: pre-wrap; word-break: break-all;");
+    await waitAsync(50); // Wait for CSS to visibly change
+    testAssertion("Core", "CSS pre-wrap break-all", confirm("Is the code wrapped, and the selected character aligned? (OK=Yes)"), "user-judged");
+    codeInputElement.setAttribute("style", "font-size: 50px; height: 10em;");
+    await waitAsync(50); // Wait for CSS to visibly change
+    testAssertion("Core", "CSS font-size", confirm("Is the selected character aligned? (OK=Yes)"), "user-judged");
+    codeInputElement.setAttribute("style", "width: 10em; height: 10em; white-space: pre-wrap; word-break: break-all;");
+    codeInputElement.scrollTo(0, (codeInputElement.offsetHeight - codeInputElement.clientHeight) + codeInputElement.scrollHeight); // Scroll to bottom - offset-client is margin+border+padding
+    await waitAsync(50); // Wait for CSS to visibly change
+    testAssertion("Core", "Scroll aligned", confirm("Is the selected character aligned? (OK=Yes)"), "user-judged");
+    codeInputElement.removeAttribute("style");
+
     /*--- Tests for plugins ---*/
     // AutoCloseBrackets
     testAddingText("AutoCloseBrackets", textarea, function(textarea) {
