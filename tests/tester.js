@@ -108,7 +108,7 @@ function waitAsync(milliseconds) {
 function beginTest(isHLJS) {
     let codeInputElem = document.querySelector("code-input");
     if(isHLJS) {
-        codeInput.registerTemplate("code-editor", codeInput.templates.hljs(hljs, [
+        codeInput.registerTemplate("code-editor", new codeInput.templates.Hljs(hljs, [
             new codeInput.plugins.AutoCloseBrackets(), 
             new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
                 if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
@@ -127,7 +127,7 @@ function beginTest(isHLJS) {
             new codeInput.plugins.SpecialChars(true),
         ]));
     } else {
-        codeInput.registerTemplate("code-editor", codeInput.templates.prism(Prism, [
+        codeInput.registerTemplate("code-editor", new codeInput.templates.Prism(Prism, [
             new codeInput.plugins.AutoCloseBrackets(), 
             new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
                 if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
