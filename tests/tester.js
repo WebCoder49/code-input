@@ -110,8 +110,8 @@ function beginTest(isHLJS) {
     if(isHLJS) {
         codeInput.registerTemplate("code-editor", new codeInput.templates.Hljs(hljs, [
             new codeInput.plugins.AutoCloseBrackets(), 
-            new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
-                if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+            new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd, selectionStart) {
+                if(selectionStart == selectionEnd && textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
                     // Show popup
                     popupElem.style.display = "block";
                     popupElem.innerHTML = "Here's your popup!";
@@ -129,8 +129,8 @@ function beginTest(isHLJS) {
     } else {
         codeInput.registerTemplate("code-editor", new codeInput.templates.Prism(Prism, [
             new codeInput.plugins.AutoCloseBrackets(), 
-            new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
-                if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+            new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd, selectionStart) {
+                if(selectionStart == selectionEnd && textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
                     // Show popup
                     popupElem.style.display = "block";
                     popupElem.innerHTML = "Here's your popup!";
@@ -343,12 +343,23 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     
     await waitAsync(50); // Wait for popup to be rendered
         
-    testAssertion("Autocomplete", "Popup Shows", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
-    backspace(textarea);
+    testAssertion("Autocomplete", "Popup Shows on input", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
+    move(textarea, -1);
     
     await waitAsync(50); // Wait for popup disappearance to be rendered
     
-    testAssertion("Autocomplete", "Popup Disappears", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
+    testAssertion("Autocomplete", "Popup Disappears on arrow key", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
+    move(textarea, 1);
+
+    await waitAsync(50); // Wait for popup to be rendered
+
+    testAssertion("Autocomplete", "Popup Shows on arrow key", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
+    backspace(textarea);
+
+    await waitAsync(50); // Wait for popup disappearance to be rendered
+
+    testAssertion("Autocomplete", "Popup Disappears on backspace", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
+    move(textarea, 1);
     backspace(textarea);
     backspace(textarea);
     backspace(textarea);
