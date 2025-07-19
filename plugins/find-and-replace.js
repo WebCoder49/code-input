@@ -206,7 +206,11 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             const findPreviousButton = document.createElement('button');
             const replaceButton = document.createElement('button');
             const replaceAllButton = document.createElement('button');
+
+            // TODO: Make a button element (semantic HTML for accessibility) in next major version
             const cancel = document.createElement('span');
+            cancel.setAttribute("role", "button");
+            cancel.setAttribute("aria-label", this.instructions.closeDialog);
             cancel.setAttribute("tabindex", 0); // Visible to keyboard navigation
             cancel.setAttribute("title", this.instructions.closeDialog);
 
@@ -245,8 +249,10 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             replaceInput.placeholder = this.instructions.replacePlaceholder;
             findNextButton.innerText = "↓";
             findNextButton.title = this.instructions.findNext;
+            findNextButton.setAttribute("aria-label", this.instructions.findNext);
             findPreviousButton.innerText = "↑";
             findPreviousButton.title = this.instructions.findPrevious;
+            findNextButton.setAttribute("aria-label", this.instructions.findPrevious);
             replaceButton.className = 'code-input_find-and-replace_button-hidden';
             replaceButton.innerText = this.instructions.replaceActionShort;
             replaceButton.title = this.instructions.replaceAction;

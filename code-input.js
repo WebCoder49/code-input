@@ -478,7 +478,6 @@ var codeInput = {
         * to syntax-highlight it. */
 
         needsHighlight = false; // Just inputted
-        handleEventsFromTextarea = true; // Turn to false when unusual internal events are called on the textarea
         originalAriaDescription;
 
         /**
@@ -518,14 +517,6 @@ var codeInput = {
             else this.template.highlight(resultElement);
 
             this.syncSize();
-
-            // If editing here, scroll to the caret by focusing, though this shouldn't count as a focus event
-            if(this.textareaElement === document.activeElement) {
-                this.handleEventsFromTextarea = false;
-                this.textareaElement.blur();
-                this.textareaElement.focus();
-                this.handleEventsFromTextarea = true;
-            }
 
             this.pluginEvt("afterHighlight");
         }
@@ -642,9 +633,7 @@ var codeInput = {
                 this.classList.add("code-input_mouse-focused");
             });
             textarea.addEventListener("blur", () => {
-                if(this.handleEventsFromTextarea) {
-                    this.classList.remove("code-input_mouse-focused");
-                }
+                this.classList.remove("code-input_mouse-focused");
             });
 
             this.innerHTML = ""; // Clear Content
@@ -868,22 +857,20 @@ var codeInput = {
             this.boundEventCallbacks[listener] = boundCallback;
 
             if (codeInput.textareaSyncEvents.includes(type)) {
-                // Synchronise with textarea, only when handleEventsFromTextarea is true
-                // This callback is modified to only run when the handleEventsFromTextarea is set.
-                let conditionalBoundCallback = function(evt) { if(this.handleEventsFromTextarea) boundCallback(evt); }.bind(this);
-                this.boundEventCallbacks[listener] = conditionalBoundCallback;
+                // Synchronise with textarea
+                this.boundEventCallbacks[listener] = boundCallback;
 
                 if (options === undefined) {
                     if(this.textareaElement == null) {
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback); });
                     } else {
-                        this.textareaElement.addEventListener(type, conditionalBoundCallback);
+                        this.textareaElement.addEventListener(type, boundCallback);
                     }
                 } else {
                     if(this.textareaElement == null) {
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback, options); });
                     } else {
-                        this.textareaElement.addEventListener(type, conditionalBoundCallback, options);
+                        this.textareaElement.addEventListener(type, boundCallback, options);
                     }
                 }
             } else {
@@ -943,10 +930,12 @@ var codeInput = {
             if (val === null || val === undefined) {
                 val = "";
             }
+
             // Save in editable textarea element
             this.textareaElement.value = val;
             // Trigger highlight
             this.scheduleHighlight();
+
             return val;
         }
 
@@ -1085,5 +1074,60 @@ var codeInput = {
     codeInput.templates.Hljs = Hljs;
 }
 // ESM-SUPPORT-END-TEMPLATES-BLOCK-2 Do not (re)move this - it's needed for ESM generation!
+
+{
+    // Templates are defined here after the codeInput variable is set, because they reference it by extending codeInput.Template.
+
+    // ESM-SUPPORT-START-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
+    /**
+    * A template that uses Prism.js syntax highlighting (https://prismjs.com/).
+    */
+    class Prism extends codeInput.Template { // Dependency: Prism.js (https://prismjs.com/)
+        /**
+        * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
+        * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
+        * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+        * @returns {codeInput.Template} template object
+        */
+        constructor(prism, plugins = []) {
+            super(
+                prism.highlightElement, // highlight
+                true, // preElementStyled
+                true, // isCode
+                false, // includeCodeInputInHighlightFunc
+                plugins
+            );
+        }
+    };
+    // ESM-SUPPORT-END-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
+    codeInput.templates.Prism = Prism;
+
+    // ESM-SUPPORT-START-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
+    /**
+     * A template that uses highlight.js syntax highlighting (https://highlightjs.org/).
+     */
+    class Hljs extends codeInput.Template { // Dependency: Highlight.js (https://highlightjs.org/)
+        /**
+         * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
+         * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
+         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+         * @returns {codeInput.Template} template object
+         */
+        constructor(hljs, plugins = []) {
+            super(
+                function(codeElement) {
+                    codeElement.removeAttribute("data-highlighted");
+                    hljs.highlightElement(codeElement);
+                }, // highlight
+                false, // preElementStyled
+                true, // isCode
+                false, // includeCodeInputInHighlightFunc
+                plugins
+            );
+        }
+    };
+    // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
+    codeInput.templates.Hljs = Hljs;
+}
 
 customElements.define("code-input", codeInput.CodeInput);

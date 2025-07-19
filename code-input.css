@@ -40,6 +40,7 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   border: 0;
   min-width: calc(100% - var(--padding) * 2);
   min-height: calc(100% - var(--padding) * 2);
+  box-sizing: content-box; /* Make height, width work consistently no matter the box-sizing of ancestors; dialogs can be styled as wanted so are excluded. */
   overflow: hidden;
   resize: none;
   grid-row: 1;
