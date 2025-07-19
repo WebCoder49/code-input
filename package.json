@@ -43,48 +43,38 @@
     "./plugins/test.mjs": {
       "import": "./esm/plugins/test.mjs"
     },
-    "./code-input.js": {
-      "import": "./code-input.js"
-    },
-    "./templates/hljs.js": {
-      "import": "./templates/hljs.js"
-    },
-    "./templates/prism.js": {
-      "import": "./templates/prism.js"
-    },
-    "./plugins/auto-close-brackets.js": {
-      "import": "./plugins/auto-close-brackets.js"
-    },
-    "./plugins/autocomplete.js": {
-      "import": "./plugins/autocomplete.js"
-    },
-    "./plugins/autodetect.js": {
-      "import": "./plugins/autodetect.js"
-    },
-    "./plugins/find-and-replace.js": {
-      "import": "./plugins/find-and-replace.js"
-    },
-    "./plugins/go-to-line.js": {
-      "import": "./plugins/go-to-line.js"
-    },
-    "./plugins/indent.js": {
-      "import": "./plugins/indent.js"
-    },
-    "./plugins/select-token-callbacks.js": {
-      "import": "./plugins/select-token-callbacks.js"
-    },
-    "./plugins/special-chars.js": {
-      "import": "./plugins/special-chars.js"
-    },
-    "./plugins/test.js": {
-      "import": "./plugins/test.js"
-    },
+    "./code-input.js": "./code-input.js",
+    "./plugins/auto-close-brackets.js": "./plugins/auto-close-brackets.js",
+    "./plugins/autocomplete.js": "./plugins/autocomplete.js",
+    "./plugins/autodetect.js": "./plugins/autodetect.js",
+    "./plugins/find-and-replace.js": "./plugins/find-and-replace.js",
+    "./plugins/go-to-line.js": "./plugins/go-to-line.js",
+    "./plugins/indent.js": "./plugins/indent.js",
+    "./plugins/select-token-callbacks.js": "./plugins/select-token-callbacks.js",
+    "./plugins/special-chars.js": "./plugins/special-chars.js",
+    "./plugins/test.js": "./plugins/test.js",
+    "./code-input.min.js": "./code-input.min.js",
+    "./plugins/auto-close-brackets.min.js": "./plugins/auto-close-brackets.min.js",
+    "./plugins/autocomplete.min.js": "./plugins/autocomplete.min.js",
+    "./plugins/autodetect.min.js": "./plugins/autodetect.min.js",
+    "./plugins/find-and-replace.min.js": "./plugins/find-and-replace.min.js",
+    "./plugins/go-to-line.min.js": "./plugins/go-to-line.min.js",
+    "./plugins/indent.min.js": "./plugins/indent.min.js",
+    "./plugins/select-token-callbacks.min.js": "./plugins/select-token-callbacks.min.js",
+    "./plugins/special-chars.min.js": "./plugins/special-chars.min.js",
+    "./plugins/test.min.js": "./plugins/test.min.js",
     "./code-input.css": "./code-input.css",
     "./plugins/autocomplete.css": "./plugins/autocomplete.css",
     "./plugins/find-and-replace.css": "./plugins/find-and-replace.css",
     "./plugins/go-to-line.css": "./plugins/go-to-line.css",
     "./plugins/prism-line-numbers.css": "./plugins/prism-line-numbers.css",
-    "./plugins/special-chars.css": "./plugins/special-chars.css"
+    "./plugins/special-chars.css": "./plugins/special-chars.css",
+    "./code-input.min.css": "./code-input.min.css",
+    "./plugins/autocomplete.min.css": "./plugins/autocomplete.min.css",
+    "./plugins/find-and-replace.min.css": "./plugins/find-and-replace.min.css",
+    "./plugins/go-to-line.min.css": "./plugins/go-to-line.min.css",
+    "./plugins/prism-line-numbers.min.css": "./plugins/prism-line-numbers.min.css",
+    "./plugins/special-chars.min.css": "./plugins/special-chars.min.css"
   },
   "scripts": {
     "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1",

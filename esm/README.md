@@ -2,7 +2,9 @@
 
 ## Using
 
-If you are using Yarn, NPM, or a similar package manager, the files should be generated on package install. Otherwise, after changing directory to the one containing this file:
+If you are using Yarn, NPM, or a similar package manager, the files should have been generated before being uploaded to the package repository, or on `pack` if the package manager is fetching from Git.
+
+Otherwise, after changing directory to the one containing this file:
 
 - If you have Node.js installed, run `node generate.mjs`.
 - If you don't have Node.js installed but are on a POSIX-like system with `bash`/`zsh`, run `sh ./generate.sh`.
