@@ -43,6 +43,42 @@
     "./plugins/test.mjs": {
       "import": "./esm/plugins/test.mjs"
     },
+    "./code-input.js": {
+      "import": "./code-input.js"
+    },
+    "./templates/hljs.js": {
+      "import": "./templates/hljs.js"
+    },
+    "./templates/prism.js": {
+      "import": "./templates/prism.js"
+    },
+    "./plugins/auto-close-brackets.js": {
+      "import": "./plugins/auto-close-brackets.js"
+    },
+    "./plugins/autocomplete.js": {
+      "import": "./plugins/autocomplete.js"
+    },
+    "./plugins/autodetect.js": {
+      "import": "./plugins/autodetect.js"
+    },
+    "./plugins/find-and-replace.js": {
+      "import": "./plugins/find-and-replace.js"
+    },
+    "./plugins/go-to-line.js": {
+      "import": "./plugins/go-to-line.js"
+    },
+    "./plugins/indent.js": {
+      "import": "./plugins/indent.js"
+    },
+    "./plugins/select-token-callbacks.js": {
+      "import": "./plugins/select-token-callbacks.js"
+    },
+    "./plugins/special-chars.js": {
+      "import": "./plugins/special-chars.js"
+    },
+    "./plugins/test.js": {
+      "import": "./plugins/test.js"
+    },
     "./code-input.css": "./code-input.css",
     "./plugins/autocomplete.css": "./plugins/autocomplete.css",
     "./plugins/find-and-replace.css": "./plugins/find-and-replace.css",
@@ -52,7 +88,7 @@
   },
   "scripts": {
     "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1",
-    "postinstall": "cd esm ; node generate.mjs ; cd .."
+    "prepack": "cd esm ; node generate.mjs ; cd .."
   },
   "repository": {
     "type": "git",
@@ -67,9 +103,9 @@
     "web-components"
   ],
   "author": {
-    "name": "WebCoder49",
+    "name": "Oliver Geer and contributors",
     "email": "hi@webcoder49.dev",
-    "url": "https://webcoder49.dev/"
+    "url": "https://oliver.geer.im/"
   },
   "license": "MIT",
   "bugs": {
