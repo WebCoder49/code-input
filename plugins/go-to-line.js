@@ -2,6 +2,8 @@
  * Add basic Go-To-Line (Ctrl+G by default) functionality to the code editor.
  * Files: go-to-line.js / go-to-line.css
  */
+"use strict";
+
 codeInput.plugins.GoToLine = class extends codeInput.Plugin {
     useCtrlG = false;
 

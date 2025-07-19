@@ -3,6 +3,8 @@
  * gain a CSS class while selected, or trigger JavaScript callbacks.
  * Files: select-token-callbacks.js
  */
+"use strict";
+
 codeInput.plugins.SelectTokenCallbacks = class extends codeInput.Plugin {
     /**
      * Set up the behaviour of tokens text-selected in the `<code-input>` element, and the exact definition of a token being text-selected.

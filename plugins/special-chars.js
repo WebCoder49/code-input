@@ -2,6 +2,7 @@
  * Render special characters and control characters as a symbol with their hex code.
  * Files: special-chars.js, special-chars.css
  */
+"use strict";
 
 codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
     specialCharRegExp;

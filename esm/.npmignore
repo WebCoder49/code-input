@@ -1,0 +1,4 @@
+# In NPM, ignore generator files and keep ES modules
+.gitignore
+generate.mjs
+generate.sh

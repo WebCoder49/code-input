@@ -43,42 +43,23 @@
         <link rel="stylesheet" href="../plugins/special-chars.css">
 
         <!--Register templates-->
+
+    </head>
+    <body>
+        <textarea dir="rtl" placeholder="textarea rtl"></textarea>
+        <textarea dir="ltr" placeholder="textarea ltr"></textarea>
+        <code-input dir="rtl" template="prism" language="markdown" placeholder="prism rtl"></code-input>
+        <code-input dir="ltr" template="prism" language="markdown" placeholder="prism ltr"></code-input>
+        <code-input dir="rtl" template="hljs" language="markdown" placeholder="hljs rtl"></code-input>
+        <code-input dir="ltr" template="hljs" language="markdown" placeholder="hljs ltr"></code-input>
+        <code-input dir="rtl" template="prism+" language="markdown" placeholder="prism rtl" class="line-numbers"></code-input>
+        <code-input dir="ltr" template="prism+" language="markdown" placeholder="prism ltr" class="line-numbers"></code-input>
+        <code-input dir="rtl" template="hljs+" language="markdown" placeholder="hljs rtl"></code-input>
+        <code-input dir="ltr" template="hljs+" language="markdown" placeholder="hljs ltr"></code-input>
+
         <script>
-            codeInput.registerTemplate("hljs", codeInput.templates.hljs(hljs, [
-                /*new codeInput.plugins.AutoCloseBrackets(),
-                new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
-                    if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
-                        // Show popup
-                        popupElem.style.display = "block";
-                        popupElem.innerHTML = "Here's your popup!";
-                    } else {
-                        popupElem.style.display = "none";
-                    }
-                }),
-                new codeInput.plugins.Autodetect(),
-                new codeInput.plugins.FindAndReplace(),
-                new codeInput.plugins.GoToLine(),
-                new codeInput.plugins.Indent(true, 2),
-                new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
-                new codeInput.plugins.SpecialChars(true),*/
-            ]));
-            codeInput.registerTemplate("prism", codeInput.templates.prism(Prism, [
-                /*new codeInput.plugins.AutoCloseBrackets(),
-                new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
-                    if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
-                        // Show popup
-                        popupElem.style.display = "block";
-                        popupElem.innerHTML = "Here's your popup!";
-                    } else {
-                        popupElem.style.display = "none";
-                    }
-                }),
-                new codeInput.plugins.FindAndReplace(),
-                new codeInput.plugins.GoToLine(),
-                new codeInput.plugins.Indent(true, 2),
-                new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
-                new codeInput.plugins.SpecialChars(true),*/
-            ]));
+            codeInput.registerTemplate("hljs", codeInput.templates.hljs(hljs, []));
+            codeInput.registerTemplate("prism", codeInput.templates.prism(Prism, []));
 
             // Attribution: Translated by Oliver Geer with some help from English Wiktionary
             let findAndReplaceTranslations = {
@@ -146,18 +127,6 @@
                 //new codeInput.plugins.SpecialChars(true),
             ]));
         </script>
-    </head>
-    <body>
-        <textarea dir="rtl" placeholder="textarea rtl"></textarea>
-        <textarea dir="ltr" placeholder="textarea ltr"></textarea>
-        <code-input dir="rtl" template="prism" language="markdown" placeholder="prism rtl"></code-input>
-        <code-input dir="ltr" template="prism" language="markdown" placeholder="prism ltr"></code-input>
-        <code-input dir="rtl" template="hljs" language="markdown" placeholder="hljs rtl"></code-input>
-        <code-input dir="ltr" template="hljs" language="markdown" placeholder="hljs ltr"></code-input>
-        <code-input dir="rtl" template="prism+" language="markdown" placeholder="prism rtl" class="line-numbers"></code-input>
-        <code-input dir="ltr" template="prism+" language="markdown" placeholder="prism ltr" class="line-numbers"></code-input>
-        <code-input dir="rtl" template="hljs+" language="markdown" placeholder="hljs rtl"></code-input>
-        <code-input dir="ltr" template="hljs+" language="markdown" placeholder="hljs ltr"></code-input>
 
         <script>
             rtl = `# ערך מומלץ ערך מומלץ
@@ -183,15 +152,12 @@ Historians analyse and interpret primary and secondary sources to construct narr
 CC-BY-SA hi.wikipedia.org: **ग्लेशियर नेशनल पार्क** अमेरिकी राष्ट्रीय उद्यान है, जो कि कनाडा-संयुक्त राज्य अमेरिका की सीमा पर स्थित है। उद्यान संयुक्त राज्य के उत्तर-पश्चिमी मोंटाना राज्य
 
 में स्थित है और कनाडा की ओर अल्बर्टा और ब्रिटिश कोलम्बिया प्रांतों से सटा हुआ है। उद्यान दस लाख एकड़ RTL: ערך מומלץ ערך מומלץ (4,000 किमी2) से अधिक क्षेत्र में फैला हुआ है और इसमें दो पर्वत श्रृंखला (रॉकी पर्वत की उप-श्रेणियाँ), 130 से अधिक नामित झीलें...`;
-            window.addEventListener("load", function() {
-
-                const elems = document.querySelectorAll("body > code-input, body > textarea");
-                for(let i = 0; i < elems.length; i++) {
-                    let dir = elems[i].getAttribute("dir");
-                    if(dir == "rtl") elems[i].value = rtl;
-                    else elems[i].value = ltr;
-                }
-            });
+            const elems = document.querySelectorAll("body > code-input, body > textarea");
+            for(let i = 0; i < elems.length; i++) {
+                let dir = elems[i].getAttribute("dir");
+                if(dir == "rtl") elems[i].value = rtl;
+                else elems[i].value = ltr;
+            }
         </script>
     </body>
 </html>

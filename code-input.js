@@ -1,10 +1,16 @@
 /**
  * **code-input** is a library which lets you create custom HTML `<code-input>`
  * elements that act like `<textarea>` elements but support syntax-highlighted
- * code, implemented using any typical syntax highlighting library. [MIT-Licensed]
- * 
+ * code, implemented using any typical syntax highlighting library.
+ *
+ * License of whole library for bundlers:
+ *
+ * Copyright 2021-2025 Oliver Geer and contributors
+ * @license MIT
+ *
  * **<https://github.com/WebCoder49/code-input>**
  */
+"use strict";
 
 
 var codeInput = {
@@ -121,13 +127,12 @@ var codeInput = {
         // Add waiting code-input elements wanting this template from queue
         if (templateName in codeInput.templateNotYetRegisteredQueue) {
             for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
-                elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
+                const elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.template = template;
-                codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
+                elem.connectedCallback();
                 // Bind sets elem as first parameter of function 
                 // So innerHTML can be read
             }
-            console.log(`code-input: template: Added existing elements with template ${templateName}`);
         }
 
         if (codeInput.defaultTemplate == undefined) {
@@ -135,16 +140,14 @@ var codeInput = {
             // Add elements with default template from queue
             if (undefined in codeInput.templateNotYetRegisteredQueue) {
                 for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
-                    elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
+                    const elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.template = template;
-                    codeInput.runOnceWindowLoaded((function(elem) { elem.connectedCallback(); }).bind(null, elem), elem);
+                    elem.connectedCallback();
                     // Bind sets elem as first parameter of function
                     // So innerHTML can be read
                 }
             }
-            console.log(`code-input: template: Set template ${templateName} as default`);
         }
-        console.log(`code-input: template: Created template ${templateName}`);
     },
 
     /**
@@ -209,6 +212,7 @@ var codeInput = {
         plugins = [];
     },
 
+    // ESM-SUPPORT-START-TEMPLATES-BLOCK-1 Do not (re)move this - it's needed for ESM generation!
     /**
      * For creating a custom template from scratch, please 
      * use `new codeInput.Template(...)`
@@ -311,6 +315,7 @@ var codeInput = {
             };
         },
     },
+    // ESM-SUPPORT-END-TEMPLATES-BLOCK-1 Do not (re)move this - it's needed for ESM generation!
 
     /* ------------------------------------
     *  ------------Plugins-----------------
@@ -351,7 +356,6 @@ var codeInput = {
          * modifications to the `codeInput.Plugin.attributeChanged` method.
          */
         constructor(observedAttributes) {
-            console.log("code-input: plugin: Created plugin");
 
             observedAttributes.forEach((attribute) => {
                 codeInput.observedAttributes.push(attribute);
@@ -720,10 +724,8 @@ var codeInput = {
             this.template = this.getTemplate();
             if (this.template != undefined) {
                 this.classList.add("code-input_registered");
-                codeInput.runOnceWindowLoaded(() => { 
-                    this.setup();
-                    this.classList.add("code-input_loaded");
-                }, this);
+                this.setup();
+                this.classList.add("code-input_loaded");
             }
             this.mutationObserver = new MutationObserver(this.mutationObserverCallback.bind(this));
             this.mutationObserver.observe(this, {
@@ -1013,20 +1015,65 @@ var codeInput = {
         formResetCallback() {
             this.value = this.initialValue;
         };
-    },
-
-    /** 
-     * To ensure the DOM is ready, run this callback after the window 
-     * has loaded (or now if it has already loaded)
-     */
-    runOnceWindowLoaded(callback, codeInputElem) {
-        if(document.readyState == "complete") {
-            callback(); // Fully loaded
-        } else {
-            window.addEventListener("load", callback);
-        }
     }
 }
+
+// ESM-SUPPORT-START-TEMPLATES-BLOCK-2 Do not (re)move this - it's needed for ESM generation!
+{
+    // Templates are defined here after the codeInput variable is set, because they reference it by extending codeInput.Template.
+
+    // ESM-SUPPORT-START-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
+    /**
+    * A template that uses Prism.js syntax highlighting (https://prismjs.com/).
+    */
+    class Prism extends codeInput.Template { // Dependency: Prism.js (https://prismjs.com/)
+        /**
+        * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
+        * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
+        * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+        * @returns {codeInput.Template} template object
+        */
+        constructor(prism, plugins = []) {
+            super(
+                prism.highlightElement, // highlight
+                true, // preElementStyled
+                true, // isCode
+                false, // includeCodeInputInHighlightFunc
+                plugins
+            );
+        }
+    };
+    // ESM-SUPPORT-END-TEMPLATE-prism Do not (re)move this - it's needed for ESM generation!
+    codeInput.templates.Prism = Prism;
+
+    // ESM-SUPPORT-START-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
+    /**
+     * A template that uses highlight.js syntax highlighting (https://highlightjs.org/).
+     */
+    class Hljs extends codeInput.Template { // Dependency: Highlight.js (https://highlightjs.org/)
+        /**
+         * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
+         * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
+         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+         * @returns {codeInput.Template} template object
+         */
+        constructor(hljs, plugins = []) {
+            super(
+                function(codeElement) {
+                    codeElement.removeAttribute("data-highlighted");
+                    hljs.highlightElement(codeElement);
+                }, // highlight
+                false, // preElementStyled
+                true, // isCode
+                false, // includeCodeInputInHighlightFunc
+                plugins
+            );
+        }
+    };
+    // ESM-SUPPORT-END-TEMPLATE-hljs Do not (re)move this - it's needed for ESM generation!
+    codeInput.templates.Hljs = Hljs;
+}
+// ESM-SUPPORT-END-TEMPLATES-BLOCK-2 Do not (re)move this - it's needed for ESM generation!
 
 {
     // Templates are defined here after the codeInput variable is set, because they reference it by extending codeInput.Template.

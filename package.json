@@ -3,8 +3,82 @@
   "version": "2.5.1",
   "description": "Fully customisable, editable syntax-highlighted textareas.",
   "browser": "code-input.js",
+  "exports": {
+    ".": {
+      "import": "./esm/code-input.mjs"
+    },
+    "./code-input.mjs": {
+      "import": "./esm/code-input.mjs"
+    },
+    "./templates/hljs.mjs": {
+      "import": "./esm/templates/hljs.mjs"
+    },
+    "./templates/prism.mjs": {
+      "import": "./esm/templates/prism.mjs"
+    },
+    "./plugins/auto-close-brackets.mjs": {
+      "import": "./esm/plugins/auto-close-brackets.mjs"
+    },
+    "./plugins/autocomplete.mjs": {
+      "import": "./esm/plugins/autocomplete.mjs"
+    },
+    "./plugins/autodetect.mjs": {
+      "import": "./esm/plugins/autodetect.mjs"
+    },
+    "./plugins/find-and-replace.mjs": {
+      "import": "./esm/plugins/find-and-replace.mjs"
+    },
+    "./plugins/go-to-line.mjs": {
+      "import": "./esm/plugins/go-to-line.mjs"
+    },
+    "./plugins/indent.mjs": {
+      "import": "./esm/plugins/indent.mjs"
+    },
+    "./plugins/select-token-callbacks.mjs": {
+      "import": "./esm/plugins/select-token-callbacks.mjs"
+    },
+    "./plugins/special-chars.mjs": {
+      "import": "./esm/plugins/special-chars.mjs"
+    },
+    "./plugins/test.mjs": {
+      "import": "./esm/plugins/test.mjs"
+    },
+    "./code-input.js": "./code-input.js",
+    "./plugins/auto-close-brackets.js": "./plugins/auto-close-brackets.js",
+    "./plugins/autocomplete.js": "./plugins/autocomplete.js",
+    "./plugins/autodetect.js": "./plugins/autodetect.js",
+    "./plugins/find-and-replace.js": "./plugins/find-and-replace.js",
+    "./plugins/go-to-line.js": "./plugins/go-to-line.js",
+    "./plugins/indent.js": "./plugins/indent.js",
+    "./plugins/select-token-callbacks.js": "./plugins/select-token-callbacks.js",
+    "./plugins/special-chars.js": "./plugins/special-chars.js",
+    "./plugins/test.js": "./plugins/test.js",
+    "./code-input.min.js": "./code-input.min.js",
+    "./plugins/auto-close-brackets.min.js": "./plugins/auto-close-brackets.min.js",
+    "./plugins/autocomplete.min.js": "./plugins/autocomplete.min.js",
+    "./plugins/autodetect.min.js": "./plugins/autodetect.min.js",
+    "./plugins/find-and-replace.min.js": "./plugins/find-and-replace.min.js",
+    "./plugins/go-to-line.min.js": "./plugins/go-to-line.min.js",
+    "./plugins/indent.min.js": "./plugins/indent.min.js",
+    "./plugins/select-token-callbacks.min.js": "./plugins/select-token-callbacks.min.js",
+    "./plugins/special-chars.min.js": "./plugins/special-chars.min.js",
+    "./plugins/test.min.js": "./plugins/test.min.js",
+    "./code-input.css": "./code-input.css",
+    "./plugins/autocomplete.css": "./plugins/autocomplete.css",
+    "./plugins/find-and-replace.css": "./plugins/find-and-replace.css",
+    "./plugins/go-to-line.css": "./plugins/go-to-line.css",
+    "./plugins/prism-line-numbers.css": "./plugins/prism-line-numbers.css",
+    "./plugins/special-chars.css": "./plugins/special-chars.css",
+    "./code-input.min.css": "./code-input.min.css",
+    "./plugins/autocomplete.min.css": "./plugins/autocomplete.min.css",
+    "./plugins/find-and-replace.min.css": "./plugins/find-and-replace.min.css",
+    "./plugins/go-to-line.min.css": "./plugins/go-to-line.min.css",
+    "./plugins/prism-line-numbers.min.css": "./plugins/prism-line-numbers.min.css",
+    "./plugins/special-chars.min.css": "./plugins/special-chars.min.css"
+  },
   "scripts": {
-    "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1"
+    "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1",
+    "prepack": "cd esm ; node generate.mjs ; cd .."
   },
   "repository": {
     "type": "git",
@@ -19,9 +93,9 @@
     "web-components"
   ],
   "author": {
-    "name": "WebCoder49",
+    "name": "Oliver Geer and contributors",
     "email": "hi@webcoder49.dev",
-    "url": "https://webcoder49.dev/"
+    "url": "https://oliver.geer.im/"
   },
   "license": "MIT",
   "bugs": {

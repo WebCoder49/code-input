@@ -2,6 +2,8 @@
  * Add Find-and-Replace (Ctrl+F for find, Ctrl+H for replace by default) functionality to the code editor.
  * Files: find-and-replace.js / find-and-replace.css
  */
+"use strict";
+
 codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
     useCtrlF = false;
     useCtrlH = false;

@@ -8,6 +8,8 @@
  * codeInput.registerTemplate("syntax-highlighted", codeInput.templates.hljs(hljs, [new codeInput.plugins.Test()]));
  * ```
  */
+"use strict";
+
 codeInput.plugins.Test = class extends codeInput.Plugin {
     constructor() {
         super(["testattr"]); 
