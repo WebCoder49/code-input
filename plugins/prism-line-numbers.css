@@ -16,6 +16,20 @@ code-input.line-numbers, .line-numbers code-input {
 }
 
 /* Make keyboard navigation still fill width */
-code-input .code-input_dialog-container .code-input_keyboard-navigation-instructions {
+code-input.line-numbers .code-input_dialog-container .code-input_keyboard-navigation-instructions, .line-numbers code-input .code-input_dialog-container .code-input_keyboard-navigation-instructions {
   width: calc(100% + max(3.8em, var(--padding, 16px)))!important;
+}
+
+/* Override Prism styles so there's no display:inline, relatively-positioned code element which breaks offsetTop, used in FindAndReplace, in Firefox. */
+code-input pre[class*=language-].line-numbers>code {
+  position: static;
+}
+/* Line numbers now positioned relative to the pre element not the code element. */
+code-input .line-numbers .line-numbers-rows {
+  left: 0;
+  top: var(--padding);
+}
+/* Things with padding when instructions are present */
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused) .line-numbers .line-numbers-rows {
+  top: calc(var(--padding) + 3em);
 }

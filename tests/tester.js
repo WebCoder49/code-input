@@ -398,7 +398,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     textarea.selectionStart = 0;
     textarea.selectionEnd = textarea.value.length;
     backspace(textarea);
-    addText(textarea, "// hello /\\S/g\nhe('llo', /\\s/g);\nhello");
+    addText(textarea, "// hello /\\S/g\nhe('llo', /\\s/g);\nhello\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\na very very very very very very very very very very very very long line with many many many many many many many many many many many words\nline\nline\nline\nline\nline\nline\nline");
     textarea.selectionStart = textarea.selectionEnd = 0; // So focuses on first match
 
     await waitAsync(50); // Wait for highlighting so text updates
@@ -437,7 +437,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     replaceInput.value = "do('hello";
     replaceButton.click();
     await waitAsync(50); // Wait for buttons to work
-    assertEqual("FindAndReplace", "Replaces Once Correctly", textarea.value, "// hello /\\S/g\ndo('hello', /\\s/g);\nhello");
+    assertEqual("FindAndReplace", "Replaces Once Correctly", textarea.value, "// hello /\\S/g\ndo('hello', /\\s/g);\nhello\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\na very very very very very very very very very very very very long line with many many many many many many many many many many many words\nline\nline\nline\nline\nline\nline\nline");
     nextMatchButton.click(); // Back to first match
 
     // Exit find input box
@@ -458,7 +458,26 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
 
     replaceInput.value = "hi";
     replaceAllButton.click();
-    assertEqual("FindAndReplace", "Replaces All Correctly", textarea.value, "// hi /\\S/g\ndo('hi', /\\s/g);\nhi");
+    assertEqual("FindAndReplace", "Replaces All Correctly", textarea.value, "// hi /\\S/g\ndo('hi', /\\s/g);\nhi\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\na very very very very very very very very very very very very long line with many many many many many many many many many many many words\nline\nline\nline\nline\nline\nline\nline");
+
+    findInput.value = "line";
+    regExpCheckbox.click(); // Now no regex
+    await waitAsync(200); // Wait for value to update
+
+    // Go to "line" on very long line
+    codeInputElement.style = "height: 100px; width: 1000px;";
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+
+    await waitAsync(200); // Wait for highlighting so matches update
+    testAssertion("FindAndReplace", "Scrolls to Match Correctly", confirm("Is the match on the very long line highlighted orange and near the centre of the element?"), "user-judged");
+    codeInputElement.style = "";
 
     // Exit find input box
     codeInputElement.querySelector(".code-input_find-and-replace_dialog").dispatchEvent(new KeyboardEvent("keydown", { "key": "Escape" }));
