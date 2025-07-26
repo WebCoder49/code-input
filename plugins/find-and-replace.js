@@ -240,7 +240,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             findRegExpCheckbox.title = this.instructions.findRegExp;
             findRegExpCheckbox.classList.add("code-input_find-and-replace_reg-exp-checkbox");
 
-            matchDescription.textContent = "Search for matches in your code.";
+            matchDescription.textContent = this.instructions.start;
             matchDescription.classList.add("code-input_find-and-replace_match-description");
             
 
