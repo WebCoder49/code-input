@@ -10,6 +10,11 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
     instructions = {
         closeDialog: "Close Dialog and Return to Editor",
         input: "Line:Column / Line no. then Enter",
+        guidanceFormat: "Wrong format. Enter a line number (e.g. 1) or a line number then colon then column number (e.g. 1:3).",
+        guidanceLineRange: (current, max) => { return `Line number (currently ${current}) should be between 1 and ${max} inclusive.` },
+        guidanceColumnRange: (line, current, max) => { return `On line ${line}, column number (currently ${current}) should be between 1 and ${max} inclusive.` },
+        guidanceValidLine: (line, column) => { return `Press Enter to go to line ${line}.` },
+        guidanceValidColumn: (line, column) => { return `Press Enter to go to line ${line}, column ${column}.` },
     };
 
     /**
@@ -33,6 +38,8 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
 
     /* Called with a dialog box keyup event to check the validity of the line number entered and submit the dialog if Enter is pressed */
     checkPrompt(dialog, event) {
+        if (event.key == 'Escape') return this.cancelPrompt(dialog, event);
+
         // Line number(:column number)
         const lines = dialog.textarea.value.split('\n');
         const maxLineNo = lines.length;
@@ -40,25 +47,42 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         let columnNo = 0; // Means go to start of indented line
         let maxColumnNo = 1;
         const querySplitByColons = dialog.input.value.split(':');
-        if(querySplitByColons.length > 2) return dialog.input.classList.add('code-input_go-to-line_error');
 
-        if (event.key == 'Escape') return this.cancelPrompt(dialog, event);
+        // Invalid format
+        if(querySplitByColons.length > 2 || !/^[0-9:]*$/.test(dialog.input.value)) {
+            dialog.guidance.textContent = this.instructions.guidanceFormat;
+            return dialog.input.classList.add('code-input_go-to-line_error');
+        }
 
+        // Number(s) present
         if (dialog.input.value) {
-            if (!/^[0-9:]*$/.test(dialog.input.value) || lineNo < 1 || lineNo > maxLineNo) {
+            if (lineNo < 1 || lineNo > maxLineNo) {
+                // Out-of-range line number
+                dialog.guidance.textContent = this.instructions.guidanceLineRange(lineNo, maxLineNo);
                 return dialog.input.classList.add('code-input_go-to-line_error');
             } else {
-                // Check if line:column
+                // Check if line:column - if so calculate column number
                 if(querySplitByColons.length >= 2) {
                     columnNo = Number(querySplitByColons[1]);
-                    maxColumnNo = lines[lineNo-1].length;
+                    maxColumnNo = lines[lineNo-1].length+1; // column 1 always works since at start of line
                 }
                 if(columnNo < 0 || columnNo > maxColumnNo) {
+                    dialog.guidance.textContent = this.instructions.guidanceColumnRange(lineNo, columnNo, maxColumnNo);
                     return dialog.input.classList.add('code-input_go-to-line_error');
                 } else {
+                    if(columnNo === 0) {
+                        // No column specified, or 0 which for backwards compatibility acts
+                        // like none selected
+                        dialog.guidance.textContent = this.instructions.guidanceValidLine(lineNo);
+                    } else {
+                        dialog.guidance.textContent = this.instructions.guidanceValidColumn(lineNo, columnNo);
+                    }
                     dialog.input.classList.remove('code-input_go-to-line_error');
                 }
             }
+        } else {
+            // No value
+            dialog.guidance.textContent = "";
         }
 
         if (event.key == 'Enter') {
@@ -91,6 +115,7 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             const textarea = codeInput.textareaElement;
 
             const dialog = document.createElement('div');
+
             const input = document.createElement('input');
 
             // TODO: Make a button element (semantic HTML for accessibility) in next major version
@@ -100,8 +125,13 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             cancel.setAttribute("tabindex", 0); // Visible to keyboard navigation
             cancel.setAttribute("title", this.instructions.closeDialog);
 
+            const guidance = document.createElement('p');
+            guidance.setAttribute("aria-live", "assertive"); // Screen reader must read the status message.
+            guidance.textContent = "";
+
             dialog.appendChild(input);
             dialog.appendChild(cancel);
+            dialog.appendChild(guidance);
 
             dialog.className = 'code-input_go-to-line_dialog';
             input.spellcheck = false;
@@ -109,6 +139,7 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             dialog.codeInput = codeInput;
             dialog.textarea = textarea;
             dialog.input = input;
+            dialog.guidance = guidance;
 
             input.addEventListener('keypress', (event) => {
                 /* Stop enter from submitting form */

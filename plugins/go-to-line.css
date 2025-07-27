@@ -11,7 +11,6 @@
 .code-input_go-to-line_dialog {
   position: absolute;
   top: 0; right: 14px;
-  height: 28px;
   padding: 6px;
   padding-top: 8px;
   border: solid 1px #00000044;
@@ -48,10 +47,6 @@
   color: #ff0000aa;
 }
 
-.code-input_go-to-line_dialog input:focus {
-  outline: none;
-}
-
 /* Cancel icon */
 .code-input_go-to-line_dialog span {
   display: inline-block;
@@ -74,4 +69,14 @@
 .code-input_go-to-line_dialog span:hover {
   opacity: .8;
   background-color: #00000018;
+}
+
+/* For backwards compatibility, p element on the same level as buttons rather than
+buttons being nested inside other element like in FindAndReplace. */
+.code-input_go-to-line_dialog p {
+  font-family: monospace;
+  width: 264px;
+  margin: 0;
+  overflow: hidden;
+  white-space: wrap;
 }

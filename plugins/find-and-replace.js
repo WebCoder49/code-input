@@ -194,6 +194,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             const findInput = document.createElement('input');
             const findCaseSensitiveCheckbox = document.createElement('input');
             const findRegExpCheckbox = document.createElement('input');
+            // TODO in next major version: use more semantic HTML element than code
             const matchDescription = document.createElement('code');
             matchDescription.setAttribute("aria-live", "assertive"); // Screen reader must read the number of matches found.
 
@@ -240,7 +241,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             findRegExpCheckbox.title = this.instructions.findRegExp;
             findRegExpCheckbox.classList.add("code-input_find-and-replace_reg-exp-checkbox");
 
-            matchDescription.textContent = "Search for matches in your code.";
+            matchDescription.textContent = this.instructions.start;
             matchDescription.classList.add("code-input_find-and-replace_match-description");
             
 
