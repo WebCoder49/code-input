@@ -48,14 +48,14 @@
     <body>
         <textarea dir="rtl" placeholder="textarea rtl"></textarea>
         <textarea dir="ltr" placeholder="textarea ltr"></textarea>
-        <code-input dir="rtl" template="prism" language="markdown" placeholder="prism rtl"></code-input>
-        <code-input dir="ltr" template="prism" language="markdown" placeholder="prism ltr"></code-input>
-        <code-input dir="rtl" template="hljs" language="markdown" placeholder="hljs rtl"></code-input>
-        <code-input dir="ltr" template="hljs" language="markdown" placeholder="hljs ltr"></code-input>
-        <code-input dir="rtl" template="prism+" language="markdown" placeholder="prism rtl" class="line-numbers"></code-input>
-        <code-input dir="ltr" template="prism+" language="markdown" placeholder="prism ltr" class="line-numbers"></code-input>
-        <code-input dir="rtl" template="hljs+" language="markdown" placeholder="hljs rtl"></code-input>
-        <code-input dir="ltr" template="hljs+" language="markdown" placeholder="hljs ltr"></code-input>
+        <code-input dir="rtl" template="prism" language="markdown"><textarea code-input-fallback placeholder="prism rtl"></textarea></code-input>
+        <code-input dir="ltr" template="prism" language="markdown"><textarea code-input-fallback placeholder="prism ltr"></textarea></code-input>
+        <code-input dir="rtl" template="hljs" language="markdown"><textarea code-input-fallback placeholder="hljs rtl"></textarea></code-input>
+        <code-input dir="ltr" template="hljs" language="markdown"><textarea code-input-fallback placeholder="hljs ltr"></textarea></code-input>
+        <code-input dir="rtl" template="prism+" language="markdown" class="line-numbers"><textarea code-input-fallback placeholder="prism rtl"></textarea></code-input>
+        <code-input dir="ltr" template="prism+" language="markdown" class="line-numbers"><textarea code-input-fallback placeholder="prism ltr"></textarea></code-input>
+        <code-input dir="rtl" template="hljs+" language="markdown"><textarea code-input-fallback placeholder="hljs rtl"></textarea></code-input>
+        <code-input dir="ltr" template="hljs+" language="markdown"><textarea code-input-fallback placeholder="hljs ltr"></textarea></code-input>
 
         <script>
             codeInput.registerTemplate("hljs", codeInput.templates.hljs(hljs, []));

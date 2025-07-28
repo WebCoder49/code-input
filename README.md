@@ -122,13 +122,13 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 To see a full list of plugins and their functions, please see [plugins/README.md](./plugins/README.md).
 
 ### 4. Using the component
-Now that you have registered a template, you can use the custom `<code-input>` element in HTML. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `language` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events, as well as CSS styles, to make your element as simple or interactive as you like, as if it were a `textarea` element! 
+Now that you have registered a template, you can use the custom `<code-input>` element in HTML. I recommend it surrounds a fallback `<textarea code-input-fallback>` element which will be used instead when JavaScript support is absent, and will pass its attributes to the `<code-input>` element otherwise, as shown below. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `language` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events, as well as CSS styles, to make your element as simple or interactive as you like, as if it were a `textarea` element! 
   ```HTML
-  <code-input language="HTML"></code-input>
+  <code-input language="HTML"><textarea code-input-fallback></textarea></code-input>
   ```
   *or*
   ```HTML
-  <code-input language="HTML" placeholder="Type code here" template="syntax-highlighted" onchange="console.log('Your code is', this.value)">&lt; href='https://github.com/WebCoder49/code-input'>code-input&lt;/a></code-input>
+  <code-input language="HTML" template="syntax-highlighted" onchange="console.log('Your code is', this.value)"><textarea code-input-fallback placeholder="Type code here">&lt; href='https://github.com/WebCoder49/code-input'>code-input&lt;/a></textarea></code-input>
   ```
 
 > ⚠️ At the moment, you need to set the `--padding` property rather than `padding` for a `code-input` element's CSS. All other properties should work as normal.
