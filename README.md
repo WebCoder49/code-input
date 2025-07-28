@@ -1,5 +1,7 @@
 # code-input
 
+> **:warning: This document is a work in progress for the next release. [Read latest released instructions.](https://github.com/WebCoder49/code-input/tree/v2.5.1/README.md)**
+
 ![Click to Switch](https://img.shields.io/static/v1?label=&message=Click%20to%20Switch:%20&color=grey&style=for-the-badge)[![GitHub](https://img.shields.io/static/v1?label=&message=GitHub&color=navy&style=for-the-badge&logo=github)](https://github.com/WebCoder49/code-input)[![NPM](https://img.shields.io/static/v1?label=&message=NPM&color=red&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@webcoder49/code-input)
 
 [![View License](https://img.shields.io/github/license/webcoder49/code-input?style=for-the-badge)](LICENSE) [![View Releases](https://img.sHields.io/github/v/release/webcoder49/code-input?style=for-the-badge)](https://github.com/WebCoder49/code-input/releases) [![View the demo on CodePen](https://img.shields.io/static/v1?label=Demo&message=on%20CodePen&color=orange&logo=codepen&style=for-the-badge)](https://codepen.io/WebCoder49/full/jOypJOx)
@@ -117,7 +119,7 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 </script>
 ```
 
-> ⚠️ Unfortunately placing multiple plugins of the same type in a template can currently cause errors and undefined behaviour, even if such a configuration makes logical sense. [This is issue #118](https://github.com/WebCoder49/code-input/issues/118) and will be fixed as soon as possible - if you'd like to help and have the time you're welcome, but it's also at the top of the maintainer's To-Do list.
+> ⚠️ Unfortunately placing multiple plugins of the same type in a template can currently cause errors and undefined behaviour, even if such a configuration makes logical sense. [This is issue #118](https://github.com/WebCoder49/code-input/issues/118) ~~and will be fixed as soon as possible - if you'd like to help and have the time you're welcome, but it's also at the top of the maintainer's To-Do list.~~ and should be fixed in major version 3 - right now, I don't believe there's much demand or use, and workarounds are not too complex.
 
 To see a full list of plugins and their functions, please see [plugins/README.md](./plugins/README.md).
 
