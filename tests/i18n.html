@@ -7,7 +7,7 @@
 
         <!--Import Prism-->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
@@ -48,14 +48,14 @@
     <body>
         <textarea dir="rtl" placeholder="textarea rtl"></textarea>
         <textarea dir="ltr" placeholder="textarea ltr"></textarea>
-        <code-input dir="rtl" template="prism" language="markdown" placeholder="prism rtl"></code-input>
-        <code-input dir="ltr" template="prism" language="markdown" placeholder="prism ltr"></code-input>
-        <code-input dir="rtl" template="hljs" language="markdown" placeholder="hljs rtl"></code-input>
-        <code-input dir="ltr" template="hljs" language="markdown" placeholder="hljs ltr"></code-input>
-        <code-input dir="rtl" template="prism+" language="markdown" placeholder="prism rtl" class="line-numbers"></code-input>
-        <code-input dir="ltr" template="prism+" language="markdown" placeholder="prism ltr" class="line-numbers"></code-input>
-        <code-input dir="rtl" template="hljs+" language="markdown" placeholder="hljs rtl"></code-input>
-        <code-input dir="ltr" template="hljs+" language="markdown" placeholder="hljs ltr"></code-input>
+        <code-input dir="rtl" template="prism" language="markdown"><textarea code-input-fallback placeholder="prism rtl"></textarea></code-input>
+        <code-input dir="ltr" template="prism" language="markdown"><textarea code-input-fallback placeholder="prism ltr"></textarea></code-input>
+        <code-input dir="rtl" template="hljs" language="markdown"><textarea code-input-fallback placeholder="hljs rtl"></textarea></code-input>
+        <code-input dir="ltr" template="hljs" language="markdown"><textarea code-input-fallback placeholder="hljs ltr"></textarea></code-input>
+        <code-input dir="rtl" template="prism+" language="markdown" class="line-numbers"><textarea code-input-fallback placeholder="prism rtl"></textarea></code-input>
+        <code-input dir="ltr" template="prism+" language="markdown" class="line-numbers"><textarea code-input-fallback placeholder="prism ltr"></textarea></code-input>
+        <code-input dir="rtl" template="hljs+" language="markdown"><textarea code-input-fallback placeholder="hljs rtl"></textarea></code-input>
+        <code-input dir="ltr" template="hljs+" language="markdown"><textarea code-input-fallback placeholder="hljs ltr"></textarea></code-input>
 
         <script>
             codeInput.registerTemplate("hljs", codeInput.templates.hljs(hljs, []));
@@ -85,6 +85,11 @@
             let goToLineTranslations = {
                 closeDialog: "Cerrar el Diálogo y Regresar al Editor",
                 input: "Línea:Columno o Línea luego Retorno",
+                guidanceFormat: "Formato incorrecto. Ingresa un número de línea (por ej. 1) o un número de línea luego dos puntos luego un número de columno (por ej. 1:3).",
+                guidanceLineRange: (current, max) => `Número de línea (actualmente ${current}) debería ser entre 1 y ${max}.`,
+                guidanceColumnRange: (line, current, max) => `En la línea número ${line}, número de columno (actualmente ${current}) debería ser entre 1 y ${max}.`,
+                guidanceValidLine: (line) => `Tecla Retorno para ir a línea número ${line}.`,
+                guidanceValidColumn: (line, column) => `Tecla Retorno para ir a línea número ${line}, columno número ${column}.`,
             };
             let indentTranslations = {
                 tabForIndentation: "Tabulador y Mayús-Tabulador actualmente para la indentación. Tecla Escape para activar la navegación por el teclado.",

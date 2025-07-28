@@ -60,10 +60,6 @@
   border: 0;
 }
 
-.code-input_find-and-replace_dialog input:hover {
-  outline: none;
-}
-
 .code-input_find-and-replace_dialog input.code-input_find-and-replace_error {
   color: #ff0000aa;
 }

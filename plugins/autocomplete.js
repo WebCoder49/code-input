@@ -22,7 +22,7 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         popupElem.style.left = caretCoords.left + "px";
         
         if(!onlyScrolled) {
-            this.updatePopupCallback(popupElem, textarea, textarea.selectionEnd);
+            this.updatePopupCallback(popupElem, textarea, textarea.selectionEnd, textarea.selectionStart);
         }
     }
     /* Create the popup element */
@@ -47,7 +47,7 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         
         let textarea = codeInput.textareaElement;
         textarea.addEventListener("input", () => { this.updatePopup(codeInput, false)});
-        textarea.addEventListener("click", () => { this.updatePopup(codeInput, false)});
+        textarea.addEventListener("selectionchange", () => { this.updatePopup(codeInput, false)});
     }
     /**
      * Return the coordinates of the caret in a code-input

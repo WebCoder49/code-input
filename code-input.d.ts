@@ -91,7 +91,7 @@ export namespace plugins {
      * Create an auto-close brackets plugin to pass into a template
      * @param {Object} bracketPairs Opening brackets mapped to closing brackets, default and example {"(": ")", "[": "]", "{": "}", '"': '"'}. All brackets must only be one character.
      */
-    constructor(bracketPairs: Object);
+    constructor(bracketPairs?: Object);
   }
   // ESM-SUPPORT-END-PLUGIN-auto-close-brackets Do not (re)move this - it's needed for ESM generation
 
@@ -103,9 +103,9 @@ export namespace plugins {
   class Autocomplete extends Plugin {
     /**
      * Pass in a function to create a plugin that displays the popup that takes in (popup element, textarea, textarea.selectionEnd).
-     * @param {(popupElement: HTMLElement, textarea: HTMLTextAreaElement, selectionEnd: number) => void} updatePopupCallback  a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
+     * @param {(popupElement: HTMLElement, textarea: HTMLTextAreaElement, selectionEnd: number, selectionStart?: number) => void} updatePopupCallback  a function to display the popup that takes in (popup element, textarea, textarea.selectionEnd).
      */
-    constructor(updatePopupCallback: (popupElem: HTMLElement, textarea: HTMLTextAreaElement, selectionEnd: number) => void);
+    constructor(updatePopupCallback: (popupElem: HTMLElement, textarea: HTMLTextAreaElement, selectionEnd: number, selectionStart?: number) => void);
   }
   // ESM-SUPPORT-END-PLUGIN-autocomplete Do not (re)move this - it's needed for ESM generation
 
@@ -119,21 +119,6 @@ export namespace plugins {
     constructor();
   }
   // ESM-SUPPORT-END-PLUGIN-autodetect Do not (re)move this - it's needed for ESM generation
-
-  // E doesn't exist? SM-SUPPORT-START-PLUGIN-debounce-update Do not (re)move this - it's needed for ESM generation
-  /**
-   * Debounce the update and highlighting function
-   * https://medium.com/@jamischarles/what-is-debouncing-2505c0648ff1
-   * Files: debounce-update.js
-   */
-  class DebounceUpdate extends Plugin {
-    /**
-     * Create a debounced update plugin to pass into a template.
-     * @param {Number} delayMs Delay, in ms, to wait until updating the syntax highlighting 
-     */
-    constructor(delayMs: number);
-  }
-  // E doesn't exist? SM-SUPPORT-END-PLUGIN-debounce-update Do not (re)move this - it's needed for ESM generation
 
   // ESM-SUPPORT-START-PLUGIN-find-and-replace Do not (re)move this - it's needed for ESM generation
   /**
@@ -189,10 +174,15 @@ export namespace plugins {
      * @param {boolean} useCtrlG Should Ctrl+G be overriden for go-to-line functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the English text.
      */
-    constructor(useCtrlG: boolean,
+    constructor(useCtrlG?: boolean,
                 instructionTranslations?: {
                   closeDialog?: string;
                   input?: string;
+                  guidanceFormat?: string;
+                  guidanceLineRange?: (current:Number, max: Number) => string;
+                  guidanceColumnRange?: (line: Number, current: Number, max: Number) => string;
+                  guidanceValidLine?: (line: Number) => string;
+                  guidanceValidColumn?: (line: Number, column: Number) => string;
                 });
     /**
      * Show a search-like dialog prompting line number.
@@ -217,7 +207,7 @@ export namespace plugins {
      * @param {boolean} escTabToChangeFocus Whether pressing the Escape key before (Shift+)Tab should make this keypress focus on a different element (Tab's default behaviour). You should always either enable this or use this plugin's disableTabIndentation and enableTabIndentation methods linked to other keyboard shortcuts, for accessibility.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the English text.
      */
-    constructor(defaultSpaces?: boolean, numSpaces?: Number, bracketPairs?: Object, escTabToChangeFocus?: boolean, instructionTranslations?: {
+    constructor(defaultSpaces?: boolean, numSpaces?: Number, bracketPairs?: Object, escTabToChangeFocus?: boolean, instructionTwranslations?: {
       tabForIndentation?: string;
       tabForNavigation?: string;
     });
@@ -270,7 +260,7 @@ export namespace plugins {
        * @param {string} selectedClass The CSS class that will be present on tokens only when they are part of the selected text in the `<code-input>` element. Defaults to "code-input_select-token-callbacks_selected".
        * @returns {TokenSelectorCallbacks} A new TokenSelectorCallbacks instance that encodes this behaviour.
        */
-      static createClassSynchronisation(selectedClass: string): codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks;
+      static createClassSynchronisation(selectedClass?: string): codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks;
     }
   }
   // ESM-SUPPORT-END-PLUGIN-select-token-callbacks Do not (re)move this - it's needed for ESM generation

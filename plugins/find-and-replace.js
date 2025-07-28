@@ -194,6 +194,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             const findInput = document.createElement('input');
             const findCaseSensitiveCheckbox = document.createElement('input');
             const findRegExpCheckbox = document.createElement('input');
+            // TODO in next major version: use more semantic HTML element than code
             const matchDescription = document.createElement('code');
             matchDescription.setAttribute("aria-live", "assertive"); // Screen reader must read the number of matches found.
 
@@ -206,7 +207,11 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             const findPreviousButton = document.createElement('button');
             const replaceButton = document.createElement('button');
             const replaceAllButton = document.createElement('button');
+
+            // TODO: Make a button element (semantic HTML for accessibility) in next major version
             const cancel = document.createElement('span');
+            cancel.setAttribute("role", "button");
+            cancel.setAttribute("aria-label", this.instructions.closeDialog);
             cancel.setAttribute("tabindex", 0); // Visible to keyboard navigation
             cancel.setAttribute("title", this.instructions.closeDialog);
 
@@ -236,7 +241,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             findRegExpCheckbox.title = this.instructions.findRegExp;
             findRegExpCheckbox.classList.add("code-input_find-and-replace_reg-exp-checkbox");
 
-            matchDescription.textContent = "Search for matches in your code.";
+            matchDescription.textContent = this.instructions.start;
             matchDescription.classList.add("code-input_find-and-replace_match-description");
             
 
@@ -245,8 +250,10 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             replaceInput.placeholder = this.instructions.replacePlaceholder;
             findNextButton.innerText = "↓";
             findNextButton.title = this.instructions.findNext;
+            findNextButton.setAttribute("aria-label", this.instructions.findNext);
             findPreviousButton.innerText = "↑";
             findPreviousButton.title = this.instructions.findPrevious;
+            findNextButton.setAttribute("aria-label", this.instructions.findPrevious);
             replaceButton.className = 'code-input_find-and-replace_button-hidden';
             replaceButton.innerText = this.instructions.replaceActionShort;
             replaceButton.title = this.instructions.replaceAction;

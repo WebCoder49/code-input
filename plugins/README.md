@@ -61,6 +61,8 @@ Files: [prism-line-numbers.css](./prism-line-numbers.css) (NO JS FILE)
 Render special characters and control characters as a symbol
 with their hex code.
 
+**Please note: This plugin is known to contain bugs, especially when used with highlight.js and/or other plugins. Please bear this in mind and look at the Issues if you want more details; fixes for the bugs are planned but not prioritised as much as those used in more common plugins or the core library.**
+
 Files: [special-chars.js](./special-chars.js) / [special-chars.css](./special-chars.css)
 
 [🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/jOeYJbm)

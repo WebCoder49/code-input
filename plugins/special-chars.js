@@ -101,6 +101,7 @@ codeInput.plugins.SpecialChars = class extends codeInput.Plugin {
 
         // Create element with hex code
         let result = document.createElement("span");
+        result.textContent = matchChar;
         result.classList.add("code-input_special-char");
         result.style.setProperty("--hex-0",  "var(--code-input_special-chars_" + hexCode[0] + ")");
         result.style.setProperty("--hex-1",  "var(--code-input_special-chars_" + hexCode[1] + ")");

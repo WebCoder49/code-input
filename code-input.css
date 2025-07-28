@@ -12,6 +12,9 @@ code-input {
   top: 0;
   left: 0;
 
+  color: black;
+  background-color: white;
+
   /* Normal inline styles */
   margin: 8px;
   --padding: 16px;
@@ -38,8 +41,9 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   margin: 0px!important;
   padding: var(--padding, 16px)!important;
   border: 0;
-  min-width: calc(100% - var(--padding) * 2);
-  min-height: calc(100% - var(--padding) * 2);
+  min-width: calc(100% - var(--padding, 16px) * 2);
+  min-height: calc(100% - var(--padding, 16px) * 2);
+  box-sizing: content-box; /* Make height, width work consistently no matter the box-sizing of ancestors; dialogs can be styled as wanted so are excluded. */
   overflow: hidden;
   resize: none;
   grid-row: 1;
@@ -56,8 +60,6 @@ code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-el
   /* Remove all margin and padding from others */
   margin: 0px!important;
   padding: 0px!important;
-  width: 100%;
-  height: 100%;
 }
 
 code-input textarea, code-input pre, code-input pre * {
@@ -91,7 +93,7 @@ code-input textarea, code-input pre {
 
 /* Move the textarea in front of the result */
 
-code-input textarea {
+code-input textarea:not([code-input-fallback]) {
   z-index: 1;
 }
 code-input pre {
@@ -100,7 +102,7 @@ code-input pre {
 
 /* Make textarea almost completely transparent, except for caret and placeholder */
 
-code-input textarea {
+code-input textarea:not([code-input-fallback]) {
   color: transparent;
   background: transparent;
   caret-color: inherit!important; /* Or choose your favourite color */
@@ -123,7 +125,7 @@ code-input textarea {
   outline: none!important;
 }
 code-input:has(textarea:focus):not(.code-input_mouse-focused) {
-  outline: 2px solid black;
+  outline: 2px solid currentColor;
 }
 
 /* Before registering give a hint about how to register. */
@@ -135,19 +137,30 @@ code-input:not(.code-input_registered) {
 
 code-input:not(.code-input_registered)::after {
   /* Display message to register */
-  content: "Use codeInput.registerTemplate to set up.";
+  content: "No-JavaScript fallback. For highlighting and plugins: as a user use a newer browser/enable JavaScript support; as a developer use codeInput.registerTemplate.";
   display: block;
   position: absolute;
-  bottom: var(--padding);
-  left: var(--padding);
-  width: calc(100% - 2 * var(--padding));
+  bottom: 0;
+  left: var(--padding, 16px);
+  width: calc(100% - 2 * var(--padding, 16px));
+  overflow-x: auto;
 
-  border-top: 1px solid grey;
-  outline: var(--padding) solid white;
-  background-color: white;
+  border-top: 1px solid currentColor;
+  outline-top: 0;
+  background-color: inherit;
+  color: inherit;
+
+  margin: 0;
+  padding: 0;
+  height: 2em;
 }
 
-code-input:not(.code-input_loaded) pre, code-input:not(.code-input_loaded) textarea {
+code-input:not(.code-input_registered) textarea {
+  /* Don't overlap with message */
+  min-height: calc(100% - var(--padding, 16px) * 2 - 2em);
+}
+
+code-input:not(.code-input_loaded) pre, code-input:not(.code-input_loaded) textarea:not([code-input-fallback]) {
   opacity: 0;
 }
 
@@ -166,12 +179,16 @@ code-input .code-input_dialog-container {
 
   margin: 0;
   padding: 0;
-  width: 100%;
   height: 0;
+  width: 100%;
 
   /* Dialog boxes' text is based on text-direction */
   text-align: inherit;
 }
+code-input.code-input_pre-element-styled .code-input_dialog-container {
+  width: calc(100% + 2 * var(--padding, 16px) - 2px);
+}
+
 [dir=rtl] code-input .code-input_dialog-container, code-input[dir=rtl] .code-input_dialog-container {
   left: unset;
   right: 0;
@@ -200,7 +217,7 @@ code-input:has(pre[dir=rtl]) .code-input_dialog-container .code-input_keyboard-n
   right: 0;
 }
 
-code-input:not(:has(textarea:focus)) .code-input_dialog-container .code-input_keyboard-navigation-instructions,
+code-input:not(:has(textarea:not([code-input-fallback]):focus)) .code-input_dialog-container .code-input_keyboard-navigation-instructions,
 code-input.code-input_mouse-focused .code-input_dialog-container .code-input_keyboard-navigation-instructions,
 code-input .code-input_dialog-container .code-input_keyboard-navigation-instructions:empty {
   /* When not keyboard-focused / no instructions don't show instructions */
@@ -208,8 +225,20 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
 }
 
 /* Things with padding when instructions are present */
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused) textarea,
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code,
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused).code-input_pre-element-styled pre {
-  padding-top: calc(var(--padding) + 3em)!important;
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused) textarea,
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code,
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused).code-input_pre-element-styled pre {
+  padding-top: calc(var(--padding, 16px) + 3em)!important;
+}
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused) textarea, code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code, code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused).code-input_pre-element-styled pre {
+  min-height: calc(100% - var(--padding, 16px) * 2 - 3em);
+}
+
+/* No JavaScript fallback - styles to override all previous */
+
+code-input textarea[code-input-fallback] {
+  overflow: auto;
+  background-color: inherit;
+  color: inherit;
+  height: max-content;
 }

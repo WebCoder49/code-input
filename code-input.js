@@ -478,7 +478,6 @@ var codeInput = {
         * to syntax-highlight it. */
 
         needsHighlight = false; // Just inputted
-        handleEventsFromTextarea = true; // Turn to false when unusual internal events are called on the textarea
         originalAriaDescription;
 
         /**
@@ -518,14 +517,6 @@ var codeInput = {
             else this.template.highlight(resultElement);
 
             this.syncSize();
-
-            // If editing here, scroll to the caret by focusing, though this shouldn't count as a focus event
-            if(this.textareaElement === document.activeElement) {
-                this.handleEventsFromTextarea = false;
-                this.textareaElement.blur();
-                this.textareaElement.focus();
-                this.handleEventsFromTextarea = true;
-            }
 
             this.pluginEvt("afterHighlight");
         }
@@ -614,16 +605,34 @@ var codeInput = {
 
             this.pluginEvt("beforeElementsAdded");
 
+            const fallbackTextarea = this.querySelector("textarea[code-input-fallback]");
+            let value;
+            if(fallbackTextarea) {
+                // Fallback textarea exists
+                // Sync attributes; existing code-input attributes take priority
+                let textareaAttributeNames = fallbackTextarea.getAttributeNames();
+                for(let i = 0; i < textareaAttributeNames.length; i++) {
+                    const attr = textareaAttributeNames[i];
+                    if(!this.hasAttribute(attr)) {
+                        this.setAttribute(attr, fallbackTextarea.getAttribute(attr));
+                    }
+                }
+                // Sync value
+                value = fallbackTextarea.value;
+            } else {
+                value = this.unescapeHtml(this.innerHTML);
+            }
+            value = value || this.getAttribute("value") || "";
+
             // First-time attribute sync
-            let lang = this.getAttribute("language") || this.getAttribute("lang");
-            let placeholder = this.getAttribute("placeholder") || this.getAttribute("language") || this.getAttribute("lang") || "";
-            let value = this.unescapeHtml(this.innerHTML) || this.getAttribute("value") || "";
-            // Value attribute deprecated, but included for compatibility
+            const lang = this.getAttribute("language") || this.getAttribute("lang");
+            const placeholder = this.getAttribute("placeholder") || lang || "";
+
 
             this.initialValue = value; // For form reset
 
             // Create textarea
-            let textarea = document.createElement("textarea");
+            const textarea = document.createElement("textarea");
             textarea.placeholder = placeholder;
             if(value != "") {
                 textarea.value = value;
@@ -642,9 +651,7 @@ var codeInput = {
                 this.classList.add("code-input_mouse-focused");
             });
             textarea.addEventListener("blur", () => {
-                if(this.handleEventsFromTextarea) {
-                    this.classList.remove("code-input_mouse-focused");
-                }
+                this.classList.remove("code-input_mouse-focused");
             });
 
             this.innerHTML = ""; // Clear Content
@@ -868,22 +875,20 @@ var codeInput = {
             this.boundEventCallbacks[listener] = boundCallback;
 
             if (codeInput.textareaSyncEvents.includes(type)) {
-                // Synchronise with textarea, only when handleEventsFromTextarea is true
-                // This callback is modified to only run when the handleEventsFromTextarea is set.
-                let conditionalBoundCallback = function(evt) { if(this.handleEventsFromTextarea) boundCallback(evt); }.bind(this);
-                this.boundEventCallbacks[listener] = conditionalBoundCallback;
+                // Synchronise with textarea
+                this.boundEventCallbacks[listener] = boundCallback;
 
                 if (options === undefined) {
                     if(this.textareaElement == null) {
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback); });
                     } else {
-                        this.textareaElement.addEventListener(type, conditionalBoundCallback);
+                        this.textareaElement.addEventListener(type, boundCallback);
                     }
                 } else {
                     if(this.textareaElement == null) {
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback, options); });
                     } else {
-                        this.textareaElement.addEventListener(type, conditionalBoundCallback, options);
+                        this.textareaElement.addEventListener(type, boundCallback, options);
                     }
                 }
             } else {
@@ -943,10 +948,12 @@ var codeInput = {
             if (val === null || val === undefined) {
                 val = "";
             }
+
             // Save in editable textarea element
             this.textareaElement.value = val;
             // Trigger highlight
             this.scheduleHighlight();
+
             return val;
         }
 

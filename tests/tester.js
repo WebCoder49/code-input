@@ -108,10 +108,10 @@ function waitAsync(milliseconds) {
 function beginTest(isHLJS) {
     let codeInputElem = document.querySelector("code-input");
     if(isHLJS) {
-        codeInput.registerTemplate("code-editor", codeInput.templates.hljs(hljs, [
+        codeInput.registerTemplate("code-editor", new codeInput.templates.Hljs(hljs, [
             new codeInput.plugins.AutoCloseBrackets(), 
-            new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
-                if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+            new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd, selectionStart) {
+                if(selectionStart == selectionEnd && textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
                     // Show popup
                     popupElem.style.display = "block";
                     popupElem.innerHTML = "Here's your popup!";
@@ -127,10 +127,10 @@ function beginTest(isHLJS) {
             new codeInput.plugins.SpecialChars(true),
         ]));
     } else {
-        codeInput.registerTemplate("code-editor", codeInput.templates.prism(Prism, [
+        codeInput.registerTemplate("code-editor", new codeInput.templates.Prism(Prism, [
             new codeInput.plugins.AutoCloseBrackets(), 
-            new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
-                if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+            new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd, selectionStart) {
+                if(selectionStart == selectionEnd && textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
                     // Show popup
                     popupElem.style.display = "block";
                     popupElem.innerHTML = "Here's your popup!";
@@ -162,12 +162,17 @@ function startLoad(codeInputElem, isHLJS) {
 }
 
 /* Make input events work and be trusted in the inputElement - thanks for this SO answer: https://stackoverflow.com/a/49519772/21785620 */
-function allowInputEvents(inputElement) {
+function allowInputEvents(inputElement, codeInputElement=undefined) {
     inputElement.addEventListener('input', function(e){
         if(!e.isTrusted){
             e.preventDefault();
             // Manually trigger
+            // Prevent auto-close-brackets plugin recapturing the event
+            // Needed because this interception is hacky.
+            // TODO: Potentially plugin-agnostic way, probably automatedKeypresses var in core, won't be needed much but may be helpful extra feature.
+            if(codeInputElement !== undefined) codeInputElement.pluginData.autoCloseBrackets.automatedKeypresses = true;
             document.execCommand("insertText", false, e.data);
+            if(codeInputElement !== undefined) codeInputElement.pluginData.autoCloseBrackets.automatedKeypresses = false;
         }
     }, false);
 }
@@ -175,9 +180,9 @@ function allowInputEvents(inputElement) {
 /* Start the tests using the textarea inside the code-input element and whether highlight.js is being used (as the Autodetect plugin only works with highlight.js, for example) */
 async function startTests(textarea, isHLJS) {
     textarea.focus();
-    allowInputEvents(textarea);
 
     codeInputElement = textarea.parentElement;
+    allowInputEvents(textarea, codeInputElement);
 
     /*--- Tests for core functionality ---*/
 
@@ -338,12 +343,23 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     
     await waitAsync(50); // Wait for popup to be rendered
         
-    testAssertion("Autocomplete", "Popup Shows", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
-    backspace(textarea);
+    testAssertion("Autocomplete", "Popup Shows on input", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
+    move(textarea, -1);
     
     await waitAsync(50); // Wait for popup disappearance to be rendered
     
-    testAssertion("Autocomplete", "Popup Disappears", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
+    testAssertion("Autocomplete", "Popup Disappears on arrow key", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
+    move(textarea, 1);
+
+    await waitAsync(50); // Wait for popup to be rendered
+
+    testAssertion("Autocomplete", "Popup Shows on arrow key", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
+    backspace(textarea);
+
+    await waitAsync(50); // Wait for popup disappearance to be rendered
+
+    testAssertion("Autocomplete", "Popup Disappears on backspace", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
+    move(textarea, 1);
     backspace(textarea);
     backspace(textarea);
     backspace(textarea);
@@ -382,7 +398,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     textarea.selectionStart = 0;
     textarea.selectionEnd = textarea.value.length;
     backspace(textarea);
-    addText(textarea, "// hello /\\S/g\nhe('llo', /\\s/g);\nhello");
+    addText(textarea, "// hello /\\S/g\nhe('llo', /\\s/g);\nhello\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\na very very very very very very very very very very very very long line with many many many many many many many many many many many words\nline\nline\nline\nline\nline\nline\nline");
     textarea.selectionStart = textarea.selectionEnd = 0; // So focuses on first match
 
     await waitAsync(50); // Wait for highlighting so text updates
@@ -421,7 +437,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     replaceInput.value = "do('hello";
     replaceButton.click();
     await waitAsync(50); // Wait for buttons to work
-    assertEqual("FindAndReplace", "Replaces Once Correctly", textarea.value, "// hello /\\S/g\ndo('hello', /\\s/g);\nhello");
+    assertEqual("FindAndReplace", "Replaces Once Correctly", textarea.value, "// hello /\\S/g\ndo('hello', /\\s/g);\nhello\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\na very very very very very very very very very very very very long line with many many many many many many many many many many many words\nline\nline\nline\nline\nline\nline\nline");
     nextMatchButton.click(); // Back to first match
 
     // Exit find input box
@@ -438,11 +454,30 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     findInput.focus();
     allowInputEvents(findInput);
     addText(findInput, "hello");
-    await waitAsync(150); // Wait for highlighting so matches update
+    await waitAsync(200); // Wait for highlighting so matches update
 
     replaceInput.value = "hi";
     replaceAllButton.click();
-    assertEqual("FindAndReplace", "Replaces All Correctly", textarea.value, "// hi /\\S/g\ndo('hi', /\\s/g);\nhi");
+    assertEqual("FindAndReplace", "Replaces All Correctly", textarea.value, "// hi /\\S/g\ndo('hi', /\\s/g);\nhi\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\na very very very very very very very very very very very very long line with many many many many many many many many many many many words\nline\nline\nline\nline\nline\nline\nline");
+
+    findInput.value = "line";
+    regExpCheckbox.click(); // Now no regex
+    await waitAsync(200); // Wait for value to update
+
+    // Go to "line" on very long line
+    codeInputElement.style = "height: 100px; width: 1000px;";
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+    previousMatchButton.click();
+
+    await waitAsync(200); // Wait for highlighting so matches update
+    testAssertion("FindAndReplace", "Scrolls to Match Correctly", confirm("Is the match on the very long line highlighted orange and near the centre of the element?"), "user-judged");
+    codeInputElement.style = "";
 
     // Exit find input box
     codeInputElement.querySelector(".code-input_find-and-replace_dialog").dispatchEvent(new KeyboardEvent("keydown", { "key": "Escape" }));
@@ -525,8 +560,10 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     backspace(textarea);
 
     testAddingText("Indent-AutoCloseBrackets", textarea, function(textarea) {
-        addText(textarea, `function printTriples(max) {\nfor(let i = 0; i < max-2; i++) {\nfor(let j = 0; j < max-1; j++) {\nfor(let k = 0; k < max; k++) {\nconsole.log(i,j,k);\n}\n//Hmmm...`, true);
-    }, 'function printTriples(max) {\n  for(let i = 0; i < max-2; i++) {\n    for(let j = 0; j < max-1; j++) {\n      for(let k = 0; k < max; k++) {\n        console.log(i,j,k);\n      }\n      //Hmmm...\n      }\n    }\n  }\n}', 189, 189);
+        addText(textarea, `function printTriples(max) {\nfor(let i = 0; i < max-2; i++) {\nfor(let j = 0; j < max-1; j++) {\nfor(let k = 0; k < max; k++) {\nconsole.log(i,j,k);\n}\n//Hmmm...\n}//Test auto-unindent\n{`, true);
+        move(textarea, 1); // Move after created closing bracket
+        backspace(textarea); // Remove created closing bracket
+    }, 'function printTriples(max) {\n  for(let i = 0; i < max-2; i++) {\n    for(let j = 0; j < max-1; j++) {\n      for(let k = 0; k < max; k++) {\n        console.log(i,j,k);\n      }\n      //Hmmm...\n    }//Test auto-unindent\n    {\n      }\n    }\n  }\n}', 221, 221);
 
     // SelectTokenCallbacks
     if(isHLJS) {
