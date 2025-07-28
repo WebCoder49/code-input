@@ -85,6 +85,11 @@
             let goToLineTranslations = {
                 closeDialog: "Cerrar el Diálogo y Regresar al Editor",
                 input: "Línea:Columno o Línea luego Retorno",
+                guidanceFormat: "Formato incorrecto. Ingresa un número de línea (por ej. 1) o un número de línea luego dos puntos luego un número de columno (por ej. 1:3).",
+                guidanceLineRange: (current, max) => `Número de línea (actualmente ${current}) debería ser entre 1 y ${max}.`,
+                guidanceColumnRange: (line, current, max) => `En la línea número ${line}, número de columno (actualmente ${current}) debería ser entre 1 y ${max}.`,
+                guidanceValidLine: (line) => `Tecla Retorno para ir a línea número ${line}.`,
+                guidanceValidColumn: (line, column) => `Tecla Retorno para ir a línea número ${line}, columno número ${column}.`,
             };
             let indentTranslations = {
                 tabForIndentation: "Tabulador y Mayús-Tabulador actualmente para la indentación. Tecla Escape para activar la navegación por el teclado.",

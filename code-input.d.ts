@@ -178,6 +178,11 @@ export namespace plugins {
                 instructionTranslations?: {
                   closeDialog?: string;
                   input?: string;
+                  guidanceFormat?: string;
+                  guidanceLineRange?: (current:Number, max: Number) => string;
+                  guidanceColumnRange?: (line: Number, current: Number, max: Number) => string;
+                  guidanceValidLine?: (line: Number) => string;
+                  guidanceValidColumn?: (line: Number, column: Number) => string;
                 });
     /**
      * Show a search-like dialog prompting line number.
