@@ -5,8 +5,8 @@
  * Files: prism-line-numbers.css
  */
 /* Update padding to match line-numbers plugin */
-code-input.line-numbers textarea, code-input.line-numbers.code-input_pre-element-styled pre,
-.line-numbers code-input textarea, .line-numbers code-input.code-input_pre-element-styled pre {
+code-input.line-numbers textarea, code-input.line-numbers.code-input_pre-element-styled pre, code-input.line-numbers:not(.code-input_pre-element-styled) pre code,
+.line-numbers code-input textarea, .line-numbers code-input.code-input_pre-element-styled pre, .line-numbers code-input:not(.code-input_pre-element-styled) pre code {
   padding-left: max(3.8em, var(--padding, 16px))!important;
 }
 

@@ -58,8 +58,8 @@
         <code-input dir="ltr" template="hljs+" language="markdown" placeholder="hljs ltr"></code-input>
 
         <script>
-            codeInput.registerTemplate("hljs", codeInput.templates.hljs(hljs, []));
-            codeInput.registerTemplate("prism", codeInput.templates.prism(Prism, []));
+            codeInput.registerTemplate("hljs", new codeInput.templates.Hljs(hljs, []));
+            codeInput.registerTemplate("prism", new codeInput.templates.Prism(Prism, []));
 
             // Attribution: Translated by Oliver Geer with some help from English Wiktionary
             let findAndReplaceTranslations = {
@@ -91,7 +91,7 @@
                 tabForNavigation: "Tabulador y Mayús-Tabulador actualmente para la navegación por el teclado. Tecla para activar la indentación.",
             };
 
-            codeInput.registerTemplate("hljs+", codeInput.templates.hljs(hljs, [
+            codeInput.registerTemplate("hljs+", new codeInput.templates.Hljs(hljs, [
                 new codeInput.plugins.AutoCloseBrackets(),
                 new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
                     if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
@@ -109,7 +109,7 @@
                 new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
                 //new codeInput.plugins.SpecialChars(true),
             ]));
-            codeInput.registerTemplate("prism+", codeInput.templates.prism(Prism, [
+            codeInput.registerTemplate("prism+", new codeInput.templates.Prism(Prism, [
                 new codeInput.plugins.AutoCloseBrackets(),
                 new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
                     if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {

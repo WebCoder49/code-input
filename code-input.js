@@ -162,7 +162,7 @@ var codeInput = {
          * Constructor to create a custom template instance. Pass this into `codeInput.registerTemplate` to use it.
          * I would strongly recommend using the built-in simpler template `codeInput.templates.prism` or `codeInput.templates.hljs`.
          * @param {(codeElement: HTMLCodeElement, codeInput?: codeInput.CodeInput) => void} highlight - a callback to highlight the code, that takes an HTML `<code>` element inside a `<pre>` element as a parameter
-         * @param {boolean} preElementStyled - is the `<pre>` element CSS-styled as well as the `<code>` element? If true, `<pre>` element's scrolling is synchronised; if false, `<code>` element's scrolling is synchronised.
+         * @param {boolean} preElementStyled - is the `<pre>` element CSS-styled (if so set to true), or the `<code>` element (false)?
          * @param {boolean} isCode - is this for writing code? If true, the code-input's lang HTML attribute can be used, and the `<code>` element will be given the class name 'language-[lang attribute's value]'.
          * @param {boolean} includeCodeInputInHighlightFunc - Setting this to true passes the `<code-input>` element as a second argument to the highlight function.
          * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.Plugin`
@@ -1031,12 +1031,13 @@ var codeInput = {
         * Constructor to create a template that uses Prism.js syntax highlighting (https://prismjs.com/)
         * @param {Object} prism Import Prism.js, then after that import pass the `Prism` object as this parameter.
         * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+        * @param {boolean} preElementStyled - Defaults to true, which should be right for most themes. If the styling is broken, change to false. (See `codeInput.Template` constructor's definition.)
         * @returns {codeInput.Template} template object
         */
-        constructor(prism, plugins = []) {
+        constructor(prism, plugins = [], preElementStyled = true) {
             super(
                 prism.highlightElement, // highlight
-                true, // preElementStyled
+                preElementStyled, // preElementStyled
                 true, // isCode
                 false, // includeCodeInputInHighlightFunc
                 plugins
@@ -1055,15 +1056,16 @@ var codeInput = {
          * Constructor to create a template that uses highlight.js syntax highlighting (https://highlightjs.org/)
          * @param {Object} hljs Import highlight.js, then after that import pass the `hljs` object as this parameter.
          * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.plugins`
+         * @param {boolean} preElementStyled - Defaults to false, which should be right for most themes. If the styling is broken, change to true. (See `codeInput.Template` constructor's definition.)
          * @returns {codeInput.Template} template object
          */
-        constructor(hljs, plugins = []) {
+        constructor(hljs, plugins = [], preElementStyled = false) {
             super(
                 function(codeElement) {
                     codeElement.removeAttribute("data-highlighted");
                     hljs.highlightElement(codeElement);
                 }, // highlight
-                false, // preElementStyled
+                preElementStyled, // preElementStyled
                 true, // isCode
                 false, // includeCodeInputInHighlightFunc
                 plugins
