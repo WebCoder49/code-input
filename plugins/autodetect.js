@@ -19,7 +19,7 @@ codeInput.plugins.Autodetect = class extends codeInput.Plugin {
     afterHighlight(codeInput) {
         let langClass = codeInput.codeElement.className || codeInput.preElement.className;
         let lang = langClass.match(/lang(\w|-)*/i)[0]; // Get word starting with lang...; Get outer bracket
-        lang = lang.split("-")[1];
+        lang = lang.match(/(?<=-)(\w|-)*/i)[0];
         if(lang == "undefined") {
             codeInput.removeAttribute("language");
             codeInput.removeAttribute("lang");
