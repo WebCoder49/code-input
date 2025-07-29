@@ -11,10 +11,10 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         closeDialog: "Close Dialog and Return to Editor",
         input: "Line:Column / Line no. then Enter",
         guidanceFormat: "Wrong format. Enter a line number (e.g. 1) or a line number then colon then column number (e.g. 1:3).",
-        guidanceLineRange: (current, max) => { return `Line number (currently ${current}) should be between 1 and ${max} inclusive.` },
-        guidanceColumnRange: (line, current, max) => { return `On line ${line}, column number (currently ${current}) should be between 1 and ${max} inclusive.` },
-        guidanceValidLine: (line, column) => { return `Press Enter to go to line ${line}.` },
-        guidanceValidColumn: (line, column) => { return `Press Enter to go to line ${line}, column ${column}.` },
+        guidanceLineRange: (current, max) => `Line number (currently ${current}) should be between 1 and ${max} inclusive.`,
+        guidanceColumnRange: (line, current, max) => `On line ${line}, column number (currently ${current}) should be between 1 and ${max} inclusive.`,
+        guidanceValidLine: (line) => `Press Enter to go to line ${line}.`,
+        guidanceValidColumn: (line, column) => `Press Enter to go to line ${line}, column ${column}.`,
     };
 
     /**

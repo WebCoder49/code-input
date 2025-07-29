@@ -605,16 +605,34 @@ var codeInput = {
 
             this.pluginEvt("beforeElementsAdded");
 
+            const fallbackTextarea = this.querySelector("textarea[code-input-fallback]");
+            let value;
+            if(fallbackTextarea) {
+                // Fallback textarea exists
+                // Sync attributes; existing code-input attributes take priority
+                let textareaAttributeNames = fallbackTextarea.getAttributeNames();
+                for(let i = 0; i < textareaAttributeNames.length; i++) {
+                    const attr = textareaAttributeNames[i];
+                    if(!this.hasAttribute(attr)) {
+                        this.setAttribute(attr, fallbackTextarea.getAttribute(attr));
+                    }
+                }
+                // Sync value
+                value = fallbackTextarea.value;
+            } else {
+                value = this.unescapeHtml(this.innerHTML);
+            }
+            value = value || this.getAttribute("value") || "";
+
             // First-time attribute sync
-            let lang = this.getAttribute("language") || this.getAttribute("lang");
-            let placeholder = this.getAttribute("placeholder") || this.getAttribute("language") || this.getAttribute("lang") || "";
-            let value = this.unescapeHtml(this.innerHTML) || this.getAttribute("value") || "";
-            // Value attribute deprecated, but included for compatibility
+            const lang = this.getAttribute("language") || this.getAttribute("lang");
+            const placeholder = this.getAttribute("placeholder") || lang || "";
+
 
             this.initialValue = value; // For form reset
 
             // Create textarea
-            let textarea = document.createElement("textarea");
+            const textarea = document.createElement("textarea");
             textarea.placeholder = placeholder;
             if(value != "") {
                 textarea.value = value;

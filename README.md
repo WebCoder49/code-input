@@ -1,5 +1,7 @@
 # code-input
 
+> **:warning: This document is a work in progress for the next release. [Read latest released instructions.](https://github.com/WebCoder49/code-input/tree/v2.5.1/README.md)**
+
 ![Click to Switch](https://img.shields.io/static/v1?label=&message=Click%20to%20Switch:%20&color=grey&style=for-the-badge)[![GitHub](https://img.shields.io/static/v1?label=&message=GitHub&color=navy&style=for-the-badge&logo=github)](https://github.com/WebCoder49/code-input)[![NPM](https://img.shields.io/static/v1?label=&message=NPM&color=red&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@webcoder49/code-input)
 
 [![View License](https://img.shields.io/github/license/webcoder49/code-input?style=for-the-badge)](LICENSE) [![View Releases](https://img.sHields.io/github/v/release/webcoder49/code-input?style=for-the-badge)](https://github.com/WebCoder49/code-input/releases) [![View the demo on CodePen](https://img.shields.io/static/v1?label=Demo&message=on%20CodePen&color=orange&logo=codepen&style=for-the-badge)](https://codepen.io/WebCoder49/full/jOypJOx)
@@ -117,18 +119,18 @@ The next step is to set up a `template` to link `code-input` to your syntax-high
 </script>
 ```
 
-> ⚠️ Unfortunately placing multiple plugins of the same type in a template can currently cause errors and undefined behaviour, even if such a configuration makes logical sense. [This is issue #118](https://github.com/WebCoder49/code-input/issues/118) and will be fixed as soon as possible - if you'd like to help and have the time you're welcome, but it's also at the top of the maintainer's To-Do list.
+> ⚠️ Unfortunately placing multiple plugins of the same type in a template can currently cause errors and undefined behaviour, even if such a configuration makes logical sense. [This is issue #118](https://github.com/WebCoder49/code-input/issues/118) ~~and will be fixed as soon as possible - if you'd like to help and have the time you're welcome, but it's also at the top of the maintainer's To-Do list.~~ and should be fixed in major version 3 - right now, I don't believe there's much demand or use, and workarounds are not too complex.
 
 To see a full list of plugins and their functions, please see [plugins/README.md](./plugins/README.md).
 
 ### 4. Using the component
-Now that you have registered a template, you can use the custom `<code-input>` element in HTML. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `language` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events, as well as CSS styles, to make your element as simple or interactive as you like, as if it were a `textarea` element! 
+Now that you have registered a template, you can use the custom `<code-input>` element in HTML. I recommend it surrounds a fallback `<textarea code-input-fallback>` element which will be used instead when JavaScript support is absent, and will pass its attributes to the `<code-input>` element otherwise, as shown below. If you have more than one template registered, you need to add the template name as the `template` attribute. With the element, using the `language` attribute will add a `language-{value}` class to the `pre code` block. You can now use HTML attributes and events, as well as CSS styles, to make your element as simple or interactive as you like, as if it were a `textarea` element! 
   ```HTML
-  <code-input language="HTML"></code-input>
+  <code-input language="HTML"><textarea code-input-fallback></textarea></code-input>
   ```
   *or*
   ```HTML
-  <code-input language="HTML" placeholder="Type code here" template="syntax-highlighted" onchange="console.log('Your code is', this.value)">&lt; href='https://github.com/WebCoder49/code-input'>code-input&lt;/a></code-input>
+  <code-input language="HTML" template="syntax-highlighted" onchange="console.log('Your code is', this.value)"><textarea code-input-fallback placeholder="Type code here">&lt; href='https://github.com/WebCoder49/code-input'>code-input&lt;/a></textarea></code-input>
   ```
 
 > ⚠️ At the moment, you need to set the `--padding` property rather than `padding` for a `code-input` element's CSS. All other properties should work as normal.

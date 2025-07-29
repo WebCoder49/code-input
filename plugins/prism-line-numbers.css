@@ -15,11 +15,6 @@ code-input.line-numbers, .line-numbers code-input {
   grid-template-columns: calc(100% - max(0em, calc(3.8em - var(--padding, 16px))));
 }
 
-/* Make keyboard navigation still fill width */
-code-input.line-numbers .code-input_dialog-container .code-input_keyboard-navigation-instructions, .line-numbers code-input .code-input_dialog-container .code-input_keyboard-navigation-instructions {
-  width: calc(100% + max(3.8em, var(--padding, 16px)))!important;
-}
-
 /* Override Prism styles so there's no display:inline, relatively-positioned code element which breaks offsetTop, used in FindAndReplace, in Firefox. */
 code-input pre[class*=language-].line-numbers>code {
   position: static;
