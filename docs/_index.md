@@ -2,7 +2,7 @@
 title = 'Flexible Syntax Highlighted Editable Textareas'
 +++
 
-# An <mark>editable</mark> `<textarea>` that supports *any* <mark>syntax highlighting</mark> algorithm, for code or something else. [Also, added plugins.](#TODO)
+# An <mark>editable</mark> `<textarea>` that supports *any* <mark>syntax highlighting</mark> algorithm, for code or something else. [Also, added plugins.](plugins)
 
 Aiming to be [more <mark>flexible</mark>, <mark>lightweight</mark>,
 <mark>modular</mark>, <mark>progressively enhanced</mark> and
@@ -47,7 +47,7 @@ console.log("Hello, World!");</textarea></code-input>
 
 ### Tutorials by Example
 
-#### Prism.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](#TODO)) {#demo-preset-prism}
+#### Prism.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](/frameworks/prism)) {#demo-preset-prism}
 
 ```
 <!DOCTYPE html>
@@ -74,7 +74,7 @@ console.log("Hello, World!");</textarea></code-input>
 
         <!--Import some code-input plugins-->
         <!--The same goes for downloaded versions.-->
-        <!--Plugin files are here: #TODO.-->
+        <!--Plugin files are here: https://code-input-js.org/plugins.-->
         <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.6/plugins/indent.min.js"></script>
 
         <!--Register code-input template-->
@@ -83,7 +83,7 @@ console.log("Hello, World!");</textarea></code-input>
                 new codeInput.templates.Prism(
                 Prism,
                 [
-                    // You can add or remove plugins in this list from #TODO.
+                    // You can add or remove plugins in this list from https://code-input-js.org/plugins.
                     // All plugins used must be imported above.
                     new codeInput.plugins.Indent()
                 ]
@@ -97,13 +97,13 @@ console.log("Hello, World!");</textarea></code-input>
         <code-input template="syntax-highlighted" language="JavaScript"><textarea code-input-fallback>// Demo editable code
 console.log("Hello, World!");</textarea></code-input>
 
-        <!--Additional usage details are here: #TODO-->
-        <!--A list of plugins are here, allowing a well-rounded code-editor to be created quickly from code-input, if you're into that: #TODO-->
+        <!--Additional usage details are here: https://code-input-js.org/#pages-->
+        <!--A list of plugins are here, allowing a well-rounded code-editor to be created quickly from code-input, if you're into that: https://code-input-js.org/plugins-->
     </body>
 </html>
 ```
 
-#### highlight.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](#TODO)) {#demo-preset-hljs}
+#### highlight.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](frameworks/hljs)) {#demo-preset-hljs}
 
 ```
 <!DOCTYPE html>
@@ -131,7 +131,7 @@ console.log("Hello, World!");</textarea></code-input>
 
         <!--Import some code-input plugins-->
         <!--The same goes for downloaded versions.-->
-        <!--Plugin files are here: #TODO.-->
+        <!--Plugin files are here: https://code-input-js.org/plugins.-->
         <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.6/plugins/indent.min.js"></script>
 
         <!--Register code-input template-->
@@ -140,7 +140,7 @@ console.log("Hello, World!");</textarea></code-input>
                 new codeInput.templates.Hljs(
                     hljs,
                     [
-                        // You can add or remove plugins in this list from #TODO.
+                        // You can add or remove plugins in this list from https://code-input-js.org/plugins.
                         // All plugins used must be imported above.
                         new codeInput.plugins.Indent()
                     ]
@@ -154,13 +154,13 @@ console.log("Hello, World!");</textarea></code-input>
         <code-input template="syntax-highlighted" language="JavaScript"><textarea code-input-fallback>// Demo editable code
 console.log("Hello, World!");</textarea></code-input>
 
-        <!--Additional usage details are here: #TODO-->
-        <!--A list of plugins are here. We recommend the Autodetect plugin with highlight.js: #TODO-->
+        <!--Additional usage details are here: https://code-input-js.org/#pages-->
+        <!--A list of plugins are here. We recommend the Autodetect plugin with highlight.js: https://code-input-js.org/plugins-->
     </body>
 </html>
 ```
 
-#### Editor with Custom Highlighting Algorithm (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](#TODO)) {#demo-preset-custom}
+#### Editor with Custom Highlighting Algorithm (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](frameworks/custom)) {#demo-preset-custom}
 
 ```
 <!--custom: TODO-->
@@ -189,7 +189,7 @@ Extensible With Plugins
 </dt>
 <dd>
 
-Want coding features like easy indentation and closing of brackets, tools like find and replace and go to line, or better integration like custom autocomplete popups and processing of selected highlighted tokens? [Try a selection of the easy-to-use plugins.](#TODO) Plugin not available? [Make one yourself as a JavaScript class!](#TODO)
+Want coding features like easy indentation and closing of brackets, tools like find and replace and go to line, or better integration like custom autocomplete popups and processing of selected highlighted tokens? [Try a selection of the easy-to-use plugins.](plugins) Plugin not available? [Make one yourself as a JavaScript class!](plugins/new)
 
 </dd>
 

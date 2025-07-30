@@ -1,20 +1,23 @@
-# Vue/Nuxt Tutorial - For Highlight.js Integration
- 
++++
+title = 'How to use code-input and highlight.js with Vue or Nuxt'
++++
+
+# How to use code-input and highlight.js with Vue or Nuxt
+
+> Contributors: 2025 Paul Rosen
+
 Vue and Nuxt have some similarities, but there is one big difference in how they can use this library. In Nuxt there is server side rendering (SSR) that will attempt to create the final HTML before sending the page to the browser. This cannot use any browser-specific things so the `code-input` component must be excluded from rendering until hydration in the browser.
-
-> [!NOTE]  
-> The following demo is for integrating with `highlight.js` but if you follow the instructions in [the main README](../README.md) you can substitute highlight.js for Prism.js or a custom template.
-
+ 
 ## Vue
 
 ### 1. Create a Vue app
 
 First, create a Vue project. (If you already have a Vue project then you can skip this step). On a command line, type this:
-```
+```bash
 npm create vue@latest
 ```
 At the time this tutorial was created, the output was the following, after I named the project `syntax-highlighter` and checked "typescript":
-```
+```plaintext
 Need to install the following packages:
 create-vue@3.18.0
 Ok to proceed? (y) y
@@ -87,7 +90,7 @@ So that Vue knows that `code-input` is not a Vue component.
 ### 3. Initialize the textarea
 
 Create a component with whatever name you want. Perhaps `RichEditor.vue`. Paste the following into it:
-```vue
+```html
 <template>
   <code-input name="richText">function hello() { console.log("world"); }
   </code-input>
@@ -132,12 +135,12 @@ code-input {
 ### 4. Using the component
 
 In the generated file `HelloWorld.vue`, place the following line after the "greetings" line:
-```vue
+```html
 <RichEditor />
 ```
 
 And put its import in the `<script>` section:
-```vue
+```html
 import RichEditor from "@/components/RichEditor.vue";
 ```
 
@@ -159,7 +162,7 @@ First, create a Nuxt project. (If you already have a Nuxt project then you can s
 npm create nuxt@latest syntax-highlighter
 ```
 At the time this tutorial was created, the output was the following:
-```
+```plaintext
 Need to install the following packages:
 create-nuxt@3.27.0
 Ok to proceed? (y) y
@@ -254,7 +257,7 @@ So that the necessary css is loaded for code-input, and an example theme is load
 
 Create a component with whatever name you want. Perhaps `app/components/RichEditor.vue`. Paste the following into it:
 
-```vue
+```html
 <template>
   <div class="rich-editor">
     <!-- Use ClientOnly so that no SSR is done on the code-input component -->
@@ -341,12 +344,12 @@ code-input textarea::selection {
 ### 4. Using the component
 
 In the generated file `app.vue`, place the following line after the "NuxtRouteAnnouncer" line:
-```vue
+```html
 <RichEditor value="function hello() { console.log('world'); }" name="myEditor" />
 ```
 
 And put its import in the `<script>` section:
-```vue
+```html
 import RichEditor from "./components/RichEditor.vue";
 ```
 
