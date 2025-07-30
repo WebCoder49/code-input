@@ -1,6 +1,9 @@
-# Vue/Nuxt Tutorial
-
+# Vue/Nuxt Tutorial - For Highlight.js Integration
+ 
 Vue and Nuxt have some similarities, but there is one big difference in how they can use this library. In Nuxt there is server side rendering (SSR) that will attempt to create the final HTML before sending the page to the browser. This cannot use any browser-specific things so the `code-input` component must be excluded from rendering until hydration in the browser.
+
+> [!NOTE]  
+> The following demo is for integrating with `highlight.js` but if you follow the instructions in [the main README](../README.md) you can substitute highlight.js for Prism.js or a custom template.
 
 ## Vue
 
@@ -56,11 +59,11 @@ npm install
 npm run dev
 ```
 
-You should be able to open your browser to the path that it prints out and see a started Vue app. If so, congratulations! Hit Ctrl-C to stop it.
+You should be able to open your browser to the path that it prints out and see a working Vue app. If so, congratulations! Hit Ctrl-C to stop it.
 
 ### 2. Add dependencies
 
-This tutorial will use `highlight.js` for the syntax highlighting. If you are using a different method then adjust as needed.
+> This tutorial will use `highlight.js` for the syntax highlighting. If you are using a different method then adjust as needed.
 
 Type this:
 ```bash
@@ -78,6 +81,8 @@ vue({
   }
 })
 ```
+
+So that Vue knows that `code-input` is not a Vue component.
 
 ### 3. Initialize the textarea
 
@@ -131,7 +136,7 @@ In the generated file `HelloWorld.vue`, place the following line after the "gree
 <RichEditor />
 ```
 
-And put its input in the `<script>` section:
+And put its import in the `<script>` section:
 ```vue
 import RichEditor from "@/components/RichEditor.vue";
 ```
@@ -147,4 +152,206 @@ If all went well, you should see the following in the browser:
 
 ## Nuxt
 
-TODO
+### 1. Create a Nuxt app
+
+First, create a Nuxt project. (If you already have a Vue project then you can skip this step). On a command line, type this:
+```bash
+npm create nuxt@latest syntax-highlighter
+```
+At the time this tutorial was created, the output was the following:
+```
+Need to install the following packages:
+create-nuxt@3.27.0
+Ok to proceed? (y) y
+
+
+> npx
+> "create-nuxt" syntax-highlighter
+
+
+        .d$b.
+       i$$A$$L  .d$b
+     .$$F` `$$L.$$A$$.
+    j$$'    `4$$:` `$$.
+   j$$'     .4$:    `$$.
+  j$$`     .$$:      `4$L
+ :$$:____.d$$:  _____.:$$:
+ `4$$$$$$$$P` .i$$$$$$$$P`
+
+ℹ Welcome to Nuxt!
+ℹ Creating a new project in syntax-highlighter.
+
+✔ Which package manager would you like to use?
+npm
+◐ Installing dependencies...
+
+> postinstall
+> nuxt prepare
+
+✔ Types generated in .nuxt
+
+added 882 packages, and audited 884 packages in 5m
+
+185 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+✔ Installation completed.
+
+✔ Initialize git repository?
+No
+
+✔ Would you like to install any of the official modules?
+Yes
+
+✔ Pick the modules to install:
+none
+
+✨ Nuxt project has been created with the v4 template. Next steps:
+ › cd syntax-highlighter
+ › Start development server with npm run dev
+
+```
+
+And just like the above instructions mention, do the following:
+```bash
+cd syntax-highlighter
+npm run dev
+```
+
+You should be able to open your browser to the path that it prints out and see a working Vue app. If so, congratulations! Hit Ctrl-C to stop it.
+
+### 2. Add dependencies
+
+> This tutorial will use `highlight.js` for the syntax highlighting. If you are using a different method then adjust as needed.
+
+Type this:
+```bash
+npm install @webcoder49/code-input
+npm install highlight.js
+```
+
+In the file `vite.config.ts`, after the line `compatibilityDate`, add this so that Vue knows that `code-input` is not a Vue component:
+
+```javascript
+vue: {
+  compilerOptions: {
+    isCustomElement: (tag) => tag === "code-input",
+  },
+},
+```
+
+Also add this:
+```javascript
+css: ['@webcoder49/code-input/code-input.css', 'highlight.js/styles/default.min.css'],
+```
+
+So that the necessary css is loaded for code-input, and an example theme is loaded. You might want to replace the second file with your own theme, but you need the first file.
+
+### 3. Initialize the textarea
+
+Create a component with whatever name you want. Perhaps `app/components/RichEditor.vue`. Paste the following into it:
+
+```vue
+<template>
+  <div class="rich-editor">
+    <!-- Use ClientOnly so that no SSR is done on the code-input component -->
+    <ClientOnly>
+      <code-input
+        ref="elem"
+        :name="name"
+        :value="value"
+        spellcheck="false"
+        @input="emit('input', $event.target.value)"
+        @code-input_load="loaded"
+      ></code-input>
+    </ClientOnly>
+  </div>
+</template>
+
+<script lang="ts" setup>
+// For loading a highlighting engine - this example uses highlight.js
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+
+// The following are optional.
+const emit = defineEmits<{
+  // If you want a listener when the user changes the contents.
+  (e: "input", value: string): void;
+  // If you want to do more initialization after code-input is ready.
+  (e: "ready", textarea: HTMLElement): void;
+}>();
+
+const props = defineProps<{
+  value: string; // The starting value for the textarea
+  name: string; // The name that is used when the textarea is in a form
+}>();
+
+// This contains the HTMLElement of the code-input component
+const elem = ref()
+
+// Before it appears on the page, code-input needs to be initialized
+onBeforeMount(async () => {
+  // Only if we're in the client
+  if (import.meta.browser) {
+    // Dynamically import code-input so that it is only in the browser
+    const codeInput = await import("@webcoder49/code-input");
+    const Template = (await import("@webcoder49/code-input/templates/hljs.mjs")).default;
+    // Set up highlight.js
+    hljs.registerLanguage('javascript', javascript);
+    // Register that engine with code-input
+    codeInput.registerTemplate("syntax-highlighted", new Template(hljs, []));
+  }
+})
+
+function loaded() {
+  // This is called after the code-input is initialized and it has created a textarea.
+  // If you have some further initialization for the textarea, then do it in this event.
+  const ta = elem.value.querySelector('textarea')
+  emit("ready", ta)
+}
+</script>
+
+<style scoped>
+.rich-editor {
+  border: 1px solid #bbbbbb;
+}
+code-input {
+  resize: both; /* if you want the resizing control that textarea has */
+  margin: 0; /* you can override other styles */
+  font-family: "Fira Mono", Monaco, monospace;
+}
+</style>
+
+<style>
+/* Notice that these styles aren't scoped */
+.hljs {
+  background: #f1f1f1;  /* here's how to change the background color. */
+}
+/* If you want to change the selection color */
+code-input textarea::selection {
+  background: #6781ef;
+  color: #ffffff;
+}
+</style>
+```
+### 4. Using the component
+
+In the generated file `app.vue`, place the following line after the "NuxtRouteAnnouncer" line:
+```vue
+<RichEditor value="function hello() { console.log('world'); }" name="myEditor" />
+```
+
+And put its import in the `<script>` section:
+```vue
+import RichEditor from "./components/RichEditor.vue";
+```
+
+Restart the server:
+```bash
+npm run dev
+```
+
+If all went well, you should see the following in the browser:
+
+![nuxt-demo-screenshot.png](nuxt-demo-screenshot.png)
