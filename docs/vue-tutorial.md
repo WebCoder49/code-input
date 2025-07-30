@@ -154,7 +154,7 @@ If all went well, you should see the following in the browser:
 
 ### 1. Create a Nuxt app
 
-First, create a Nuxt project. (If you already have a Vue project then you can skip this step). On a command line, type this:
+First, create a Nuxt project. (If you already have a Nuxt project then you can skip this step). On a command line, type this:
 ```bash
 npm create nuxt@latest syntax-highlighter
 ```
@@ -219,7 +219,7 @@ cd syntax-highlighter
 npm run dev
 ```
 
-You should be able to open your browser to the path that it prints out and see a working Vue app. If so, congratulations! Hit Ctrl-C to stop it.
+You should be able to open your browser to the path that it prints out and see a working Nuxt app. If so, congratulations! Hit Ctrl-C to stop it.
 
 ### 2. Add dependencies
 
@@ -246,7 +246,9 @@ Also add this:
 css: ['@webcoder49/code-input/code-input.css', 'highlight.js/styles/default.min.css'],
 ```
 
-So that the necessary css is loaded for code-input, and an example theme is loaded. You might want to replace the second file with your own theme, but you need the first file.
+So that the necessary css is loaded for code-input, and an example theme is loaded. 
+
+> You might want to replace the second file with your own theme, but you need the first file.
 
 ### 3. Initialize the textarea
 
@@ -290,7 +292,8 @@ const props = defineProps<{
 // This contains the HTMLElement of the code-input component
 const elem = ref()
 
-// Before it appears on the page, code-input needs to be initialized
+// Before it appears on the page, code-input needs to be initialized.
+// This must be onBeforeMount and not onMount!
 onBeforeMount(async () => {
   // Only if we're in the client
   if (import.meta.browser) {
