@@ -32,8 +32,6 @@ codeInput.plugins.Autocomplete = class extends codeInput.Plugin {
         codeInput.appendChild(popupElem);
 
         let testPosPre = document.createElement("pre");
-        popupElem.setAttribute("inert", true); // Invisible to keyboard navigation
-        popupElem.setAttribute("tabindex", -1); // Invisible to keyboard navigation
         testPosPre.setAttribute("aria-hidden", true); // Hide for screen readers
         if(codeInput.template.preElementStyled) {
             testPosPre.classList.add("code-input_autocomplete_testpos");
