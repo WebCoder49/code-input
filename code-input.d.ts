@@ -301,11 +301,10 @@ export class Template {
    * @param {boolean} preElementStyled - is the `<pre>` element CSS-styled (if so set to true), or the `<code>` element (false)?
    * @param {boolean} isCode - is this for writing code? If true, the code-input's lang HTML attribute can be used, and the `<code>` element will be given the class name 'language-[lang attribute's value]'.
    * @param {false} includeCodeInputInHighlightFunc - Setting this to true passes the `<code-input>` element as a second argument to the highlight function.
-   * @param {boolean} autoDisableDuplicateSearching - Leaving this as true uses code-input's default fix for preventing duplicate results in Ctrl+F searching from the input and result elements, and setting this to false indicates your highlighting function implements its own fix. The default fix works by moving text content from elements to CSS `::before` pseudo-elements after highlighting.
    * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.Plugin`
    * @returns template object
    */
-  constructor(highlight?: (codeElement: HTMLElement) => void, preElementStyled?: boolean, isCode?: boolean, includeCodeInputInHighlightFunc?: false, autoDisableDuplicateSearching?: boolean, plugins?: Plugin[])
+  constructor(highlight?: (codeElement: HTMLElement) => void, preElementStyled?: boolean, isCode?: boolean, includeCodeInputInHighlightFunc?: false, plugins?: Plugin[])
   /**
    * **When `includeCodeInputInHighlightFunc` is `true`, `highlight` takes two parameters: the `<pre><code>` element, and the `<code-input>` element.**
    * 
@@ -315,25 +314,15 @@ export class Template {
    * @param {boolean} preElementStyled - is the `<pre>` element CSS-styled (if so set to true), or the `<code>` element (false)?
    * @param {boolean} isCode - is this for writing code? If true, the code-input's lang HTML attribute can be used, and the `<code>` element will be given the class name 'language-[lang attribute's value]'.
    * @param {true} includeCodeInputInHighlightFunc - Setting this to true passes the `<code-input>` element as a second argument to the highlight function.
-   * @param {boolean} autoDisableDuplicateSearching - Leaving this as true uses code-input's default fix for preventing duplicate results in Ctrl+F searching from the input and result elements, and setting this to false indicates your highlighting function implements its own fix. The default fix works by moving text content from elements to CSS `::before` pseudo-elements after highlighting.
    * @param {codeInput.Plugin[]} plugins - An array of plugin objects to add extra features - see `codeInput.Plugin`
    * @returns template object
    */
-  constructor(highlight?: (codeElement: HTMLElement, codeInput: CodeInput) => void, preElementStyled?: boolean, isCode?: boolean, includeCodeInputInHighlightFunc?: true, autoDisableDuplicateSearching?: boolean, plugins?: Plugin[])
+  constructor(highlight?: (codeElement: HTMLElement, codeInput: CodeInput) => void, preElementStyled?: boolean, isCode?: boolean, includeCodeInputInHighlightFunc?: true, plugins?: Plugin[])
   highlight: Function
   preElementStyled: boolean
   isCode: boolean
   includeCodeInputInHighlightFunc: boolean
-  autoDisableDuplicateSearching: boolean
-  plugins: Plugin[]
-  /**
-   * @deprecated Please give a value for the `autoDisableDuplicateSearching` parameter.
-   */
-  constructor(highlight?: (code: HTMLElement) => void, preElementStyled?: boolean, isCode?: boolean, includeCodeInputInHighlightFunc?: false, plugins?: Plugin[])
-  /**
-   * @deprecated Please give a value for the `autoDisableDuplicateSearching` parameter.
-   */
-  constructor(highlight?: (code: HTMLElement, codeInput: CodeInput) => void, preElementStyled?: boolean, isCode?: boolean, includeCodeInputInHighlightFunc?: true, plugins?: Plugin[])
+  plugins: Plugin[] 
 }
 
 // ESM-SUPPORT-START-NAMESPACE-2 Do not (re)move this - it's needed for ESM generation

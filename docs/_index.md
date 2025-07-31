@@ -7,7 +7,7 @@ title = 'Flexible Syntax Highlighted Editable Textareas'
 Aiming to be [more <mark>flexible</mark>, <mark>lightweight</mark>,
 <mark>modular</mark>, <mark>progressively enhanced</mark> and
 <mark>standards-based</mark></a> than the alternatives](#features), we support
-HTML forms, the `<textarea>` JavaScript interface, more languages and
+[HTML forms](interface/forms), the [`<textarea>` JavaScript interface](interface/js), more languages and
 more use cases.
 
 ## Get Started with a Demo
@@ -16,7 +16,7 @@ more use cases.
 
 ### Demos
 
-#### Basic Prism.js Code Editor {#demo-preset-basic}
+#### Basic Prism.js Code Editor {#playground-preset-basic}
 
 ```
 <!DOCTYPE html>
@@ -47,7 +47,7 @@ console.log("Hello, World!");</textarea></code-input>
 
 ### Tutorials by Example
 
-#### Prism.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](/frameworks/prism)) {#demo-preset-prism}
+#### Prism.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](frameworks/prism)) {#playground-preset-prism}
 
 ```
 <!DOCTYPE html>
@@ -103,7 +103,7 @@ console.log("Hello, World!");</textarea></code-input>
 </html>
 ```
 
-#### highlight.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](frameworks/hljs)) {#demo-preset-hljs}
+#### highlight.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](frameworks/hljs)) {#playground-preset-hljs}
 
 ```
 <!DOCTYPE html>
@@ -160,13 +160,70 @@ console.log("Hello, World!");</textarea></code-input>
 </html>
 ```
 
-#### Editor with Custom Highlighting Algorithm (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](frameworks/custom)) {#demo-preset-custom}
+#### Editor with Custom Highlighting Algorithm (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](frameworks/custom)) {#playground-preset-custom}
 
 ```
-<!--custom: TODO-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>code-input: Editor with Custom Highlighting Algorithm</title>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
+
+        <!--Import code-input-->
+        <!--The same goes for downloaded versions.-->
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.6/code-input.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.6/code-input.min.css">
+
+        <!--Import some code-input plugins-->
+        <!--The same goes for downloaded versions.-->
+        <!--Plugin files are here: https://code-input-js.org/plugins.-->
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.6/plugins/indent.min.js"></script>
+
+        <!--Register code-input template-->
+        <script>
+            codeInput.registerTemplate("syntax-highlighted",
+                new codeInput.Template(
+                    function(result_element) { /* Highlight function - with `pre code` code element */
+                        /* Highlight code in result_element - code is already escaped so it doesn't become HTML */
+                        // TODO
+                        // Example highlights question marks red
+                        result_element.innerHTML = result_element.innerHTML.replace(/\?/g, "<strong style='color: red;'>?</strong>");
+                    },
+
+                    true, /* Optional - Is the `pre` element styled as well as the `code` element?
+                           * Changing this to false uses the code element as the scrollable one rather
+                           * than the pre element */
+                           
+                    true, /* Optional - This is used for editing code - setting this to true sets the `code`
+                           * element's class to `language-<the code-input's lang attribute>` */
+
+                    false /* Optional - Setting this to true passes the `<code-input>` element as a second
+                           * argument to the highlight function to be used for getting data- attribute values
+                           * and using the DOM for the code-input */,
+
+                    [
+                        // You can add or remove plugins in this list from https://code-input-js.org/plugins.
+                        // All plugins used must be imported above.
+                        new codeInput.plugins.Indent()
+                    ]
+                )
+            );
+            // Register templates with different names here, if needed.
+        </script>
+    </head>
+    <body>
+        <code-input template="syntax-highlighted"><textarea code-input-fallback>What will you create?
+Code or something else?</textarea></code-input>
+
+        <!--Additional usage details are here: https://code-input-js.org/#pages-->
+        <!--A list of plugins are here: https://code-input-js.org/plugins-->
+    </body>
+</html>
 ```
 
 {{< /playground >}}
+
+Next, you can [style your `code-input`](interface/css) and use it in [JavaScript](interface/js) or [HTML5 Forms](interface/forms).
 
 ## Features
 
@@ -178,7 +235,7 @@ Choose Any Highlighter
 </dt>
 <dd>
 
-Use the built in templates for [Prism.js](#demo-preset-prism) or [highlight.js](#demo-preset-hljs), or [pass in any function to highlight a normal HTML element](#demo-preset-custom), and `code-input.js` will do the editability for you. What will you create?
+Use the built in templates for [Prism.js](#playground-preset-prism) or [highlight.js](#playground-preset-hljs), or [pass in any function to highlight a normal HTML element](#playground-preset-custom), and `code-input.js` will do the editability for you. What will you create?
 
 </dd>
 
@@ -239,3 +296,5 @@ something like [CodeMirror](https://codemirror.net/),
 [Ace](https://ace.c9.io/) or
 [Monaco](https://microsoft.github.io/monaco-editor/).
 
+## Read Enough?
+**If you don't need web framework integration, get started with the commented tutorials by example on this page, for [Prism.js](#playground-preset-prism), [highlight.js](#playground-preset-hljs), or [another highlighter](#playground-preset-custom). If you're using a web framework, start [here](frameworks).**
