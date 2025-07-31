@@ -37,7 +37,6 @@ var codeInput = {
      */
     textareaSyncAttributes: [
         "value",
-        "tabindex",
         // Form validation - https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation
         "min", "max",
         "type",
