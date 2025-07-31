@@ -37,6 +37,7 @@ var codeInput = {
      */
     textareaSyncAttributes: [
         "value",
+        "tabindex",
         // Form validation - https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#using_built-in_form_validation
         "min", "max",
         "type",
@@ -70,7 +71,11 @@ var codeInput = {
         "change",
         "selectionchange",
         "invalid",
-        "input"
+        "input",
+        "focus",
+        "blur",
+        "focusin",
+        "focusout"
     ],
 
     /* ------------------------------------
@@ -955,6 +960,14 @@ var codeInput = {
             this.scheduleHighlight();
 
             return val;
+        }
+
+        // Synchronise blur and focus
+        focus(options={}) {
+            return this.textareaElement.focus(options);
+        }
+        blur(options={}) {
+            return this.textareaElement.blur(options);
         }
 
         /**
