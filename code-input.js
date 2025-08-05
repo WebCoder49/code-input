@@ -517,7 +517,7 @@ var codeInput = {
             this.pluginEvt("beforeHighlight");
 
             // Syntax Highlight
-            if (this.templateObject.includeCodeInputInHighlightFunc) this.template.highlight(resultElement, this);
+            if (this.templateObject.includeCodeInputInHighlightFunc) this.templateObject.highlight(resultElement, this);
             else this.templateObject.highlight(resultElement);
 
             this.syncSize();
