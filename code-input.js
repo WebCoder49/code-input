@@ -132,7 +132,7 @@ var codeInput = {
         if (templateName in codeInput.templateNotYetRegisteredQueue) {
             for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
                 const elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
-                elem.template = template;
+                elem.templateObject = template;
                 elem.connectedCallback();
                 // Bind sets elem as first parameter of function 
                 // So innerHTML can be read
@@ -145,7 +145,7 @@ var codeInput = {
             if (undefined in codeInput.templateNotYetRegisteredQueue) {
                 for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
                     const elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
-                    elem.template = template;
+                    elem.templateObject = template;
                     elem.connectedCallback();
                     // Bind sets elem as first parameter of function
                     // So innerHTML can be read
@@ -461,8 +461,8 @@ var codeInput = {
          * @param {Array} args - the arguments to pass into the event callback in the template after the code-input element. Normally left empty
         */
         pluginEvt(eventName, args) {
-            for (let i in this.template.plugins) {
-                let plugin = this.template.plugins[i];
+            for (let i in this.templateObject.plugins) {
+                let plugin = this.templateObject.plugins[i];
                 if (eventName in plugin) {
                     if (args === undefined) {
                         plugin[eventName](this);
@@ -517,8 +517,8 @@ var codeInput = {
             this.pluginEvt("beforeHighlight");
 
             // Syntax Highlight
-            if (this.template.includeCodeInputInHighlightFunc) this.template.highlight(resultElement, this);
-            else this.template.highlight(resultElement);
+            if (this.templateObject.includeCodeInputInHighlightFunc) this.template.highlight(resultElement, this);
+            else this.templateObject.highlight(resultElement);
 
             this.syncSize();
 
@@ -530,7 +530,7 @@ var codeInput = {
          */
         syncSize() {
             // Synchronise the size of the pre/code and textarea elements
-            if(this.template.preElementStyled) {
+            if(this.templateObject.preElementStyled) {
                 this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
                 this.textareaElement.style.height = getComputedStyle(this.preElement).height;
                 this.textareaElement.style.width = getComputedStyle(this.preElement).width;
@@ -605,7 +605,7 @@ var codeInput = {
             if(this.textareaElement != null) return; // Already set up
 
             this.classList.add("code-input_registered"); // Remove register message
-            if (this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
+            if (this.templateObject.preElementStyled) this.classList.add("code-input_pre-element-styled");
 
             this.pluginEvt("beforeElementsAdded");
 
@@ -687,7 +687,7 @@ var codeInput = {
             pre.append(code);
             this.append(pre);
 
-            if (this.template.isCode) {
+            if (this.templateObject.isCode) {
                 if (lang != undefined && lang != "") {
                     code.classList.add("language-" + lang.toLowerCase());
                 }
@@ -718,17 +718,29 @@ var codeInput = {
         }
 
         /**
-         * @deprecated Please use `codeInput.CodeInput.escapeHtml`
+         * @deprecated This shouldn't have been accessed as part of the library's public interface (to enable more flexibility in backwards-compatible versions), but is still here just in case it was.
          */
         escape_html(text) {
             return this.escapeHtml(text);
         }
 
         /**
-         * @deprecated Please use `codeInput.CodeInput.getTemplate`
+         * @deprecated This shouldn't have been accessed as part of the library's public interface (to enable more flexibility in backwards-compatible versions), but is still here just in case it was.
          */
         get_template() {
             return this.getTemplate();
+        }
+        /**
+         * @deprecated This shouldn't have been accessed as part of the library's public interface (to enable more flexibility in backwards-compatible versions), but is still here just in case it was.
+	 */
+        get template() {
+            return this.templateObject;
+        }
+        /**
+         * @deprecated This shouldn't have been accessed as part of the library's public interface (to enable more flexibility in backwards-compatible versions), but is still here just in case it was.
+	 */
+        set template(value) {
+            this.templateObject = value;
         }
 
 
@@ -743,8 +755,10 @@ var codeInput = {
          * find its template and set up the element.
          */
         connectedCallback() {
-            this.template = this.getTemplate();
-            if (this.template != undefined) {
+            // Stored in templateObject because some frameworks will override
+            // template property with the string value of the attribute
+            this.templateObject = this.getTemplate();
+            if (this.templateObject != undefined) {
                 this.classList.add("code-input_registered");
                 this.setup();
                 this.classList.add("code-input_loaded");
@@ -793,8 +807,8 @@ var codeInput = {
                         this.value = newValue;
                         break;
                     case "template":
-                        this.template = codeInput.usedTemplates[newValue || codeInput.defaultTemplate];
-                        if (this.template.preElementStyled) this.classList.add("code-input_pre-element-styled");
+                        this.templateObject = codeInput.usedTemplates[newValue || codeInput.defaultTemplate];
+                        if (this.templateObject.preElementStyled) this.classList.add("code-input_pre-element-styled");
                         else this.classList.remove("code-input_pre-element-styled");
                         // Syntax Highlight
                         this.scheduleHighlight();
