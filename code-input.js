@@ -604,6 +604,12 @@ var codeInput = {
         setup() {
             if(this.textareaElement != null) return; // Already set up
 
+            this.mutationObserver = new MutationObserver(this.mutationObserverCallback.bind(this));
+            this.mutationObserver.observe(this, {
+                attributes: true,
+                attributeOldValue: true
+            });
+
             this.classList.add("code-input_registered"); // Remove register message
             if (this.templateObject.preElementStyled) this.classList.add("code-input_pre-element-styled");
 
@@ -762,12 +768,7 @@ var codeInput = {
                 this.classList.add("code-input_registered");
                 this.setup();
                 this.classList.add("code-input_loaded");
-            }
-            this.mutationObserver = new MutationObserver(this.mutationObserverCallback.bind(this));
-            this.mutationObserver.observe(this, {
-                attributes: true,
-                attributeOldValue: true
-            });
+            } 
         }
 
         mutationObserverCallback(mutationList, observer) {
