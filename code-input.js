@@ -736,19 +736,6 @@ var codeInput = {
         get_template() {
             return this.getTemplate();
         }
-        /**
-         * @deprecated This shouldn't have been accessed as part of the library's public interface (to enable more flexibility in backwards-compatible versions), but is still here just in case it was.
-	 */
-        get template() {
-            return this.templateObject;
-        }
-        /**
-         * @deprecated This shouldn't have been accessed as part of the library's public interface (to enable more flexibility in backwards-compatible versions), but is still here just in case it was.
-	 */
-        set template(value) {
-            this.templateObject = value;
-        }
-
 
         /* ------------------------------------
         *  -----------Callbacks----------------
