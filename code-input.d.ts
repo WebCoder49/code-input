@@ -285,7 +285,9 @@ export namespace plugins {
 // ESM-SUPPORT-END-NAMESPACE-1 Do not (re)move this - it's needed for ESM generation
 
 /**
- * Please see `codeInput.templates.prism` or `codeInput.templates.hljs`.
+ * If you're using one of the two named highlighters, please see
+ * `codeInput.templates.prism` or `codeInput.templates.hljs`.
+ * Otherwise please see this class' constructor.
  * Templates are used in `<code-input>` elements and once registered with
  * `codeInput.registerTemplate` will be in charge of the highlighting
  * algorithm and settings for all code-inputs with a `template` attribute
@@ -397,9 +399,35 @@ export namespace templates {
 
 /**
  * A `<code-input>` element, an instance of an `HTMLElement`, and the result
- * of `document.createElement("code-input")`.
+ * of `document.createElement("code-input")`. Attributes are only set when
+ * the element's template has been registered, and before this are null.
  */
-export class CodeInput extends HTMLElement { }
+export class CodeInput extends HTMLElement {
+  /**
+   * When the code-input's template is registered, this contains its codeInput.Template object.
+   */
+  templateObject?: readonly Template
+  /**
+   * Exposed child textarea element for user to input code in; in this version of code-input you shouldn't need to access
+   * it because most textarea functionality is present on the code-input element itself.
+   */
+  textareaElement?: HTMLTextAreaElement
+  /**
+   * Exposed child pre element where syntax-highlighted code is outputted.
+   * Contains this.codeElement as its only child.
+   */
+  preElement?: HTMLPreElement
+  /**
+   * Exposed child pre element's child code element where syntax-highlighted code is outputted.
+   * Has this.preElement as its parent.
+   */
+  codeElement?: HTMLElement
+  /**
+   * Exposed non-scrolling element designed to contain dialog boxes etc. from plugins,
+   * that shouldn't scroll with the code-input element.
+   */
+  dialogContainerElement?: HTMLElement
+}
 
 /**
  * Register a template so code-input elements with a template attribute that equals the templateName will use the template.

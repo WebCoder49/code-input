@@ -67,7 +67,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
         let testIndentationWidthPre = document.createElement("pre");
         testIndentationWidthPre.setAttribute("aria-hidden", "true"); // Hide for screen readers
         let testIndentationWidthSpan = document.createElement("span");
-        if(codeInput.template.preElementStyled) {
+        if(codeInput.templateObject.preElementStyled) {
             testIndentationWidthPre.appendChild(testIndentationWidthSpan);
             testIndentationWidthPre.classList.add("code-input_autocomplete_test-indentation-width");
             codeInput.appendChild(testIndentationWidthPre); // Styled like first pre, but first pre found to update

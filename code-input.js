@@ -412,13 +412,20 @@ var codeInput = {
     *  ------------------------------------ */
 
     /**
-     * A code-input element.
+     * A `<code-input>` element, an instance of an `HTMLElement`, and the result
+     * of `document.createElement("code-input")`. Attributes are only set when
+     * the element's template has been registered, and before this are null.
      */
     CodeInput: class extends HTMLElement {
         constructor() {
             super(); // Element
         }
 
+        /**
+         * When the code-input's template is registered, this contains its codeInput.Template object.
+         * Should be treated as read-only by external code.
+         */
+        templateObject = null;
         /**
         * Exposed child textarea element for user to input code in
         */
@@ -435,8 +442,8 @@ var codeInput = {
         codeElement = null;
 
         /** 
-         * Exposed non-scrolling element designed to contain dialog boxes etc. that shouldn't scroll
-         * with the code-input element.
+         * Exposed non-scrolling element designed to contain dialog boxes etc. from plugins,
+         * that shouldn't scroll with the code-input element.
          */
         dialogContainerElement = null;
 
@@ -736,6 +743,22 @@ var codeInput = {
         get_template() {
             return this.getTemplate();
         }
+
+        /**
+         * @deprecated Present for backwards compatibility; use CodeInput.templateObject.
+         */
+        get template() {
+            return this.templateObject;
+        }
+
+        /**
+         * @deprecated The Vue framework may try to set the template
+         * property to the value of the template attribute, a string.
+         * This should not happen. Intentional use of this should
+         * also not happen since templates are changed by changing
+         * the template attribute to the name of one registered.
+         */
+        set template(value) { }
 
         /* ------------------------------------
         *  -----------Callbacks----------------
