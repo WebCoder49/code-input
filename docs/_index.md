@@ -38,7 +38,7 @@ more use cases.
     </head>
     <body>
         <!--4. Use the code-input element-->
-        <code-input language="JavaScript"><textarea code-input-fallback>// Demo editable code
+        <code-input language="JavaScript"><textarea data-code-input-fallback>// Demo editable code
 console.log("Hello, World!");</textarea></code-input>
         <!--See details in the Tutorials by Example-->
     </body>
@@ -94,7 +94,7 @@ console.log("Hello, World!");</textarea></code-input>
     </head>
     <body>
         <!--The language attribute is case-insensitive but must refer to a language from https://prismjs.com/index.html#supported-languages.-->
-        <code-input template="syntax-highlighted" language="JavaScript"><textarea code-input-fallback>// Demo editable code
+        <code-input template="syntax-highlighted" language="JavaScript"><textarea data-code-input-fallback>// Demo editable code
 console.log("Hello, World!");</textarea></code-input>
 
         <!--Additional usage details are here: https://code-input-js.org/#pages-->
@@ -151,7 +151,7 @@ console.log("Hello, World!");</textarea></code-input>
     </head>
     <body>
         <!--The language attribute is case-insensitive but must refer to a language imported above.-->
-        <code-input template="syntax-highlighted" language="JavaScript"><textarea code-input-fallback>// Demo editable code
+        <code-input template="syntax-highlighted" language="JavaScript"><textarea data-code-input-fallback>// Demo editable code
 console.log("Hello, World!");</textarea></code-input>
 
         <!--Additional usage details are here: https://code-input-js.org/#pages-->
@@ -212,7 +212,7 @@ console.log("Hello, World!");</textarea></code-input>
         </script>
     </head>
     <body>
-        <code-input template="syntax-highlighted"><textarea code-input-fallback>What will you create?
+        <code-input template="syntax-highlighted"><textarea data-code-input-fallback>What will you create?
 Code or something else?</textarea></code-input>
 
         <!--Additional usage details are here: https://code-input-js.org/#pages-->
