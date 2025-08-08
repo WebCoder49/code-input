@@ -427,6 +427,12 @@ export class CodeInput extends HTMLElement {
    * that shouldn't scroll with the code-input element.
    */
   dialogContainerElement?: HTMLElement
+  /**
+   * Show some instructions to the user only if they are using keyboard navigation - for example, a prompt on how to navigate with the keyboard if Tab is repurposed.
+   * @param {string} instructions The instructions to display only if keyboard navigation is being used. If it's blank, no instructions will be shown.
+   * @param {boolean} includeAriaDescriptionFirst Whether to include the aria-description of the code-input element before the keyboard navigation instructions for a screenreader. Keep this as true when the textarea is first focused.
+   */
+  setKeyboardNavInstructions(instructions: string, includeAriaDescriptionFirst: boolean): void
 }
 
 /**
