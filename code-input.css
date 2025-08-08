@@ -94,7 +94,7 @@ code-input textarea, code-input pre {
 
 /* Move the textarea in front of the result */
 
-code-input textarea:not([code-input-fallback]) {
+code-input textarea:not([data-code-input-fallback]) {
   z-index: 1;
 }
 code-input pre {
@@ -103,7 +103,7 @@ code-input pre {
 
 /* Make textarea almost completely transparent, except for caret and placeholder */
 
-code-input textarea:not([code-input-fallback]) {
+code-input textarea:not([data-code-input-fallback]) {
   color: transparent;
   background: transparent;
   caret-color: inherit!important; /* Or choose your favourite color */
@@ -161,7 +161,7 @@ code-input:not(.code-input_registered) textarea {
   min-height: calc(100% - var(--padding, 16px) * 2 - 2em);
 }
 
-code-input:not(.code-input_loaded) pre, code-input:not(.code-input_loaded) textarea:not([code-input-fallback]) {
+code-input:not(.code-input_loaded) pre, code-input:not(.code-input_loaded) textarea:not([data-code-input-fallback]) {
   opacity: 0;
 }
 
@@ -218,7 +218,7 @@ code-input:has(pre[dir=rtl]) .code-input_dialog-container .code-input_keyboard-n
   right: 0;
 }
 
-code-input:not(:has(textarea:not([code-input-fallback]):focus)) .code-input_dialog-container .code-input_keyboard-navigation-instructions,
+code-input:not(:has(textarea:not([data-code-input-fallback]):focus)) .code-input_dialog-container .code-input_keyboard-navigation-instructions,
 code-input.code-input_mouse-focused .code-input_dialog-container .code-input_keyboard-navigation-instructions,
 code-input .code-input_dialog-container .code-input_keyboard-navigation-instructions:empty {
   /* When not keyboard-focused / no instructions don't show instructions */
@@ -226,18 +226,18 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
 }
 
 /* Things with padding when instructions are present */
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused) textarea,
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code,
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused).code-input_pre-element-styled pre {
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused) textarea,
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code,
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused).code-input_pre-element-styled pre {
   padding-top: calc(var(--padding, 16px) + 3em)!important;
 }
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused) textarea, code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code, code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([code-input-fallback]):focus):not(.code-input_mouse-focused).code-input_pre-element-styled pre {
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused) textarea, code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code, code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused).code-input_pre-element-styled pre {
   min-height: calc(100% - var(--padding, 16px) * 2 - 3em);
 }
 
 /* No JavaScript fallback - styles to override all previous */
 
-code-input textarea[code-input-fallback] {
+code-input textarea[data-code-input-fallback] {
   overflow: auto;
   background-color: inherit;
   color: inherit;

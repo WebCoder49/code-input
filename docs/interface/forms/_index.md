@@ -11,7 +11,7 @@ title = '`code-input` in HTML5 Forms'
 This is a good time to make use of the fallback textarea which is used when JavaScript is disabled; the following code will send data to the HTML5 form correctly whether or not JavaScript is enabled:
 ```html
 <form>
-    <code-input><textarea code-input-fallback name="code"></textarea></code-input>
+    <code-input><textarea data-code-input-fallback name="code"></textarea></code-input>
     <input type="submit"/>
 </form>
 ```

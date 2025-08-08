@@ -622,7 +622,7 @@ var codeInput = {
 
             this.pluginEvt("beforeElementsAdded");
 
-            const fallbackTextarea = this.querySelector("textarea[code-input-fallback]");
+            const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
             let value;
             if(fallbackTextarea) {
                 // Fallback textarea exists
@@ -966,8 +966,18 @@ var codeInput = {
          * Get the text contents of the code-input element.
          */
         get value() {
-            // Get from editable textarea element
-            return this.textareaElement.value;
+            if(this.textareaElement) {
+                // Get from editable textarea element
+                return this.textareaElement.value;
+            } else {
+                // Unregistered
+                const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+                if(fallbackTextarea) {
+                    return fallbackTextarea.value;
+                } else {
+                    return this.innerHTML;
+                }
+            }
         }
         /**
          * Set the text contents of the code-input element.
@@ -977,13 +987,20 @@ var codeInput = {
             if (val === null || val === undefined) {
                 val = "";
             }
-
-            // Save in editable textarea element
-            this.textareaElement.value = val;
-            // Trigger highlight
-            this.scheduleHighlight();
-
-            return val;
+            if(this.textareaElement) {
+                // Save in editable textarea element
+                this.textareaElement.value = val;
+                // Trigger highlight
+                this.scheduleHighlight();
+            } else {
+                // Unregistered
+                const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+                if(fallbackTextarea) {
+                    fallbackTextarea.value = val;
+                } else {
+                    this.innerHTML = val;
+                }
+            }
         }
 
         // Synchronise blur and focus
