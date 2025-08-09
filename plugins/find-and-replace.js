@@ -626,11 +626,28 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
         }
     }
 
-    /* Highlight a match from the find functionality given its start and end indexes in the text. 
-    Start from the currentElement as this function is recursive. Use the matchID in the class name
+    /* Highlight a match from the find functionality given its start and end indexes in the text.
+    Start from the currentElement. Use the matchID in the class name
     of the match so different matches can be identified.
-    This code is similar to codeInput.plugins.SelectTokenCallbacks.SelectedTokenState.updateSelectedTokens*/
+    */
     highlightMatch(matchID, currentElement, startIndex, endIndex) {
+        const lines = currentElement.textContent.substring(startIndex, endIndex).split("\n");
+        let lineStartIndex = startIndex;
+        for(let i = 0; i < lines.length; i++) {
+            if(i == 0) {
+                this.highlightMatchNewlineOnlyAtStart(matchID, currentElement, lineStartIndex, lineStartIndex+lines[i].length);
+            } else {
+                // Include previous newline character too
+                this.highlightMatchNewlineOnlyAtStart(matchID, currentElement, lineStartIndex-1, lineStartIndex+lines[i].length);
+            }
+
+            lineStartIndex += lines[i].length + 1; // +1 for newline character
+        }
+    }
+
+    /* Same as highlightMatch, but assumes any newlines in the
+    match are at the startIndex (for simpler code). */
+    highlightMatchNewlineOnlyAtStart(matchID, currentElement, startIndex, endIndex) {
         for(let i = 0; i < currentElement.childNodes.length; i++) {
             let childElement = currentElement.childNodes[i];
             let childText = childElement.textContent;
@@ -679,7 +696,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
                         i++; // An extra element has been added
                         return;
                     } else {
-                        this.highlightMatch(matchID, childElement, 0, endIndex);
+                        this.highlightMatchNewlineOnlyAtStart(matchID, childElement, 0, endIndex);
                     }
 
                     // Match ended - nothing to do after backtracking
@@ -738,7 +755,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
                         i++; // An extra element has been added
                     }
                 } else {
-                    this.highlightMatch(matchID, childElement, startIndex, endIndex);
+                    this.highlightMatchNewlineOnlyAtStart(matchID, childElement, startIndex, endIndex);
                 }
                 
                 if(childText.length > endIndex) {
