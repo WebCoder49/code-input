@@ -46,6 +46,13 @@ export abstract class Plugin {
    * modifications to the `codeInput.Plugin.attributeChanged` method.
    */
   observedAttributes: Array<string>
+
+  /**
+   * Replace the values in destination with those from source where the keys match, in-place.
+   * @param {Object} destination Where to place the translated strings, already filled with the keys pointing to English strings.
+   * @param {Object} source The same keys, or some of them, mapped to translated strings. Keys not present here will retain the values they are maapped to in destination.
+   */
+  addTranslations(destination: Object, source: Object): void
 }
 
 // ESM-SUPPORT-START-NAMESPACE-1 Do not (re)move this - it's needed for ESM generation
@@ -128,8 +135,8 @@ export namespace plugins {
   class FindAndReplace extends Plugin {
     /**
      * Create a find-and-replace command plugin to pass into a template
-     * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
-     * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
+     * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
+     * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the find-and-replace.js source code for the English text.
      */
     constructor(useCtrlF?: boolean, useCtrlH?: boolean,
@@ -171,7 +178,7 @@ export namespace plugins {
   class GoToLine extends Plugin {
     /**
      * Create a go-to-line command plugin to pass into a template
-     * @param {boolean} useCtrlG Should Ctrl+G be overriden for go-to-line functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
+     * @param {boolean} useCtrlG Should Ctrl+G be overriden for go-to-line functionality? Either way, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the English text.
      */
     constructor(useCtrlG?: boolean,
@@ -269,14 +276,22 @@ export namespace plugins {
   /**
    * Render special characters and control characters as a symbol with their hex code.
    * Files: special-chars.js, special-chars.css
+   *
+   * WARNING:
+   *
+   * This plugin is currently unstable when used with other plugins,
+   * Unicode characters, or highlight.js. I hope to fix much of this by
+   * major version 3, and if you could help that would be amazing!
+   *
+   * See https://github.com/WebCoder49/code-input/issues?q=is%3Aissue%20state%3Aopen%20specialchars
    */
   class SpecialChars extends Plugin {
     /**
      * Create a special characters plugin instance.
      * Default = covers many non-renderable ASCII characters.
-     * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code
-     * @param {Boolean} inheritTextColor If `inheritTextColor` is false, forces the color of the hex code to inherit from syntax highlighting. Otherwise, the base color of the `pre code` element is used to give contrast to the small characters.
-     * @param {RegExp} specialCharRegExp The regular expression which matches special characters
+     * @param {Boolean} colorInSpecialChars Whether or not to give special characters custom background colors based on their hex code. Defaults to false.
+     * @param {Boolean} inheritTextColor If true, forces the color of the hex code to inherit from syntax highlighting. If false, the base color of the `pre code` element is used to give contrast to the small characters. Defaults to false.
+     * @param {RegExp} specialCharRegExp The regular expression which matches special characters. Defaults to many non-renderable ASCII characters (which characters are renderable depends on the browser and OS).
      */
     constructor(colorInSpecialChars?: boolean, inheritTextColor?: boolean, specialCharRegExp?: RegExp);
   }

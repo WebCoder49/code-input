@@ -19,7 +19,7 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
 
     /**
      * Create a go-to-line command plugin to pass into a template
-     * @param {boolean} useCtrlG Should Ctrl+G be overriden for go-to-line functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
+     * @param {boolean} useCtrlG Should Ctrl+G be overriden for go-to-line functionality? Either way, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the available keys and English text.
      */
     constructor(useCtrlG = true, instructionTranslations = {}) {

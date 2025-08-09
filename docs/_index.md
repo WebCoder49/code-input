@@ -47,7 +47,7 @@ console.log("Hello, World!");</textarea></code-input>
 
 ### Tutorials by Example
 
-#### Prism.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](frameworks/prism)) {#playground-preset-prism}
+#### Prism.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](modules-and-frameworks/prism)) {#playground-preset-prism}
 
 ```
 <!DOCTYPE html>
@@ -103,7 +103,7 @@ console.log("Hello, World!");</textarea></code-input>
 </html>
 ```
 
-#### highlight.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](frameworks/hljs)) {#playground-preset-hljs}
+#### highlight.js Code Editor (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](modules-and-frameworks/hljs)) {#playground-preset-hljs}
 
 ```
 <!DOCTYPE html>
@@ -160,7 +160,7 @@ console.log("Hello, World!");</textarea></code-input>
 </html>
 ```
 
-#### Editor with Custom Highlighting Algorithm (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](frameworks/custom)) {#playground-preset-custom}
+#### Editor with Custom Highlighting Algorithm (use **with vanilla HTML here** or [with ECMAScript Modules/Vue/Nuxt](modules-and-frameworks/custom)) {#playground-preset-custom}
 
 ```
 <!DOCTYPE html>
@@ -279,7 +279,7 @@ Widely Usable and Progressively Enhanced
 </dt>
 <dd>
 
-Works on any modern browser independent of whether a framework is used, with the standardised web component API. Integrates well into modular setups and web frameworks with TypeScript definitions, an ECMAScript Module build and tutorials. Falls back to a `textarea` element when there is insufficient JavaScript support. The fallback even works on Lynx.
+Works on any modern browser independent of whether a framework is used, with the standardised web component API. Integrates well into modular setups and web frameworks with TypeScript definitions, an ECMAScript Module build and [tutorials](modules-and-frameworks). Falls back to a `textarea` element when there is insufficient JavaScript support. The fallback even works on Lynx.
 
 </dd>
 </dl>
@@ -297,4 +297,4 @@ something like [CodeMirror](https://codemirror.net/),
 [Monaco](https://microsoft.github.io/monaco-editor/).
 
 ## Read Enough?
-**If you don't need web framework integration, get started with the commented tutorials by example on this page, for [Prism.js](#playground-preset-prism), [highlight.js](#playground-preset-hljs), or [another highlighter](#playground-preset-custom). If you're using a web framework, start [here](frameworks).**
+**If you don't need web framework integration, get started with the commented tutorials by example on this page, for [Prism.js](#playground-preset-prism), [highlight.js](#playground-preset-hljs), or [another highlighter](#playground-preset-custom). If you're using ECMAScript modules or a web framework, start [here](modules-and-frameworks).**

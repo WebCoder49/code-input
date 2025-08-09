@@ -212,7 +212,7 @@ In the generated file `HelloWorld.vue`, place the following line after the "gree
 ```
 
 And put its import in the `<script>` section:
-```html
+```javascript
 import CodeEditor from "@/components/CodeEditor.vue";
 ```
 

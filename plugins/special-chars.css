@@ -1,6 +1,14 @@
 /**
  * Render special characters and control characters as a symbol with their hex code.
  * Files: special-chars.js, special-chars.css
+ *
+ * WARNING:
+ *
+ * This plugin is currently unstable when used with other plugins,
+ * Unicode characters, or highlight.js. I hope to fix much of this by
+ * major version 3, and if you could help that would be amazing!
+ *
+ * See https://github.com/WebCoder49/code-input/issues?q=is%3Aissue%20state%3Aopen%20specialchars
  */
 
 /* Main styling */

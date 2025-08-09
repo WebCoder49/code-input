@@ -33,8 +33,8 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
 
     /**
      * Create a find-and-replace command plugin to pass into a template
-     * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
-     * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? If not, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
+     * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
+     * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the find-and-replace.js source code for the English text and available keys.
      */
     constructor(useCtrlF = true, useCtrlH = true, instructionTranslations = {}) {

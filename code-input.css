@@ -138,7 +138,7 @@ code-input:not(.code-input_registered) {
 
 code-input:not(.code-input_registered)::after {
   /* Display message to register */
-  content: "No-JavaScript fallback. For highlighting and plugins: as a user use a newer browser/enable JavaScript support; as a developer use codeInput.registerTemplate.";
+  content: "No highlighting. JavaScript support is disabled or insufficient, or codeInput.registerTemplate has not been called.";
   display: block;
   position: absolute;
   bottom: 0;
