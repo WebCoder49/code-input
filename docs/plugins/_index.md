@@ -4,6 +4,8 @@ title = "Adding Extra Functionality With code-input.js' Plugins"
 
 # Adding Extra Functionality With `code-input.js`' Plugins
 
+Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbacks plugin) to a code-input template, and cannot remove or add plugins after registering the template. This is hoped to be fixed in major version 3 of code-input.js, but is not regularly needed and can usually be worked around. [If you need it, let us know!](https://github.com/WebCoder49/code-input/issues/118)
+
 ## Learn by Example
 {{< playground >}}
 
