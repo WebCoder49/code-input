@@ -1,0 +1,3 @@
+License files in this directory are only for the documentation in the `docs` directory, and not for the `code-input` library itself (see its top-level LICENSE file). This is because licenses designed for code do not work well for text. This differentiation also simplifies usage of the tutorials by typically not requiring attribution of their code snippets. The licenses chosen are later versions of those used for the popular Mozilla Developer Network web platform documentation.
+
+Except where otherwise noted, content licensed [CC-BY-SA 4.0](LICENSE.CC-BY-SA-4.0), copyright its authors identified at the top of the page, and code snippets presented in tutorials dedicated to the public domain under [CC0-1.0](LICENSE.CC0-1.0).

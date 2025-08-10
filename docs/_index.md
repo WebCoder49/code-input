@@ -6,9 +6,11 @@ title = 'Flexible Syntax Highlighted Editable Textareas'
 
 Aiming to be [more <mark>flexible</mark>, <mark>lightweight</mark>,
 <mark>modular</mark>, <mark>progressively enhanced</mark> and
-<mark>standards-based</mark></a> than the alternatives](#features), we support
+<mark>standards-based</mark than the alternatives](#features), we support
 [HTML forms](interface/forms), the [`<textarea>` JavaScript interface](interface/js), more languages and
 more use cases.
+
+*code-input.js is free, libre, open source software under the MIT (AKA Expat) license.* **Download it [from the Git repository](https://github.com/WebCoder49/code-input/tree/v2.6.0), [in a ZIP archive](/release/code-input-js-v2.6.0.zip), [in a TAR.GZ archive](/release/code-input-js-v2.6.0.tar.gz), or from `@webcoder49/code-input` on the NPM registry ([Yarn](https://yarnpkg.com/package?name=@webcoder49/code-input), [NPM](https://npmjs.com/package/@webcoder49/code-input), etc.).**
 
 ## Get Started with a Demo
 
@@ -298,3 +300,9 @@ something like [CodeMirror](https://codemirror.net/),
 
 ## Read Enough?
 **If you don't need web framework integration, get started with the commented tutorials by example on this page, for [Prism.js](#playground-preset-prism), [highlight.js](#playground-preset-hljs), or [another highlighter](#playground-preset-custom). If you're using ECMAScript modules or a web framework, start [here](modules-and-frameworks).**
+
+## Contribute Bug Reports / Code / Docs {contributing}
+
+code-input.js is collaboratively developed by many people, which is what keeps it going strong. By version 2.6.0, many have reported bugs and suggestions, and 9 people have contributed code or documentation directly. If you have found a bug, would like to help with the code or documentation, or have additional suggestions, for plugins or core functionality, [please look at GitHub]() or [get in touch via email](mailto:code-input-js@webcoder49.dev)!
+
+*We're looking into mirroring code-input.js onto Codeberg as well as GitHub for more flexibility and freedom - if you have ideas for this please email!*

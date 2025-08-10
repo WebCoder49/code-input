@@ -9,3 +9,4 @@ title = 'Styling `code-input` elements with CSS'
 `code-input` elements can be styled like `textarea` elements in most cases; however, there are some exceptions:
 * The CSS variable `--padding` should be used rather than the property `padding` (e.g. `<code-input style="--padding: 10px;">...`)
 * Background colours set on `code-input` elements will not work with highlighters that set background colours themselves - use `(code-input's selector) pre[class*="language-"]` for Prism.js, `(code-input's selector) TODO` for highlight.js to target the highlighted element with higher specificity than the highlighter's theme.
+* For now, elements on top of `code-input` elements should have a CSS `z-index` at least 3 greater than the `code-input` element.

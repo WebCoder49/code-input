@@ -15,6 +15,8 @@ title = "Adding Extra Functionality With code-input.js' Plugins"
 <!DOCTYPE html>
 <html>
     <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
+
         <!--Prism+code-input-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
@@ -51,6 +53,7 @@ title = "Adding Extra Functionality With code-input.js' Plugins"
 <!DOCTYPE html>
 <html>
     <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
         <!--Prism+code-input-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
@@ -124,6 +127,7 @@ title = "Adding Extra Functionality With code-input.js' Plugins"
 <!DOCTYPE html>
 <html>
     <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
         <!--Prism+code-input-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
@@ -169,6 +173,7 @@ Hickory dickory dock.</code-input>
 <!DOCTYPE html>
 <html>
     <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
         <!--Prism+code-input-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
@@ -215,6 +220,7 @@ Hickory dickory dock.</code-input>
 <!DOCTYPE html>
 <html>
     <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
         <!--Prism+code-input-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
@@ -499,6 +505,7 @@ Hickory dickory dock.</code-input>
         <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.6/plugins/select-token-callbacks.min.js"></script>
     </head>
     <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
         
         <script>
             codeInput.registerTemplate("syntax-highlighted", new codeInput.templates.Prism(Prism, [
@@ -553,6 +560,7 @@ See https://github.com/WebCoder49/code-input/issues?q=is%3Aissue%20state%3Aopen%
 <!DOCTYPE html>
 <html>
     <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
         <!--Prism+code-input-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
@@ -598,6 +606,7 @@ See https://github.com/WebCoder49/code-input/issues?q=is%3Aissue%20state%3Aopen%
 <!DOCTYPE html>
 <html>
     <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
         <!--highlight.js+code-input-->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
@@ -629,6 +638,7 @@ See https://github.com/WebCoder49/code-input/issues?q=is%3Aissue%20state%3Aopen%
 <!DOCTYPE html>
 <html>
     <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
         <!--Prism+code-input-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
