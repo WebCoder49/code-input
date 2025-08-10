@@ -417,7 +417,7 @@ export namespace templates {
  * of `document.createElement("code-input")`. Attributes are only set when
  * the element's template has been registered, and before this are null.
  */
-export class CodeInput extends HTMLElement {
+export class CodeInput extends HTMLTextAreaElement { // Tries to implement textarea interface
   /**
    * When the code-input's template is registered, this contains its codeInput.Template object.
    */
