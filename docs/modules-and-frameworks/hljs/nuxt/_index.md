@@ -120,9 +120,9 @@ So that the necessary css is loaded for code-input, and an example theme is load
 
 > You might want to replace the second file with your own theme, but you need the first file.
 
-## 3. Initialize the textarea
+## 3. Initialize a code-input element
 
-Create a component with whatever name you want. Perhaps `app/components/CodeEditor.vue`. Paste the following into it:
+Create a component with whatever name you want. Perhaps `app/components/CodeEditor.vue`. Read the following code then paste it into the file:
 
 ```html
 <template>
@@ -138,13 +138,14 @@ Create a component with whatever name you want. Perhaps `app/components/CodeEdit
     :name="name"
     :value="value"
     :language="language"
-    @input="emit('input', elem.value)"
+    @input="value = elem.value; emit('input', elem.value)"
     @code-input_load="loaded"
   >
     <textarea
+      ref="fallback"
       :name="name"
       :value="value"
-      @input="emit('input', elem.value)"
+      @input="value = fallback.value; emit('input', fallback.value)"
       data-code-input-fallback
     ></textarea>
   </code-input>
@@ -246,3 +247,6 @@ npm run dev
 If all went well, you should see the following in the browser:
 
 ![An editable syntax-highlighted textarea added to the Nuxt starter page.](nuxt-demo-screenshot.png)
+
+## Please Note
+* Hot module replacement (the updating of a running app when files are changed) will not work completely correctly when the `CodeEditor` component is changed but will work when files that use it are changed. This is only important when running a development server.

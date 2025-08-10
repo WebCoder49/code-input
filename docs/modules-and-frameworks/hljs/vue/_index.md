@@ -101,9 +101,9 @@ vue({
 
 So that Vue knows that `code-input` is not a Vue component.
 
-## 3. Initialize the textarea
+## 3. Initialize a code-input element
 
-Create a component with whatever name you want. Perhaps `CodeEditor.vue`. Paste the following into it:
+Create a component with whatever name you want. Perhaps `CodeEditor.vue`. Read the following code then paste it into the file:
 ```html
 <template>
   <!--Attributes that make sense on a
@@ -118,13 +118,14 @@ Create a component with whatever name you want. Perhaps `CodeEditor.vue`. Paste 
     :name="name"
     :value="value"
     :language="language"
-    @input="emit('input', elem.value)"
+    @input="value = elem.value; emit('input', elem.value)"
     @code-input_load="loaded"
   >
     <textarea
+      ref="fallback"
       :name="name"
       :value="value"
-      @input="emit('input', elem.value)"
+      @input="value = fallback.value; emit('input', fallback.value)"
       data-code-input-fallback
     ></textarea>
   </code-input>
@@ -227,3 +228,6 @@ npm run dev
 If all went well, you should see the following in the browser:
 
 ![An editable syntax-highlighted textarea added to the Vue starter page.](vue-demo-screenshot.png)
+
+## Please Note
+* Hot module replacement (the updating of a running app when files are changed) will not work completely correctly when the `CodeEditor` component is changed but will work when files that use it are changed. This is only important when running a development server.
