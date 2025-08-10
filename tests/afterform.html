@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Form Submitted</title>
+    </head>
+    <body>
+        <h1>Form Submitted</h1>
+        <h2>GET parameters (as JSON):</h2>
+        <pre style="white-space: pre-wrap;"></pre>
+        <script>document.querySelector("pre").textContent = JSON.stringify(Object.fromEntries(new URLSearchParams(window.location.search)))</script>
+</html>
