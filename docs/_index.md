@@ -27,7 +27,7 @@ more use cases.
 
         <!--1. Import highlighter-->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30/themes/prism.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30/plugins/autoloader/prism-autoloader.min.js"></script>
         <!--2. Import code-input-js-->
         <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.6/code-input.min.js"></script>
@@ -64,7 +64,7 @@ console.log("Hello, World!");</textarea></code-input>
         <!--Guide: https://prismjs.com/#basic-usage-->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30/themes/prism.min.css">
         <!--You can also choose custom themes by changing "prism" above to something like "prism-dark" from https://prismjs.com/index.html-->
-        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30/plugins/autoloader/prism-autoloader.min.js"></script>
 
         <!--Import code-input-->
