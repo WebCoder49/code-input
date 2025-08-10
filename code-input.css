@@ -187,7 +187,7 @@ code-input .code-input_dialog-container {
   text-align: inherit;
 }
 code-input.code-input_pre-element-styled .code-input_dialog-container {
-  width: calc(100% + 2 * var(--padding, 16px) - 2px);
+  width: calc(100% + 2 * var(--padding, 16px));
 }
 
 [dir=rtl] code-input .code-input_dialog-container, code-input[dir=rtl] .code-input_dialog-container {

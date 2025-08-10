@@ -25,6 +25,6 @@ code-input .line-numbers .line-numbers-rows {
   top: var(--padding);
 }
 /* Things with padding when instructions are present */
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:focus):not(.code-input_mouse-focused) .line-numbers .line-numbers-rows {
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused) .line-numbers .line-numbers-rows {
   top: calc(var(--padding) + 3em);
 }
