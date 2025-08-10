@@ -202,20 +202,20 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
 
   display: block;
   position: absolute;
+  top: 0;
+  left: 0;
+
   background-color: black;
   color: white;
   padding: 2px;
-  padding-left: 10px;
   margin: 0;
   text-wrap: balance;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: calc(100% - 12px);
+
+  width: 100%;
+  box-sizing: border-box;
   max-height: 3em;
-}
-code-input:has(pre[dir=rtl]) .code-input_dialog-container .code-input_keyboard-navigation-instructions {
-  left: unset;
-  right: 0;
 }
 
 code-input:not(:has(textarea:not([data-code-input-fallback]):focus)) .code-input_dialog-container .code-input_keyboard-navigation-instructions,

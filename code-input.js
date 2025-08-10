@@ -1076,7 +1076,7 @@ var codeInput = {
 
         /**
          * Allows plugins to store data in the scope of a single element.
-         * Key - name of the plugin
+         * Key - name of the plugin, in camelCase
          * Value - object of data to be stored; different plugins may use this differently.
          */
         pluginData = {};

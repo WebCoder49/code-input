@@ -448,6 +448,12 @@ export class CodeInput extends HTMLTextAreaElement { // Tries to implement texta
    * @param {boolean} includeAriaDescriptionFirst Whether to include the aria-description of the code-input element before the keyboard navigation instructions for a screenreader. Keep this as true when the textarea is first focused.
    */
   setKeyboardNavInstructions(instructions: string, includeAriaDescriptionFirst: boolean): void
+  /**
+   * Allows plugins to store data in the scope of a single element.
+   * Key - name of the plugin, in camelCase
+   * Value - object of data to be stored; different plugins may use this differently.
+   */
+  pluginData: Object
 }
 
 /**
