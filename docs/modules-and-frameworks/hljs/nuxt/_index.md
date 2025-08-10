@@ -109,14 +109,7 @@ vue: {
     isCustomElement: (tag) => tag === "code-input",
   },
 },
-```
-
-Also add this:
-```javascript
-css: ['@webcoder49/code-input/code-input.css', 'highlight.js/styles/default.min.css'],
-```
-
-So that the necessary css is loaded for code-input, and an example theme is loaded. 
+``` 
 
 > You might want to replace the second file with your own theme, but you need the first file.
 
@@ -215,6 +208,11 @@ code-input {
 </style>
 
 <style>
+/* These are necessary styles to make code-input work */
+@import '@webcoder49/code-input/code-input.css';
+/* This is one possibility of styles to use for highlighting */
+@import 'highlight.js/styles/default.min.css';
+
 /* Notice that these styles aren't scoped */
 .hljs {
   background: #f1f1f1;  /* This is a style specific to highlighted code, so needs to use highlight.js' selector.
