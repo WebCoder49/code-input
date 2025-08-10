@@ -1,7 +1,7 @@
 {
   "name": "@webcoder49/code-input",
-  "version": "2.5.1",
-  "description": "Fully customisable, editable syntax-highlighted textareas.",
+  "version": "2.6.0",
+  "description": "An editable &lt;textarea&gt; that supports *any* syntax highlighting algorithm, for code or something else. Also, added plugins.",
   "browser": "code-input.js",
   "exports": {
     ".": {
@@ -77,8 +77,8 @@
     "./plugins/special-chars.min.css": "./plugins/special-chars.min.css"
   },
   "scripts": {
-    "test": "echo \"This is a front-end library, not a Node library. Please see the README for how to use.\" && exit 1",
-    "postinstall": "cd esm ; node generate.mjs ; cd .."
+    "test": "echo \"This is a front-end library, not a Node library. Please see https://code-input-js.org for how to use.\" && exit 1",
+    "prepack": "cd esm ; node generate.mjs ; cd .."
   },
   "repository": {
     "type": "git",
@@ -90,7 +90,9 @@
     "highlight",
     "textarea",
     "editable",
-    "web-components"
+    "web-components",
+    "code-editor",
+    "text-editor"
   ],
   "author": {
     "name": "Oliver Geer and contributors",
@@ -101,5 +103,5 @@
   "bugs": {
     "url": "https://github.com/WebCoder49/code-input/issues"
   },
-  "homepage": "https://github.com/WebCoder49/code-input#readme"
+  "homepage": "https://code-input-js.org/"
 }

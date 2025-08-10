@@ -8,7 +8,7 @@
  * Copyright 2021-2025 Oliver Geer and contributors
  * @license MIT
  *
- * **<https://github.com/WebCoder49/code-input>**
+ * **<https://code-input-js.org>**
  */
 "use strict";
 
