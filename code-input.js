@@ -630,6 +630,7 @@ var codeInput = {
                 let textareaAttributeNames = fallbackTextarea.getAttributeNames();
                 for(let i = 0; i < textareaAttributeNames.length; i++) {
                     const attr = textareaAttributeNames[i];
+                    if(attr == "data-code-input-fallback") continue;
 
                     if(!this.hasAttribute(attr)) {
                         this.setAttribute(attr, fallbackTextarea.getAttribute(attr));
