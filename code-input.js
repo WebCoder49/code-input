@@ -15,8 +15,8 @@
 
 var codeInput = {
     /**
-     * A list of attributes that will trigger the 
-     * `codeInput.CodeInput.attributeChangedCallback` 
+     * A list of attributes that will trigger the
+     * `codeInput.CodeInput.attributeChangedCallback`
      * when modified in a code-input element. This
      * does not include events, which are handled in
      * `codeInput.CodeInput.addEventListener` and
@@ -133,9 +133,7 @@ var codeInput = {
             for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
                 const elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
                 elem.templateObject = template;
-                elem.connectedCallback();
-                // Bind sets elem as first parameter of function 
-                // So innerHTML can be read
+                elem.setup();
             }
         }
 
@@ -146,9 +144,7 @@ var codeInput = {
                 for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
                     const elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
                     elem.templateObject = template;
-                    elem.connectedCallback();
-                    // Bind sets elem as first parameter of function
-                    // So innerHTML can be read
+                    elem.setup();
                 }
             }
         }
@@ -611,6 +607,8 @@ var codeInput = {
         setup() {
             if(this.textareaElement != null) return; // Already set up
 
+            this.classList.add("code-input_registered");
+
             this.mutationObserver = new MutationObserver(this.mutationObserverCallback.bind(this));
             this.mutationObserver.observe(this, {
                 attributes: true,
@@ -728,6 +726,8 @@ var codeInput = {
                 this.syncSize();
             });
             resizeObserver.observe(this);
+
+            this.classList.add("code-input_loaded");
         }
 
         /**
@@ -775,9 +775,10 @@ var codeInput = {
             // template property with the string value of the attribute
             this.templateObject = this.getTemplate();
             if (this.templateObject != undefined) {
+                // Template registered before loading
                 this.classList.add("code-input_registered");
-                this.setup();
-                this.classList.add("code-input_loaded");
+                // Children not yet present - wait until they are
+                window.addEventListener("DOMContentLoaded", this.setup.bind(this))
             } 
         }
 

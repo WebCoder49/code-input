@@ -80,6 +80,9 @@ console.log("Hello, World!");</textarea></code-input>
         <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.6/plugins/indent.min.js"></script>
 
         <!--Register code-input template-->
+        <!--This can be before the code-input element is created, in which case it will defer the registration of all code-input
+        elements until the page is loaded, or after it is created, in which case registration will occur immediately, but not inside
+        code-input elements.-->
         <script>
             codeInput.registerTemplate("syntax-highlighted",
                 new codeInput.templates.Prism(
@@ -137,6 +140,9 @@ console.log("Hello, World!");</textarea></code-input>
         <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.6/plugins/indent.min.js"></script>
 
         <!--Register code-input template-->
+        <!--This can be before the code-input element is created, in which case it will defer the registration of all code-input
+        elements until the page is loaded, or after it is created, in which case registration will occur immediately, but not inside
+        code-input elements.-->
         <script>
             codeInput.registerTemplate("syntax-highlighted",
                 new codeInput.templates.Hljs(
@@ -182,6 +188,9 @@ console.log("Hello, World!");</textarea></code-input>
         <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.6/plugins/indent.min.js"></script>
 
         <!--Register code-input template-->
+        <!--This can be before the code-input element is created, in which case it will defer the registration of all code-input
+        elements until the page is loaded, or after it is created, in which case registration will occur immediately, but not inside
+        code-input elements.-->
         <script>
             codeInput.registerTemplate("syntax-highlighted",
                 new codeInput.Template(
@@ -305,4 +314,4 @@ something like [CodeMirror](https://codemirror.net/),
 
 🎉 code-input.js is collaboratively developed by many people, which is what keeps it going strong. By version 2.6.0, many have reported bugs and suggestions, and [9 people (see them on GitHub)](https://github.com/WebCoder49/code-input/graphs/contributors) have contributed code or documentation directly. If you have found a bug, would like to help with the code or documentation, or have additional suggestions, for plugins or core functionality, [please look at GitHub](https://github.com/WebCoder49/code-input/tree/main/CONTRIBUTING.md) or [get in touch via email so I can add it for you](mailto:code-input-js@webcoder49.dev)!
 
-*We're looking into mirroring code-input.js onto Codeberg as well as GitHub for more flexibility and freedom - if you have ideas for this please get in touch!*
+*I'm looking into mirroring code-input.js onto Codeberg as well as GitHub for more flexibility and freedom - if you have ideas for this please get in touch!*
