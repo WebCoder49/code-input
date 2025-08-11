@@ -657,7 +657,10 @@ var codeInput = {
                 textarea.value = value;
             }
             textarea.innerHTML = this.innerHTML;
-            textarea.setAttribute("spellcheck", "false");
+            if(!this.hasAttribute("spellcheck")) {
+                // For backwards compatibility:
+                textarea.setAttribute("spellcheck", "false");
+            }
             
             // Disable focusing on the code-input element - only allow the textarea to be focusable
             textarea.setAttribute("tabindex", this.getAttribute("tabindex") || 0);
