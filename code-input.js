@@ -15,12 +15,14 @@
 
 var codeInput = {
     /**
-     * A list of attributes that will trigger the
+     * A list of attributes that will trigger functionality in the
      * `codeInput.CodeInput.attributeChangedCallback`
      * when modified in a code-input element. This
      * does not include events, which are handled in
      * `codeInput.CodeInput.addEventListener` and
      * `codeInput.CodeInput.removeEventListener`.
+     *
+     * This does not include those listed in `codeInput.textareaSyncAttributes` that only synchronise with the textarea element.
      */
     observedAttributes: [
         "value",
@@ -628,6 +630,7 @@ var codeInput = {
                 let textareaAttributeNames = fallbackTextarea.getAttributeNames();
                 for(let i = 0; i < textareaAttributeNames.length; i++) {
                     const attr = textareaAttributeNames[i];
+
                     if(!this.hasAttribute(attr)) {
                         this.setAttribute(attr, fallbackTextarea.getAttribute(attr));
                     }
@@ -790,6 +793,11 @@ var codeInput = {
                 /* Check regular attributes */
                 for(let i = 0; i < codeInput.observedAttributes.length; i++) {
                     if (mutation.attributeName == codeInput.observedAttributes[i]) {
+                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
+                    }
+                }
+                for(let i = 0; i < codeInput.textareaSyncAttributes.length; i++) {
+                    if (mutation.attributeName == codeInput.textareaSyncAttributes[i]) {
                         return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                     }
                 }
@@ -963,117 +971,167 @@ var codeInput = {
             }
         }
 
+        //-------------------------------------------
+        //----------- Textarea interface ------------
+        //-------------------------------------------
+        // See https://developer.mozilla.org/en-US/docs/Web/API/HTMLTextAreaElement
+        // Attributes defined at codeInput.textareaSyncAttributes
+
         /**
-         * Get the text contents of the code-input element.
+         * Get the JavaScript property from the internal textarea
+         * element, given its name and a defaultValue to return
+         * when no textarea is present (undefined to make it throw
+         * an error instead).
+         *
+         * For internal use - treat the code-input element as a
+         * textarea for the standard properties (e.g. document.
+         * querySelector("code-input").defaultValue).
          */
-        get value() {
+        getTextareaProperty(name, defaultValue=undefined) {
             if(this.textareaElement) {
-                // Get from editable textarea element
-                return this.textareaElement.value;
+                return this.textareaElement[name];
             } else {
                 // Unregistered
                 const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
                 if(fallbackTextarea) {
-                    return fallbackTextarea.value;
+                    return fallbackTextarea[name];
                 } else {
-                    return this.innerHTML;
+                    if(defaultValue === undefined) {
+                        throw new Error("Cannot get "+name+" of an unregistered code-input element without a data-code-input-fallback textarea.");
+                    }
+                    return defaultValue;
                 }
             }
         }
         /**
-         * Set the text contents of the code-input element.
-         * @param {string} val - New text contents
+         * Set the JavaScript property of the internal textarea
+         * element, given its name and value.
+         *
+         * If there is no registered or fallback textarea and errorIfCannot is
+         * false, return false (otherwise true); If there is no registered or
+         * fallback textarea and errorIfCannot is true, throw an error.
+         *
+         * For internal use - treat the code-input element as a
+         * textarea for the standard properties (e.g. document.
+         * querySelector("code-input").defaultValue).
          */
+        setTextareaProperty(name, value, errorIfCannot=true) {
+            if(this.textareaElement) {
+                this.textareaElement[name] = value;
+            } else {
+                // Unregistered
+                const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+                if(fallbackTextarea) {
+                    fallbackTextarea[name] = value;
+                } else {
+                    if(!errorIfCannot) return false;
+                    throw new Error("Cannot set "+name+" of an unregistered code-input element without a data-code-input-fallback textarea.");
+                }
+            }
+            return true;
+        }
+
+        get autocomplete() { return this.getAttribute("autocomplete"); }
+        set autocomplete(val) { return this.setAttribute("autocomplete", val); }
+        get cols() { return this.getTextareaProperty("cols", Number(this.getAttribute("cols"))); }
+        set cols(val) { this.setAttribute("cols", val); }
+        get defaultValue() { return this.initialValue; }
+        set defaultValue(val) { this.initialValue = val; }
+        get textContent() { return this.initialValue; }
+        set textContent(val) { this.initialValue = val; }
+        get dirName() { return this.getAttribute("dirName") || ""; }
+        set dirName(val) { this.setAttribute("dirname", val); }
+        get disabled() { return this.hasAttribute("disabled"); }
+        set disabled(val) {
+            if(val) {
+                this.setAttribute("disabled", true);
+            } else {
+                this.removeAttribute("disabled");
+            }
+        }
+        get form() { return this.getTextareaProperty("form"); }
+        get labels() { return this.getTextareaProperty("labels"); }
+        get maxLength() {
+            const result = Number(this.getAttribute("maxlength"));
+            if(isNaN(result)) {
+                return -1;
+            }
+            return result;
+        }
+        set maxLength(val) {
+            if(val == -1) {
+                this.removeAttribute("maxlength");
+            } else {
+                this.setAttribute("maxlength", val);
+            }
+        }
+        get minLength() {
+            const result = Number(this.getAttribute("minlength"));
+            if(isNaN(result)) {
+                return -1;
+            }
+            return result;
+        }
+        set minLength(val) {
+            if(val == -1) {
+                this.removeAttribute("minlength");
+            } else {
+                this.setAttribute("minlength", val);
+            }
+        }
+        get name() { return this.getAttribute("name") || ""; }
+        set name(val) { this.setAttribute("name", val); }
+        get placeholder() { return this.getAttribute("placeholder") || ""; }
+        set placeholder(val) { this.setAttribute("placeholder", val); }
+        get readOnly() { return this.hasAttribute("readonly"); }
+        set readOnly(val) {
+            if(val) {
+                this.setAttribute("readonly", true);
+            } else {
+                this.removeAttribute("readonly");
+            }
+        }
+        get required() { return this.hasAttribute("readonly"); }
+        set required(val) {
+            if(val) {
+                this.setAttribute("readonly", true);
+            } else {
+                this.removeAttribute("readonly");
+            }
+        }
+        get rows() { return this.getTextareaProperty("rows", Number(this.getAttribute("rows"))); }
+        set rows(val) { this.setAttribute("rows", val); }
+        get selectionDirection() { return this.getTextareaProperty("selectionDirection"); }
+        set selectionDirection(val) { this.setTextareaProperty("selectionDirection", val); }
+        get selectionEnd() { return this.getTextareaProperty("selectionEnd"); }
+        set selectionEnd(val) { this.setTextareaProperty("selectionEnd", val); }
+        get selectionStart() { return this.getTextareaProperty("selectionStart"); }
+        set selectionStart(val) { this.setTextareaProperty("selectionStart", val); }
+        get textLength() { return this.value.length; }
+        get type() { return "textarea"; } // Mimics textarea
+        get validationMessage() { return this.getTextareaProperty("validationMessage"); }
+        get validity() { return this.getTextareaProperty("validationMessage"); }
+        get value() { return this.getTextareaProperty("value", this.getAttribute("value") || this.innerHTML); }
         set value(val) {
-            if (val === null || val === undefined) {
-                val = "";
-            }
-            if(this.textareaElement) {
-                // Save in editable textarea element
-                this.textareaElement.value = val;
-                // Trigger highlight
-                this.scheduleHighlight();
+            val = val || "";
+            if(this.setTextareaProperty("value", val, false)) {
+                if(this.textareaElement) this.scheduleHighlight();
             } else {
-                // Unregistered
-                const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
-                if(fallbackTextarea) {
-                    fallbackTextarea.value = val;
-                } else {
-                    this.innerHTML = val;
-                }
+                this.innerHTML = val;
             }
         }
+        get willValidate() { return this.getTextareaProperty("willValidate", this.disabled || this.readOnly); }
+        get wrap() { return this.getAttribute("wrap") || ""; }
+        set wrap(val) { this.setAttribute("wrap", val); }
 
-        // Synchronise blur and focus
-        focus(options={}) {
-            return this.textareaElement.focus(options);
-        }
-        blur(options={}) {
-            return this.textareaElement.blur(options);
-        }
 
-        /**
-         * Get the placeholder of the code-input element that appears
-         * when no code has been entered.
-         */
-        get placeholder() {
-            return this.getAttribute("placeholder");
-        }
-        /**
-         * Set the placeholder of the code-input element that appears
-         * when no code has been entered.
-         * @param {string} val - New placeholder
-         */
-        set placeholder(val) {
-            return this.setAttribute("placeholder", val);
-        }
-
-        /**
-         * Returns a  ValidityState object that represents the validity states of an element.
-         * 
-         * See `HTMLTextAreaElement.validity`
-         */
-        get validity() {
-            return this.textareaElement.validity;
-        }
-
-        /**
-         * Returns the error message that would be displayed if the user submits the form, or an empty string if no error message. 
-         * It also triggers the standard error message, such as "this is a required field". The result is that the user sees validation 
-         * messages without actually submitting.
-         * 
-         * See `HTMLTextAreaElement.validationMessage`
-         */
-        get validationMessage() {
-            return this.textareaElement.validationMessage;
-        }
-
-        /**
-         * Sets a custom error message that is displayed when a form is submitted.
-         * 
-         * See `HTMLTextAreaElement.setCustomValidity`
-         * @param error Sets a custom error message that is displayed when a form is submitted.
-         */
-        setCustomValidity(error) {
-            return this.textareaElement.setCustomValidity(error);
-        }
-
-        /**
-         * Returns whether a form will validate when it is submitted, 
-         * without having to submit it.
-         * 
-         * See `HTMLTextAreaElement.checkValidity`
-         */
-        checkValidity() {
-            return this.textareaElement.checkValidity();
-        }
-
-        /**
-         * See `HTMLTextAreaElement.reportValidity`
-         */
-        reportValidity() {
-            return this.textareaElement.reportValidity();
-        }
+        blur(options={}) { return this.textareaElement.blur(options); }
+        checkValidity() { return this.textareaElement.checkValidity(); }
+        focus(options={}) { return this.textareaElement.focus(options); }
+        reportValidity() { return this.textareaElement.reportValidity(); }
+        setCustomValidity(error) { this.textareaElement.setCustomValidity(error); }
+        setRangeText(replacement, selectionStart=this.selectionStart, selectionEnd=this.selectionEnd, selectMode="preserve") { this.getTextareaProperty("setRangeText")(replacement, selectionStart, selectionEnd, selectMode); }
+        setSelectionRange(selectionStart, selectionEnd, selectionDirection="none") { this.getTextareaProperty("setSelectionRange")(selectionStart, selectionEnd, selectionDirection); }
 
         /**
          * Allows plugins to store data in the scope of a single element.
