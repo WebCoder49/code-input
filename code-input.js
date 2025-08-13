@@ -732,7 +732,7 @@ var codeInput = {
                 // The only element that could be resized is this code-input element.
                 this.syncSize();
             });
-            resizeObserver.observe(this);
+            resizeObserver.observe(this.textareaElement);
 
             this.classList.add("code-input_loaded");
         }
@@ -1128,14 +1128,40 @@ var codeInput = {
         get wrap() { return this.getAttribute("wrap") || ""; }
         set wrap(val) { this.setAttribute("wrap", val); }
 
+        /**
+         * Get the JavaScript method from the internal textarea
+         * element, throwing an error when no textarea is present.
+         * The method is bound to the textarea as `this`.
+         *
+         * For internal use - treat the code-input element as a
+         * textarea for the standard functions (e.g. document.
+         * querySelector("code-input").focus()).
+         */
+        getTextareaMethod(name) {
+            if(this.textareaElement) {
+                return this.textareaElement[name].bind(this.textareaElement);
+            } else {
+                // Unregistered
+                const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+                if(fallbackTextarea) {
+                    return fallbackTextarea[name].bind(fallbackTextarea);
+                } else {
+                    throw new Error("Cannot call "+name+" on an unregistered code-input element without a data-code-input-fallback textarea.");
+                }
+            }
+        }
 
-        blur(options={}) { return this.textareaElement.blur(options); }
-        checkValidity() { return this.textareaElement.checkValidity(); }
-        focus(options={}) { return this.textareaElement.focus(options); }
-        reportValidity() { return this.textareaElement.reportValidity(); }
-        setCustomValidity(error) { this.textareaElement.setCustomValidity(error); }
-        setRangeText(replacement, selectionStart=this.selectionStart, selectionEnd=this.selectionEnd, selectMode="preserve") { this.getTextareaProperty("setRangeText")(replacement, selectionStart, selectionEnd, selectMode); }
-        setSelectionRange(selectionStart, selectionEnd, selectionDirection="none") { this.getTextareaProperty("setSelectionRange")(selectionStart, selectionEnd, selectionDirection); }
+        blur(options={}) { this.getTextareaMethod("blur")(options); }
+        checkValidity() { return this.getTextareaMethod("checkValidity")(); }
+        focus(options={}) { this.getTextareaMethod("focus")(options); }
+        reportValidity() { return this.getTextareaMethod("reportValidity")(); }
+        setCustomValidity(error) { this.getTextareaMethod("setCustomValidity")(error); }
+        setRangeText(replacement, selectionStart=this.selectionStart, selectionEnd=this.selectionEnd, selectMode="preserve") {
+            this.getTextareaMethod("setRangeText")(replacement, selectionStart, selectionEnd, selectMode);
+            // Reflect that value updated
+            if(this.textareaElement) this.scheduleHighlight();
+        }
+        setSelectionRange(selectionStart, selectionEnd, selectionDirection="none") { this.getTextareaMethod("setSelectionRange")(selectionStart, selectionEnd, selectionDirection); }
 
         /**
          * Allows plugins to store data in the scope of a single element.
