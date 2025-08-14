@@ -165,11 +165,6 @@ code-input:not(.code-input_registered)::after {
   height: 2em;
 }
 
-code-input:not(.code-input_registered) textarea {
-  /* Don't overlap with message */
-  min-height: calc(100% - var(--padding, 16px) * 2 - 2em);
-}
-
 code-input:not(.code-input_loaded) pre, code-input:not(.code-input_loaded) textarea:not([data-code-input-fallback]) {
   opacity: 0;
 }
@@ -246,9 +241,15 @@ code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(tex
 
 /* No JavaScript fallback - styles to override all previous */
 
+code-input:has(textarea[data-code-input-fallback]) {
+  padding: 0!important; /* Padding now in the textarea */
+  box-sizing: content-box;
+}
 code-input textarea[data-code-input-fallback] {
   overflow: auto;
   background-color: inherit;
   color: inherit;
-  height: max-content;
+
+  /* Don't overlap with message */
+  min-height: calc(100% - var(--padding, 16px) * 2 - 2em);
 }
