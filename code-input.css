@@ -217,6 +217,8 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
   background-color: black;
   color: white;
   padding: 2px;
+  padding-left: var(--padding, 16px);
+  padding-right: var(--padding, 16px);
   margin: 0;
   text-wrap: balance;
   overflow: hidden;
