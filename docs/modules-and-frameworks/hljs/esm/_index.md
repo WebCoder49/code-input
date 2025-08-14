@@ -60,7 +60,7 @@ Note the `.mjs` extensions on code-input.js import paths. They are needed, and a
 The import paths above assume a package manager and `package.json` export paths are being used.
 
 In some setups, this will not work. You have two options (replace `node_modules/@webcoder49/code-input` with the relative path to the library, if it is different):
-* use relative paths instead: replace `"@webcoder49/code-input/path/to/file.mjs"` with `"node_modules/@webcoder49/code-input/esm/path/to/file.mjs"` (note the `esm` directory). Also replace `"@webcoder49/code-input/path/to/file.mjs"` with `"node_modules/@highlightjs/cdn-assets/es/path/to/file.mjs"` (note the `es` directory) *If you're not using an import map yet, I recommend this option because import maps are not supported on as many browsers.*
+* use relative paths instead: assuming you are importing from your project's root directory and have installed the libraries with a typical JS package manager, replace `"@webcoder49/code-input/path/to/file.mjs"` with `"./node_modules/@webcoder49/code-input/esm/path/to/file.mjs"` (note the `esm` directory). Also replace `"@webcoder49/code-input/path/to/file.mjs"` with `"./node_modules/@highlightjs/cdn-assets/es/path/to/file.mjs"` (note the `es` directory) *If you're not using an import map yet, I recommend this option because import maps are not supported on as many browsers.*
 * If you're using an [import map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#importing_modules_using_import_maps), add the following to it:
   ```json
   {
