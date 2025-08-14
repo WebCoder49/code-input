@@ -671,9 +671,23 @@ var codeInput = {
             // Accessibility - detect when mouse focus to remove focus outline + keyboard navigation guidance that could irritate users.
             this.addEventListener("mousedown", () => {
                 this.classList.add("code-input_mouse-focused");
+                // Wait for CSS to update padding
+                window.setTimeout(() => {
+                    this.syncSize();
+                }, 0);
             });
             textarea.addEventListener("blur", () => {
                 this.classList.remove("code-input_mouse-focused");
+                // Wait for CSS to update padding
+                window.setTimeout(() => {
+                    this.syncSize();
+                }, 0);
+            });
+            textarea.addEventListener("focus", () => {
+                // Wait for CSS to update padding
+                window.setTimeout(() => {
+                    this.syncSize();
+                }, 0);
             });
 
             this.innerHTML = ""; // Clear Content
