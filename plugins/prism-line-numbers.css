@@ -14,6 +14,11 @@ code-input.line-numbers textarea, code-input.line-numbers.code-input_pre-element
 code-input.line-numbers, .line-numbers code-input {
   grid-template-columns: calc(100% - max(0em, calc(3.8em - var(--padding, 16px))));
 }
+/* Despite the above, keep dialog container full width */
+code-input.line-numbers .code-input_dialog-container, .line-numbers code-input .code-input_dialog-container {
+  width: calc(100% + max(0em, calc(3.8em - var(--padding, 16px))));
+}
+
 
 /* Override Prism styles so there's no display:inline, relatively-positioned code element which breaks offsetTop, used in FindAndReplace, in Firefox. */
 code-input pre[class*=language-].line-numbers>code {
