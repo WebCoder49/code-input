@@ -620,9 +620,26 @@ var codeInput = {
             this.classList.add("code-input_registered"); // Remove register message
             if (this.templateObject.preElementStyled) this.classList.add("code-input_pre-element-styled");
 
-            this.pluginEvt("beforeElementsAdded");
-
             const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+            let fallbackFocused = false;
+            let fallbackSelectionStart = undefined;
+            let fallbackSelectionEnd = undefined;
+            let fallbackSelectionDirection = undefined;
+            let fallbackScrollLeft = undefined;
+            let fallbackScrollTop = undefined;
+            if(fallbackTextarea) {
+                // Move some attributes to new textarea so typing during
+                // slow load not interrupted
+                if(fallbackTextarea === document.activeElement) { // Thanks to https://stackoverflow.com/a/36430896
+                    fallbackFocused = true;
+                }
+                fallbackSelectionStart = fallbackTextarea.selectionStart;
+                fallbackSelectionEnd = fallbackTextarea.selectionEnd;
+                fallbackSelectionDirection = fallbackTextarea.selectionDirection;
+                fallbackScrollLeft = fallbackTextarea.scrollLeft;
+                fallbackScrollTop = fallbackTextarea.scrollTop;
+            }
+
             let value;
             if(fallbackTextarea) {
                 // Fallback textarea exists
@@ -638,10 +655,14 @@ var codeInput = {
                 }
                 // Sync value
                 value = fallbackTextarea.value;
+                // Backwards compatibility with plugins
+                this.innerHTML = this.escapeHtml(value);
             } else {
                 value = this.unescapeHtml(this.innerHTML);
             }
             value = value || this.getAttribute("value") || "";
+
+            this.pluginEvt("beforeElementsAdded");
 
             // First-time attribute sync
             const lang = this.getAttribute("language") || this.getAttribute("lang");
@@ -740,6 +761,18 @@ var codeInput = {
             this.dispatchEvent(new CustomEvent("code-input_load"));
 
             this.value = value;
+
+            // Update with fallback textarea's state so can keep editing
+            // if loaded slowly
+            if(fallbackSelectionStart !== undefined) {
+                console.log("sel", fallbackSelectionStart, fallbackSelectionEnd, fallbackSelectionDirection, "scr", fallbackScrollTop, fallbackScrollLeft, "foc", fallbackFocused);
+                textarea.setSelectionRange(fallbackSelectionStart, fallbackSelectionEnd, fallbackSelectionDirection);
+                textarea.scrollTo(fallbackScrollTop, fallbackScrollLeft);
+            }
+            if(fallbackFocused) {
+                textarea.focus();
+            }
+
             this.animateFrame();
 
             const resizeObserver = new ResizeObserver((elements) => {
