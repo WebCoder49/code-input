@@ -863,7 +863,9 @@ var codeInput = {
         }
 
         disconnectedCallback() {
-            this.mutationObserver.disconnect();
+            if (this.mutationObserver) {
+                this.mutationObserver.disconnect();
+            }
         }
 
         /**
