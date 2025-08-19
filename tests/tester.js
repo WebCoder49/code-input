@@ -217,6 +217,14 @@ console.log("I've got another line!", 2 < 3, "should be true.");`);
 console.log("I've got another line!", 2 &lt; 3, "should be true.");
 `); // Extra newline so line numbers visible if enabled
 
+    const programmaticCodeInput = document.createElement("code-input");
+    document.body.append(programmaticCodeInput);
+    programmaticCodeInput.focus();
+    document.execCommand("insertText", false, "Hello, World!");
+    assertEqual("Core", "Programmatically-created element JS-accessible value", programmaticCodeInput.value, "Hello, World!");
+    await waitAsync(50);
+    assertEqual("Core", "Programmatically-created element rendered value", programmaticCodeInput.preElement.textContent, "Hello, World!\n");
+
     // Event Listener Tests
     // Function type listeners
     let numTimesInputCalled = 0;

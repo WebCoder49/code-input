@@ -831,8 +831,12 @@ var codeInput = {
             if (this.templateObject != undefined) {
                 // Template registered before loading
                 this.classList.add("code-input_registered");
-                // Children not yet present - wait until they are
-                window.addEventListener("DOMContentLoaded", this.setup.bind(this))
+                if (document.readyState === 'loading') {
+                    // Children not yet present - wait until they are
+                    window.addEventListener("DOMContentLoaded", this.setup.bind(this))
+                } else {
+                    this.setup();
+                }
             } 
         }
 
@@ -859,7 +863,9 @@ var codeInput = {
         }
 
         disconnectedCallback() {
-            this.mutationObserver.disconnect();
+            if (this.mutationObserver) {
+                this.mutationObserver.disconnect();
+            }
         }
 
         /**
