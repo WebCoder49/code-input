@@ -11,7 +11,7 @@ Aiming to be [more <mark>flexible</mark>, <mark>lightweight</mark>,
 [HTML forms](interface/forms), the [`<textarea>` JavaScript interface](interface/js), more languages and
 more use cases.
 
-*code-input.js is free, libre, open source software under the MIT (AKA Expat) license.* **Download it [from the Git repository](https://github.com/WebCoder49/code-input/tree/v2.6.5), [in a ZIP archive](/release/code-input-js-v2.6.5.zip), [in a TAR.GZ archive](/release/code-input-js-v2.6.5.tar.gz), or from `@webcoder49/code-input` on the NPM registry ([Yarn](https://yarnpkg.com/package?name=@webcoder49/code-input), [NPM](https://npmjs.com/package/@webcoder49/code-input), etc.).**
+*code-input.js is free, libre, open source software under the MIT (AKA Expat) license.* **Download it [from the Git repository](https://github.com/WebCoder49/code-input/tree/v2.6.6), [in a ZIP archive](/release/code-input-js-v2.6.6.zip), [in a TAR.GZ archive](/release/code-input-js-v2.6.6.tar.gz), or from `@webcoder49/code-input` on the NPM registry ([Yarn](https://yarnpkg.com/package?name=@webcoder49/code-input), [NPM](https://npmjs.com/package/@webcoder49/code-input), etc.).**
 
 ## Get Started with a Demo
 
@@ -313,6 +313,6 @@ something like [CodeMirror](https://codemirror.net/),
 
 ## Contribute Bug Reports / Code / Docs {#contributing}
 
-🎉 code-input.js is collaboratively developed by many people, which is what keeps it going strong. By version 2.6.0, many have reported bugs and suggestions, and [10 people (see them on GitHub)](https://github.com/WebCoder49/code-input/graphs/contributors) have contributed code or documentation directly. If you have found a bug, would like to help with the code or documentation, or have additional suggestions, for plugins or core functionality, [please look at GitHub](https://github.com/WebCoder49/code-input/tree/main/CONTRIBUTING.md) or [get in touch via email so I can add it for you](mailto:code-input-js@webcoder49.dev) / [this address for security issues](mailto:security@webcoder49.dev) ([address owner, encryption and privacy info](https://oliver.geer.im/#email))!
+🎉 code-input.js is collaboratively developed by many people, which is what keeps it going strong. Many have reported bugs and suggestions, and [10 people (see them on GitHub)](https://github.com/WebCoder49/code-input/graphs/contributors) have contributed code or documentation directly. If you have found a bug, would like to help with the code or documentation, or have additional suggestions, for plugins or core functionality, [please look at GitHub](https://github.com/WebCoder49/code-input/tree/main/CONTRIBUTING.md) or [get in touch via email so I can add it for you](mailto:code-input-js@webcoder49.dev) / [this address for security issues](mailto:security@webcoder49.dev) ([address owner, encryption and privacy info](https://oliver.geer.im/#email))!
 
 *I'm looking into mirroring code-input.js onto Codeberg as well as GitHub for more flexibility and freedom - if you have ideas for this please get in touch!*
