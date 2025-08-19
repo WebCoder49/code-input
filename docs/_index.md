@@ -5,8 +5,9 @@ title = 'Flexible Syntax Highlighted Editable Textareas'
 # An <mark>editable</mark> `<textarea>` that supports *any* <mark>syntax highlighting</mark> algorithm, for code or something else. [Also, added plugins.](plugins)
 
 Aiming to be [more <mark>flexible</mark>, <mark>lightweight</mark>,
-<mark>modular</mark>, <mark>progressively enhanced</mark> and
-<mark>standards-based</mark than the alternatives](#features), we support
+<mark>modular</mark>,
+<mark>accessible</mark>, <mark>progressively enhanced</mark> and
+<mark>standards-based</mark> than the alternatives](#features), we support
 [HTML forms](interface/forms), the [`<textarea>` JavaScript interface](interface/js), more languages and
 more use cases.
 
@@ -312,6 +313,6 @@ something like [CodeMirror](https://codemirror.net/),
 
 ## Contribute Bug Reports / Code / Docs {#contributing}
 
-🎉 code-input.js is collaboratively developed by many people, which is what keeps it going strong. By version 2.6.0, many have reported bugs and suggestions, and [9 people (see them on GitHub)](https://github.com/WebCoder49/code-input/graphs/contributors) have contributed code or documentation directly. If you have found a bug, would like to help with the code or documentation, or have additional suggestions, for plugins or core functionality, [please look at GitHub](https://github.com/WebCoder49/code-input/tree/main/CONTRIBUTING.md) or [get in touch via email so I can add it for you](mailto:code-input-js@webcoder49.dev) / [this address for security issues](mailto:security@webcoder49.dev) ([address owner, encryption and privacy info](https://oliver.geer.im/#email))!
+🎉 code-input.js is collaboratively developed by many people, which is what keeps it going strong. By version 2.6.0, many have reported bugs and suggestions, and [10 people (see them on GitHub)](https://github.com/WebCoder49/code-input/graphs/contributors) have contributed code or documentation directly. If you have found a bug, would like to help with the code or documentation, or have additional suggestions, for plugins or core functionality, [please look at GitHub](https://github.com/WebCoder49/code-input/tree/main/CONTRIBUTING.md) or [get in touch via email so I can add it for you](mailto:code-input-js@webcoder49.dev) / [this address for security issues](mailto:security@webcoder49.dev) ([address owner, encryption and privacy info](https://oliver.geer.im/#email))!
 
 *I'm looking into mirroring code-input.js onto Codeberg as well as GitHub for more flexibility and freedom - if you have ideas for this please get in touch!*
