@@ -20,7 +20,13 @@ code-input {
   top: 0;
   left: 0;
 
-  color: black;
+  /* CSS variables rather than inline styles used for values synced from JavaScript
+   to keep low precedence and thus overridability
+   The variables may change and are for internal use. */
+  --code-input_highlight-text-color: black; /* Set by JS to be base text color of pre code element */
+  color: var(--code-input_highlight-text-color, black);
+  --code-input_default-caret-color: black; /* Set by JS to be same as color property */
+  caret-color: var(--code-input_default-caret-color, black); /* Set by JS to be equal to color property */
   background-color: white;
 
   /* Normal inline styles */
@@ -36,7 +42,6 @@ code-input {
   text-align: start;
   line-height: 1.5; /* Inherited to child elements */
   tab-size: 2;
-  caret-color: darkgrey;
   white-space: pre;
   padding: 0!important; /* Use --padding to set the code-input element's padding */
   display: grid;
@@ -118,12 +123,13 @@ code-input pre {
 /* Make textarea almost completely transparent, except for caret and placeholder */
 
 code-input textarea:not([data-code-input-fallback]) {
-  color: transparent;
   background: transparent;
-  caret-color: inherit!important; /* Or choose your favourite color */
+  color: transparent;
+  caret-color: inherit; /* Or choose your favourite color */
 }
-code-input textarea::placeholder {
-  color: lightgrey;
+code-input textarea:not([data-code-input-fallback]):placeholder-shown {
+  /* Show placeholder */
+  color: inherit;
 }
 
 /* Can be scrolled */
@@ -252,6 +258,8 @@ code-input:not(.code-input_loaded) pre, code-input:not(.code-input_loaded) texta
 code-input:has(textarea[data-code-input-fallback]) {
   padding: 0!important; /* Padding now in the textarea */
   box-sizing: content-box;
+
+  caret-color: revert; /* JS not setting the colour since no highlighting */
 }
 code-input textarea[data-code-input-fallback] {
   overflow: auto;

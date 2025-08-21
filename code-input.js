@@ -506,6 +506,18 @@ var codeInput = {
                 this.needsHighlight = false;
             }
 
+            // Synchronise colors
+            if(this.textareaElement) {
+                let color;
+                if(this.templateObject.preElementStyled) {
+                    color = getComputedStyle(this.preElement).color;
+                } else {
+                    color = getComputedStyle(this.codeElement).color;
+                }
+                this.style.setProperty("--code-input_highlight-text-color", color);
+            }
+            this.style.setProperty("--code-input_default-caret-color", getComputedStyle(this).color);
+
             window.requestAnimationFrame(this.animateFrame.bind(this));
         }
 
@@ -536,11 +548,9 @@ var codeInput = {
         syncSize() {
             // Synchronise the size of the pre/code and textarea elements
             if(this.templateObject.preElementStyled) {
-                this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
                 this.textareaElement.style.height = getComputedStyle(this.preElement).height;
                 this.textareaElement.style.width = getComputedStyle(this.preElement).width;
             } else {
-                this.style.backgroundColor = getComputedStyle(this.codeElement).backgroundColor;
                 this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
                 this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
             }
@@ -765,7 +775,6 @@ var codeInput = {
             // Update with fallback textarea's state so can keep editing
             // if loaded slowly
             if(fallbackSelectionStart !== undefined) {
-                console.log("sel", fallbackSelectionStart, fallbackSelectionEnd, fallbackSelectionDirection, "scr", fallbackScrollTop, fallbackScrollLeft, "foc", fallbackFocused);
                 textarea.setSelectionRange(fallbackSelectionStart, fallbackSelectionEnd, fallbackSelectionDirection);
                 textarea.scrollTo(fallbackScrollTop, fallbackScrollLeft);
             }
