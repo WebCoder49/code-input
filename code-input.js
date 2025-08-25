@@ -506,18 +506,6 @@ var codeInput = {
                 this.needsHighlight = false;
             }
 
-            // Synchronise colors
-            if(this.textareaElement) {
-                let color;
-                if(this.templateObject.preElementStyled) {
-                    color = getComputedStyle(this.preElement).color;
-                } else {
-                    color = getComputedStyle(this.codeElement).color;
-                }
-                this.style.setProperty("--code-input_highlight-text-color", color);
-            }
-            this.style.setProperty("--code-input_default-caret-color", getComputedStyle(this).color);
-
             window.requestAnimationFrame(this.animateFrame.bind(this));
         }
 
@@ -749,7 +737,6 @@ var codeInput = {
             this.codeElement = code;
             pre.append(code);
             this.append(pre);
-
             if (this.templateObject.isCode) {
                 if (lang != undefined && lang != "") {
                     code.classList.add("language-" + lang.toLowerCase());
@@ -788,7 +775,41 @@ var codeInput = {
                 // The only element that could be resized is this code-input element.
                 this.syncSize();
             });
-            resizeObserver.observe(this.textareaElement);
+            resizeObserver.observe(this);
+
+            // Synchronise colors
+            if(this.templateObject.preElementStyled) {
+                this.preElement.addEventListener("transitionend", (evt) => {
+                    if(evt.propertyName == "color") {
+                        // So previous variable value does not affect new value:
+                        // (required to deal with color being no longer specified in CSS)
+                        this.style.removeProperty("--code-input_highlight-text-color");
+
+                        console.log("pre", evt, getComputedStyle(this.preElement).color);
+                        this.style.setProperty("--code-input_highlight-text-color", getComputedStyle(this.preElement).color);
+                    }
+                });
+            } else {
+                this.codeElement.addEventListener("transitionend", (evt) => {
+                    if(evt.propertyName == "color") {
+                        // So previous variable value does not affect new value:
+                        // (required to deal with color being no longer specified in CSS)
+                        this.style.removeProperty("--code-input_highlight-text-color");
+
+                        console.log("code", evt, getComputedStyle(this.codeElement).color);
+                        this.style.setProperty("--code-input_highlight-text-color", getComputedStyle(this.codeElement).color);
+                    }
+                });
+            }
+            // Not on this element so CSS transition property which must be set for
+            // listener to work does not conflict with library-user transition property
+            this.dialogContainerElement.addEventListener("transitionend", (evt) => {
+                if(evt.propertyName == "color") {
+                    console.log("ci", evt, getComputedStyle(this).color);
+
+                    this.style.setProperty("--code-input_default-caret-color", getComputedStyle(this).color);
+                }
+            });
 
             this.classList.add("code-input_loaded");
         }

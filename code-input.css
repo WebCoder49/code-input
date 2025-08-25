@@ -24,7 +24,7 @@ code-input {
    to keep low precedence and thus overridability
    The variables may change and are for internal use. */
   --code-input_highlight-text-color: black; /* Set by JS to be base text color of pre code element */
-  color: var(--code-input_highlight-text-color, black);
+  color: var(--code-input_highlight-text-color, black); /* Variable separate so can be overridden by CSS */
   --code-input_default-caret-color: black; /* Set by JS to be same as color property */
   caret-color: var(--code-input_default-caret-color, black); /* Set by JS to be equal to color property */
   background-color: white;
@@ -73,6 +73,12 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
 code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
   height: max-content;
   width: max-content;
+
+
+  /* Allow colour change to reflect properly;
+  transition-behavior: allow-discrete could be used but this is better supported and
+  works with the color property. */
+  transition: color 0.001s;
 }
 
 code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-element-styled pre code {
@@ -169,6 +175,13 @@ code-input .code-input_dialog-container {
 
   /* Dialog boxes' text is based on text-direction */
   text-align: inherit;
+
+
+  /* Allow colour change to reflect properly;
+  transition-behavior: allow-discrete could be used but this is better supported and
+  works with the color property. */
+  color: inherit;
+  transition: color 0.001s;
 }
 
 [dir=rtl] code-input .code-input_dialog-container, code-input[dir=rtl] .code-input_dialog-container {
