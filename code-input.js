@@ -716,7 +716,8 @@ var codeInput = {
             // Synchronise attributes to textarea
             for(let i = 0; i < this.attributes.length; i++) {
                 let attribute = this.attributes[i].name;
-                if (codeInput.textareaSyncAttributes.includes(attribute) || attribute.substring(0, 5) == "aria-") {
+                if (codeInput.textareaSyncAttributes.includes(attribute) 
+                    || attribute.substring(0, 5) == "aria-") {
                     textarea.setAttribute(attribute, this.getAttribute(attribute));
                 }
             }
@@ -726,6 +727,7 @@ var codeInput = {
             // Save element internally
             this.textareaElement = textarea;
             this.append(textarea);
+            this.setupTextareaSyncEvents(this.textareaElement);
 
             // Create result element
             let code = document.createElement("code");
@@ -837,7 +839,24 @@ var codeInput = {
                 } else {
                     this.setup();
                 }
-            } 
+            }
+
+            // Graceful degradation: make events still work without template being
+            // registered
+            if (document.readyState === 'loading') {
+                // Children not yet present - wait until they are
+                window.addEventListener("DOMContentLoaded", () => {
+                    const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+                    if(fallbackTextarea) {
+                        this.setupTextareaSyncEvents(fallbackTextarea);
+                    }
+                })
+            } else {
+                const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+                if(fallbackTextarea) {
+                    this.setupTextareaSyncEvents(fallbackTextarea);
+                }
+            }
         }
 
         mutationObserverCallback(mutationList, observer) {
@@ -855,7 +874,7 @@ var codeInput = {
                     if (mutation.attributeName == codeInput.textareaSyncAttributes[i]) {
                         return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                     }
-                }
+		}
                 if (mutation.attributeName.substring(0, 5) == "aria-") {
                     return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                 }
@@ -949,12 +968,31 @@ var codeInput = {
 
         }
 
-        /* ------------------------------------
-        *  -----------Overrides----------------
-        *  ------------------------------------
-        * Override/Implement ordinary HTML textarea functionality so that the <code-input>
-        * element acts just like a <textarea>. */
+        //-------------------------------------------
+        //----------- Textarea interface ------------
+        //-------------------------------------------
+        // See https://developer.mozilla.org/en-US/docs/Web/API/HTMLTextAreaElement
+        // Attributes defined at codeInput.textareaSyncAttributes
+        // Event listener added to pass to code-input element
 
+        /**
+         * Capture all events from textareaSyncEvents triggered on the given textarea
+         * element and pass them to the code-input element.
+         */
+        setupTextareaSyncEvents(textarea) {
+            for(let i = 0; i < codeInput.textareaSyncEvents.length; i++) {
+                const evtName = codeInput.textareaSyncEvents[i];
+                textarea.addEventListener(evtName, (evt) => {
+                    if(!evt.bubbles) { // Don't duplicate the callback
+                        this.dispatchEvent(new evt.constructor(evt.type, evt)); // Thanks to
+                    }
+                });
+            }
+        }
+
+        // addEventListener and removeEventListener overrides are still used
+        // for backwards compatibility - unlike the solution above, they keep
+        // the event's isTrusted as true.
         /**
          * @override
          */
@@ -975,12 +1013,22 @@ var codeInput = {
 
                 if (options === undefined) {
                     if(this.textareaElement == null) {
+                        // Unregistered
+                        const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+                        if(fallbackTextarea) {
+                            fallbackTextarea.addEventListener(type, boundCallback);
+                        }
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback); });
                     } else {
                         this.textareaElement.addEventListener(type, boundCallback);
                     }
                 } else {
                     if(this.textareaElement == null) {
+                        // Unregistered
+                        const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+                        if(fallbackTextarea) {
+                            fallbackTextarea.addEventListener(type, boundCallback, options);
+                        }
                         this.addEventListener("code-input_load", () => { this.textareaElement.addEventListener(type, boundCallback, options); });
                     } else {
                         this.textareaElement.addEventListener(type, boundCallback, options);
@@ -1000,19 +1048,29 @@ var codeInput = {
          * @override
          */
         removeEventListener(type, listener, options = undefined) {
-            // Save a copy of the callback where `this` refers to the code-input element 
+            // Save a copy of the callback where `this` refers to the code-input element
             let boundCallback = this.boundEventCallbacks[listener];
 
             if (codeInput.textareaSyncEvents.includes(type)) {
                 // Synchronise with textarea
                 if (options === undefined) {
                     if(this.textareaElement == null) {
+                        // Unregistered
+                        const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+                        if(fallbackTextarea) {
+                            fallbackTextarea.removeEventListener(type, boundCallback);
+                        }
                         this.addEventListener("code-input_load", () => { this.textareaElement.removeEventListener(type, boundCallback); });
                     } else {
                         this.textareaElement.removeEventListener(type, boundCallback);
                     }
                 } else {
                     if(this.textareaElement == null) {
+                        // Unregistered
+                        const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
+                        if(fallbackTextarea) {
+                            fallbackTextarea.removeEventListener(type, boundCallback, options);
+                        }
                         this.addEventListener("code-input_load", () => { this.textareaElement.removeEventListener(type, boundCallback, options); });
                     } else {
                         this.textareaElement.removeEventListener(type, boundCallback, options);
@@ -1027,12 +1085,6 @@ var codeInput = {
                 }
             }
         }
-
-        //-------------------------------------------
-        //----------- Textarea interface ------------
-        //-------------------------------------------
-        // See https://developer.mozilla.org/en-US/docs/Web/API/HTMLTextAreaElement
-        // Attributes defined at codeInput.textareaSyncAttributes
 
         /**
          * Get the JavaScript property from the internal textarea
