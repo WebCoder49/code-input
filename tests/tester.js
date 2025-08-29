@@ -226,20 +226,51 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     assertEqual("Core", "Programmatically-created element rendered value", programmaticCodeInput.preElement.textContent, "Hello, World!\n");
 
     // Event Listener Tests
-    // Function type listeners
-    let numTimesInputCalled = 0;
-    let numTimesChangeCalled = 0;
 
-    let inputListener = (evt) => {
-        if(!evt.isTrusted) { // To prevent duplicate calling due to allowInputEvents hack
-            numTimesInputCalled++;
+    let numTimesInputCalled = {"listener": 0, "idl": 0, "content": 0};
+    let numTimesChangeCalled = {"listener": 0, "idl": 0, "content": 0};
+    let numTimesFocusCalled = {"listener": 0, "idl": 0, "content": 0};
+    let numTimesBlurCalled = {"listener": 0, "idl": 0, "content": 0};
+
+    let inputListener = (type, evt) => {
+        if(!evt.isTrusted) { // To prevent duplicate calling due to allowInputEvents hack, used just in this test
+            numTimesInputCalled[type]++;
         }
     };
-    codeInputElement.addEventListener("input", inputListener);
-    let changeListener = () => {
-        numTimesChangeCalled++;
+    let changeListener = (type) => {
+        numTimesChangeCalled[type]++;
     };
-    codeInputElement.addEventListener("change", changeListener);
+    let focusListener = (type, evt) => {
+        numTimesFocusCalled[type]++;
+    };
+    let blurListener = (type, evt) => {
+        numTimesBlurCalled[type]++;
+    };
+
+    codeInputElement.addEventListener("input", inputListener.bind(null, "listener"));
+    codeInputElement.addEventListener("change", changeListener.bind(null, "listener"));
+    codeInputElement.addEventListener("focus", focusListener.bind(null, "listener"));
+    codeInputElement.addEventListener("blur", blurListener.bind(null, "listener"));
+
+    codeInputElement.oninput = inputListener.bind(null, "idl");
+    codeInputElement.onchange = changeListener.bind(null, "idl");
+    codeInputElement.onfocus = focusListener.bind(null, "idl");
+    codeInputElement.onblur = blurListener.bind(null, "idl");
+
+    // Make listeners be called - first time
+    textarea.focus(); // Focus textarea
+    addText(textarea, " // Hi");
+    textarea.blur(); // Unfocus textarea - calls change event
+    textarea.focus();
+
+    window.content_listener_oninput = inputListener.bind(null, "content");
+    codeInputElement.setAttribute("oninput", "content_listener_oninput(event)");
+    window.content_listener_onchange = changeListener.bind(null, "content");
+    codeInputElement.setAttribute("onchange", "content_listener_onchange(event)");
+    window.content_listener_onfocus = focusListener.bind(null, "content");
+    codeInputElement.setAttribute("onfocus", "content_listener_onfocus(event)");
+    window.content_listener_onblur = blurListener.bind(null, "content");
+    codeInputElement.setAttribute("onblur", "content_listener_onblur(event)");
 
     let inputDeletedListenerCalled = false;
     let deletedListener = () => {
@@ -248,15 +279,33 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     codeInputElement.addEventListener("input", deletedListener);
     codeInputElement.removeEventListener("input", deletedListener);
 
-    // Make listeners be called
-    textarea.focus(); // Focus textarea
+    // Make listeners be called - second time
     addText(textarea, " // Hi");
     textarea.blur(); // Unfocus textarea - calls change event
     textarea.focus();
 
-    assertEqual("Core", "Function Event Listeners: Input Called Right Number of Times", numTimesInputCalled, 6);
-    assertEqual("Core", "Function Event Listeners: Change Called Right Number of Times", numTimesChangeCalled, 1);
-    testAssertion("Core", "Function Event Listeners: Input Removed Listener Not Called", !inputDeletedListenerCalled, "(code-input element).removeEventListener did not work.");
+    // Function type listeners
+    // Never overriden
+    assertEqual("Core", "addEventListener: Input Called Right Number of Times", numTimesInputCalled["listener"], 12);
+    assertEqual("Core", "addEventListener: Change Called Right Number of Times", numTimesChangeCalled["listener"], 2);
+    assertEqual("Core", "addEventListener: Focus Called Right Number of Times", numTimesFocusCalled["listener"], 3);
+    assertEqual("Core", "addEventListener: Blur Called Right Number of Times", numTimesBlurCalled["listener"], 2);
+
+    // IDL attribute (JavaScript property) type listeners
+    // Overriden by content attributes before second set of interaction
+    assertEqual("Core", "IDL attribute (JavaScript .oninput) event handler: Input Called Right Number of Times then Overriden by Content Attr", numTimesInputCalled["idl"], 6);
+    assertEqual("Core", "IDL attribute (JavaScript .onchange) event handler: Change Called Right Number of Times then Overriden by Content Attr", numTimesChangeCalled["idl"], 1);
+    assertEqual("Core", "IDL attribute (JavaScript .onfocus) event handler: Focus Called Right Number of Times then Overriden by Content Attr", numTimesFocusCalled["idl"], 2);
+    assertEqual("Core", "IDL attribute (JavaScript .onblur) event handler: Blur Called Right Number of Times then Overriden by Content Attr", numTimesBlurCalled["idl"], 1);
+
+    // Content attribute (HTML attribute) type listeners
+    // Only registered before second set of interaction
+    assertEqual("Core", "Content attribute (HTML oninput=\"...\") event handler: Input Called Right Number of Times", numTimesInputCalled["content"], 6);
+    assertEqual("Core", "Content attribute (HTML onchange=\"...\") event handler: Change Called Right Number of Times", numTimesChangeCalled["content"], 1);
+    assertEqual("Core", "Content attribute (HTML onfocus=\"...\") event handler: Focus Called Right Number of Times", numTimesFocusCalled["content"], 1);
+    assertEqual("Core", "Content attribute (HTML onblur=\"...\") event handler: Blur Called Right Number of Times", numTimesBlurCalled["content"], 1);
+
+    testAssertion("Core", "addEventListener, removeEventListener: Input Removed Listener Not Called", !inputDeletedListenerCalled, "(code-input element).removeEventListener did not work.");
     
     codeInputElement.removeEventListener("input", inputListener);
     codeInputElement.removeEventListener("change", changeListener);
