@@ -22,10 +22,11 @@ code-input {
 
   /* CSS variables rather than inline styles used for values synced from JavaScript
    to keep low precedence and thus overridability
-   The variables may change and are for internal use. */
-  --code-input_highlight-text-color: black; /* Set by JS to be base text color of pre code element */
-  color: var(--code-input_highlight-text-color, black); /* Variable separate so can be overridden by CSS */
-  --code-input_default-caret-color: black; /* Set by JS to be same as color property */
+   The variable names may change and are for internal use. */
+  /* --code-input_highlight-text-color: Set by JS to be base text color of pre code element */
+  --code-input_no-override-color: inherit; /* Set by JS for very short time to get whether color has been overriden */
+  color: var(--code-input_no-override-color, inherit);
+  /* --code-input_default-caret-color: Set by JS to be same as color property */
   caret-color: var(--code-input_default-caret-color, black); /* Set by JS to be equal to color property */
   background-color: white;
 
@@ -135,7 +136,7 @@ code-input textarea:not([data-code-input-fallback]) {
 }
 code-input textarea:not([data-code-input-fallback]):placeholder-shown {
   /* Show placeholder */
-  color: inherit;
+  color: var(--code-input_highlight-text-color, inherit);
 }
 
 /* Can be scrolled */
@@ -176,10 +177,8 @@ code-input .code-input_dialog-container {
   /* Dialog boxes' text is based on text-direction */
   text-align: inherit;
 
-
   /* Allow colour change to reflect properly;
-  transition-behavior: allow-discrete could be used but this is better supported and
-  works with the color property. */
+   * transition-behavior: allow-discrete could be used but this is * better supported and works with the color property. */
   color: inherit;
   transition: color 0.001s;
 }
@@ -254,7 +253,7 @@ code-input:not(.code-input_loaded)::after {
   border-top: 1px solid currentColor;
   outline-top: 0;
   background-color: inherit;
-  color: inherit;
+  color: var(--code-input_highlight-text-color, inherit);
 
   margin: 0;
   padding: 0;
@@ -277,7 +276,7 @@ code-input:has(textarea[data-code-input-fallback]) {
 code-input textarea[data-code-input-fallback] {
   overflow: auto;
   background-color: inherit;
-  color: inherit;
+  color: var(--code-input_highlight-text-color, inherit);
 
   /* Don't overlap with message */
   min-height: calc(100% - var(--padding-top, 16px) - 2em - var(--padding-bottom, 16px));

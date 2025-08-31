@@ -530,19 +530,66 @@ var codeInput = {
             this.pluginEvt("afterHighlight");
         }
 
+        getStyledHighlightingElement() {
+            if(this.templateObject.preElementStyled) {
+                return this.preElement;
+            } else {
+                return this.codeElement;
+            }
+        }
+
         /**
          * Set the size of the textarea element to the size of the pre/code element.
          */
         syncSize() {
             // Synchronise the size of the pre/code and textarea elements
-            if(this.templateObject.preElementStyled) {
-                this.textareaElement.style.height = getComputedStyle(this.preElement).height;
-                this.textareaElement.style.width = getComputedStyle(this.preElement).width;
-            } else {
-                this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
-                this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
+            this.textareaElement.style.height = getComputedStyle(this.getStyledHighlightingElement()).height;
+            this.textareaElement.style.width = getComputedStyle(this.getStyledHighlightingElement()).width;
+        }
+
+        /**
+         * If the color attribute has been defined on the
+         * code-input element by external code, return true.
+         * Otherwise, make the aspects the color affects
+         * (placeholder and caret colour) be the base colour
+         * of the highlighted text, for best contrast, and
+         * return false.
+         */
+        isColorOverridenSyncIfNot() {
+            this.style.setProperty("--code-input_no-override-color", "rgb(0, 0, 0)");
+            if(getComputedStyle(this).color == "rgb(0, 0, 0)") {
+                // May not be overriden
+                this.style.setProperty("--code-input_no-override-color", "rgb(255, 255, 255)");
+                if(getComputedStyle(this).color == "rgb(255, 255, 255)") {
+                    // Definitely not overriden
+                    this.style.removeProperty("--code-input_no-override-color");
+
+                    this.style.setProperty("--code-input_highlight-text-color", getComputedStyle(this.getStyledHighlightingElement()).color);
+                    this.style.setProperty("--code-input_default-caret-color", getComputedStyle(this.getStyledHighlightingElement()).color);
+                    return false;
+                }
+            }
+            this.style.removeProperty("--code-input_no-override-color");
+
+            return true;
+        }
+
+        /**
+         * Update the aspects the color affects
+         * (placeholder and caret colour) to the correct
+         * colour: either that defined on the code-input
+         * element, or if none is defined externally the
+         * base colour of the highlighted text.
+         */
+        syncColorCompletely() {
+            // color of code-input element
+            if(this.isColorOverridenSyncIfNot()) {
+                // color overriden
+                this.style.removeProperty("--code-input_highlight-text-color");
+                this.style.setProperty("--code-input_default-caret-color", getComputedStyle(this).color);
             }
         }
+
 
         /**
          * Show some instructions to the user only if they are using keyboard navigation - for example, a prompt on how to navigate with the keyboard if Tab is repurposed.
@@ -778,38 +825,23 @@ var codeInput = {
             resizeObserver.observe(this);
 
             // Synchronise colors
-            if(this.templateObject.preElementStyled) {
-                this.preElement.addEventListener("transitionend", (evt) => {
-                    if(evt.propertyName == "color") {
-                        // So previous variable value does not affect new value:
-                        // (required to deal with color being no longer specified in CSS)
-                        this.style.removeProperty("--code-input_highlight-text-color");
-
-                        console.log("pre", evt, getComputedStyle(this.preElement).color);
-                        this.style.setProperty("--code-input_highlight-text-color", getComputedStyle(this.preElement).color);
-                    }
-                });
-            } else {
-                this.codeElement.addEventListener("transitionend", (evt) => {
-                    if(evt.propertyName == "color") {
-                        // So previous variable value does not affect new value:
-                        // (required to deal with color being no longer specified in CSS)
-                        this.style.removeProperty("--code-input_highlight-text-color");
-
-                        console.log("code", evt, getComputedStyle(this.codeElement).color);
-                        this.style.setProperty("--code-input_highlight-text-color", getComputedStyle(this.codeElement).color);
-                    }
-                });
-            }
-            // Not on this element so CSS transition property which must be set for
-            // listener to work does not conflict with library-user transition property
-            this.dialogContainerElement.addEventListener("transitionend", (evt) => {
+            const preColorChangeCallback = (evt) => {
                 if(evt.propertyName == "color") {
-                    console.log("ci", evt, getComputedStyle(this).color);
-
-                    this.style.setProperty("--code-input_default-caret-color", getComputedStyle(this).color);
+                    this.isColorOverridenSyncIfNot();
                 }
-            });
+            };
+            this.preElement.addEventListener("transitionend", preColorChangeCallback);
+            this.preElement.addEventListener("-webkit-transitionend", preColorChangeCallback);
+            const thisColorChangeCallback = (evt) => {
+                if(evt.propertyName == "color") {
+                    this.syncColorCompletely();
+                }
+            };
+            // Not on this element so CSS transition property which must be set for
+            this.dialogContainerElement.addEventListener("transitionend", thisColorChangeCallback);
+            this.dialogContainerElement.addEventListener("-webkit-transitionend", thisColorChangeCallback);
+
+            this.syncColorCompletely();
 
             this.classList.add("code-input_loaded");
         }
