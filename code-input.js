@@ -556,6 +556,8 @@ var codeInput = {
          * return false.
          */
         isColorOverridenSyncIfNot() {
+            const oldTransition = this.style.transition;
+            this.style.transition = "unset";
             this.style.setProperty("--code-input_no-override-color", "rgb(0, 0, 0)");
             if(getComputedStyle(this).color == "rgb(0, 0, 0)") {
                 // May not be overriden
@@ -563,13 +565,17 @@ var codeInput = {
                 if(getComputedStyle(this).color == "rgb(255, 255, 255)") {
                     // Definitely not overriden
                     this.style.removeProperty("--code-input_no-override-color");
+                    this.style.transition = oldTransition;
 
-                    this.style.setProperty("--code-input_highlight-text-color", getComputedStyle(this.getStyledHighlightingElement()).color);
-                    this.style.setProperty("--code-input_default-caret-color", getComputedStyle(this.getStyledHighlightingElement()).color);
+                    const highlightedTextColor = getComputedStyle(this.getStyledHighlightingElement()).color;
+
+                    this.style.setProperty("--code-input_highlight-text-color", highlightedTextColor);
+                    this.style.setProperty("--code-input_default-caret-color", highlightedTextColor);
                     return false;
                 }
             }
             this.style.removeProperty("--code-input_no-override-color");
+            this.style.transition = oldTransition;
 
             return true;
         }
@@ -836,10 +842,19 @@ var codeInput = {
                 if(evt.propertyName == "color") {
                     this.syncColorCompletely();
                 }
+                if(evt.target == this.dialogContainerElement) {
+                    evt.stopPropagation();
+                    // Prevent bubbling because code-input
+                    // transitionend is separate
+                }
             };
-            // Not on this element so CSS transition property which must be set for
+            // Not on this element so CSS transition property does not override publicly-visible one
             this.dialogContainerElement.addEventListener("transitionend", thisColorChangeCallback);
             this.dialogContainerElement.addEventListener("-webkit-transitionend", thisColorChangeCallback);
+
+            // For when this code-input element has an externally-defined, different-duration transition
+            this.addEventListener("transitionend", thisColorChangeCallback);
+            this.addEventListener("-webkit-transitionend", thisColorChangeCallback);
 
             this.syncColorCompletely();
 

@@ -24,10 +24,10 @@ code-input {
    to keep low precedence and thus overridability
    The variable names may change and are for internal use. */
   /* --code-input_highlight-text-color: Set by JS to be base text color of pre code element */
-  --code-input_no-override-color: inherit; /* Set by JS for very short time to get whether color has been overriden */
-  color: var(--code-input_no-override-color, inherit);
+  --code-input_no-override-color: revert; /* Set by JS for very short time to get whether color has been overriden */
+  color: var(--code-input_no-override-color, revert);
   /* --code-input_default-caret-color: Set by JS to be same as color property */
-  caret-color: var(--code-input_default-caret-color, black); /* Set by JS to be equal to color property */
+  caret-color: var(--code-input_default-caret-color, black); /* Set by JS to be equal to color property - currentColor won't work because it's lazily evaluated so gives transparent for the textarea */
   background-color: white;
 
   /* Normal inline styles */
