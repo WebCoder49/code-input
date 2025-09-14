@@ -60,8 +60,8 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
 
         let textarea = codeInput.textareaElement;
         textarea.addEventListener('focus', (event) => { if(this.escTabToChangeFocus) codeInput.setKeyboardNavInstructions(this.instructions.tabForIndentation, true); })
-        textarea.addEventListener('keydown', (event) => { this.checkTab(codeInput, event); this.checkEnter(codeInput, event); this.checkBackspace(codeInput, event); });
-        textarea.addEventListener('beforeinput', (event) => { this.checkCloseBracket(codeInput, event); });
+        textarea.addEventListener('keydown', (event) => { this.checkTab(codeInput, event); this.checkBackspace(codeInput, event);  });
+        textarea.addEventListener('beforeinput', (event) => { this.checkEnter(codeInput, event); this.checkCloseBracket(codeInput, event); });
 
         // Get the width of the indentation in pixels
         let testIndentationWidthPre = document.createElement("pre");
@@ -205,7 +205,7 @@ codeInput.plugins.Indent = class extends codeInput.Plugin {
     /* Deal with new lines retaining indentation */
     checkEnter(codeInput, event) {
         if(codeInput.pluginData.indent.automatedKeypresses) return;
-        if(event.key != "Enter") {
+        if(event.inputType != "insertLineBreak" && event.data != "\n") {
             return;
         }
         event.preventDefault(); // Stop normal \n only
