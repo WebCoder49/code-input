@@ -18,6 +18,8 @@ To keep this community productive and enjoyable, please [don't break our code of
 
 ---
 # Ways you could contribute:
+If you don't want to use GitHub, for all of these you can alternatively [get in touch via email so the maintainer can add your contribution for you](mailto:code-input-js@webcoder49.dev).
+
 ## 1. I've found a bug but don't know how / don't have time to fix it.
 If you think you've found a bug, please [submit an issue](https://github.com/WebCoder49/code-input/issues) with screenshots, how you found the bug, and copies of the console's logs if an error is in them. Please also mention the template and plugins you used (your `codeInput.registerTemplate(...)` snippet). We'd be more than happy to help you fix it. A demo using [CodePen](https://codepen.io/) would be incredibly useful.
 
