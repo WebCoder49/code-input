@@ -767,7 +767,6 @@ var codeInput = {
             // Update with fallback textarea's state so can keep editing
             // if loaded slowly
             if(fallbackSelectionStart !== undefined) {
-                console.log("sel", fallbackSelectionStart, fallbackSelectionEnd, fallbackSelectionDirection, "scr", fallbackScrollTop, fallbackScrollLeft, "foc", fallbackFocused);
                 textarea.setSelectionRange(fallbackSelectionStart, fallbackSelectionEnd, fallbackSelectionDirection);
                 textarea.scrollTo(fallbackScrollTop, fallbackScrollLeft);
             }
