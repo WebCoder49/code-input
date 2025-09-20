@@ -50,7 +50,7 @@ code-input {
   grid-template-rows: 100%;
 }
 
-code-input * {
+code-input :not(.code-input_dialog-container *) {
   box-sizing: content-box; /* Make height, width work consistently no matter the box-sizing of ancestors; dialogs can be styled as wanted so are excluded. */
 }
 
