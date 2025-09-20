@@ -152,6 +152,8 @@ var codeInput = {
         }
     },
 
+    stylesheetI: 0, // Increments to give different classes to each code-input element so they can have custom styles synchronised internally without affecting the inline style
+
     /**
      * Please see `codeInput.templates.prism` or `codeInput.templates.hljs`.
      * Templates are used in `<code-input>` elements and once registered with
@@ -446,6 +448,16 @@ var codeInput = {
         dialogContainerElement = null;
 
         /**
+         * Like style attribute, but with a specificity of 1
+         * element, 1 class. Present so styles can be set on only
+         * this element while giving other code freedom of use of
+         * the style attribute.
+         *
+         * For internal use only.
+         */
+        internalStyle = null;
+
+        /**
         * Form-Associated Custom Element Callbacks
         * https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-face-example
         */
@@ -559,23 +571,23 @@ var codeInput = {
             const oldTransition = this.style.transition;
             this.style.transition = "unset";
             window.requestAnimationFrame(() => {
-                this.style.setProperty("--code-input_no-override-color", "rgb(0, 0, 0)");
+                this.internalStyle.setProperty("--code-input_no-override-color", "rgb(0, 0, 0)");
                 if(getComputedStyle(this).color == "rgb(0, 0, 0)") {
                     // May not be overriden
-                    this.style.setProperty("--code-input_no-override-color", "rgb(255, 255, 255)");
+                    this.internalStyle.setProperty("--code-input_no-override-color", "rgb(255, 255, 255)");
                     if(getComputedStyle(this).color == "rgb(255, 255, 255)") {
                         // Definitely not overriden
-                        this.style.removeProperty("--code-input_no-override-color");
+                        this.internalStyle.removeProperty("--code-input_no-override-color");
                         this.style.transition = oldTransition;
 
                         const highlightedTextColor = getComputedStyle(this.getStyledHighlightingElement()).color;
 
-                        this.style.setProperty("--code-input_highlight-text-color", highlightedTextColor);
-                        this.style.setProperty("--code-input_default-caret-color", highlightedTextColor);
+                        this.internalStyle.setProperty("--code-input_highlight-text-color", highlightedTextColor);
+                        this.internalStyle.setProperty("--code-input_default-caret-color", highlightedTextColor);
                         return false;
                     }
                 }
-                this.style.removeProperty("--code-input_no-override-color");
+                this.internalStyle.removeProperty("--code-input_no-override-color");
                 this.style.transition = oldTransition;
             });
 
@@ -593,8 +605,8 @@ var codeInput = {
             // color of code-input element
             if(this.isColorOverridenSyncIfNot()) {
                 // color overriden
-                this.style.removeProperty("--code-input_highlight-text-color");
-                this.style.setProperty("--code-input_default-caret-color", getComputedStyle(this).color);
+                this.internalStyle.removeProperty("--code-input_highlight-text-color");
+                this.internalStyle.setProperty("--code-input_default-caret-color", getComputedStyle(this).color);
             }
         }
 
@@ -832,6 +844,15 @@ var codeInput = {
             });
             resizeObserver.observe(this);
 
+
+            // Add internal style as non-externally-overridable alternative to style attribute for e.g. syncing color
+            this.classList.add("code-input_styles_" + codeInput.stylesheetI);
+            const stylesheet = document.createElement("style");
+            stylesheet.innerHTML = "code-input.code-input_styles_" + codeInput.stylesheetI + " {}";
+            this.appendChild(stylesheet);
+            this.internalStyle = stylesheet.sheet.cssRules[0].style;
+            codeInput.stylesheetI++;
+
             // Synchronise colors
             const preColorChangeCallback = (evt) => {
                 if(evt.propertyName == "color") {
@@ -993,7 +1014,9 @@ var codeInput = {
                             code.classList.add("language-" + newValue);
                         }
 
-                        if (mainTextarea.placeholder == oldValue) mainTextarea.placeholder = newValue;
+                        if (mainTextarea.placeholder == oldValue || oldValue == null && mainTextarea.placeholder == "") {
+                            mainTextarea.placeholder = newValue;
+                        }
 
                         this.scheduleHighlight();
 

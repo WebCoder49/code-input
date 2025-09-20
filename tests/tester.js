@@ -326,6 +326,34 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
 // A third line with &lt;html&gt; tags
 `); // Extra newline so line numbers visible if enabled.
 
+    // Delete all code
+    textarea.selectionStart = 0;
+    textarea.selectionEnd = textarea.value.length;
+    backspace(textarea);
+    codeInputElement.setAttribute("language", "JavaScript"); // for placeholder
+
+    await waitAsync(100); // Wait for rendered value to update
+    testAssertion("Core", "Light theme Caret/Placeholder Color Correct", confirm("Are the caret and placeholder near-black? (OK=Yes)"), "user-judged");
+
+    if(isHLJS) {
+        document.getElementById("theme-stylesheet").href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/dark.min.css";
+    } else {
+        document.getElementById("theme-stylesheet").href = "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css";
+    }
+    await waitAsync(200); // Wait for colours to update
+    testAssertion("Core", "Dark theme Caret/Placeholder Color Correct", confirm("Are the caret and placeholder near-white? (OK=Yes)"), "user-judged");
+
+    codeInputElement.style.color = "red";
+    await waitAsync(200); // Wait for colours to update
+    testAssertion("Core", "Overriden color Caret/Placeholder Color Correct", confirm("Are the caret and placeholder (for Firefox) or just caret (for Chromium/WebKit, for consistency with textareas) red? (OK=Yes)"), "user-judged");
+
+    codeInputElement.style.removeProperty("color");
+    codeInputElement.style.caretColor = "red";
+    await waitAsync(200); // Wait for colours to update
+    testAssertion("Core", "Overriden caret-color Caret/Placeholder Color Correct", confirm("Is the caret red and placeholder near-white? (OK=Yes)"), "user-judged");
+
+    codeInputElement.style.removeProperty("caret-color");
+
     /*--- Tests for plugins ---*/
     // AutoCloseBrackets
     testAddingText("AutoCloseBrackets", textarea, function(textarea) {

@@ -27,7 +27,7 @@ code-input {
   /* --code-input_no-override-color: Set by JS for very short time to get whether color has been overriden */
   color: var(--code-input_no-override-color, black);
   /* --code-input_default-caret-color: Set by JS to be same as color property - currentColor won't work because it's lazily evaluated so gives transparent for the textarea */
-  caret-color: var(--code-input_default-caret-color, black);
+  caret-color: var(--code-input_default-caret-color, inherit);
   background-color: white;
 
   /* Normal inline styles */
@@ -132,7 +132,7 @@ code-input pre {
 code-input textarea:not([data-code-input-fallback]) {
   background: transparent;
   color: transparent;
-  caret-color: inherit; /* Or choose your favourite color */
+  caret-color: inherit;
 }
 code-input textarea:not([data-code-input-fallback]):placeholder-shown {
   /* Show placeholder */
@@ -253,7 +253,7 @@ code-input:not(.code-input_loaded)::after {
   border-top: 1px solid currentColor;
   outline-top: 0;
   background-color: inherit;
-  color: var(--code-input_highlight-text-color, inherit);
+  color: inherit;
 
   margin: 0;
   padding: 0;
