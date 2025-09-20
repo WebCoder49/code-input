@@ -6,7 +6,7 @@
     <title>code-input Tester</title>
 
     <!--Import Highlight.JS-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" id="theme-stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
@@ -42,7 +42,7 @@
 
     <details id="collapse-results"><summary>Test Results (Click to Open)</summary><pre id="test-results"></pre></details>
     <form method="GET" action="afterform.html" target="_blank">
-        <code-input><textarea data-code-input-fallback name="q">console.log("Hello, World!");
+        <code-input><textarea data-code-input-fallback name="q" placeholder="language auto-detected">console.log("Hello, World!");
 // A second line
 // A third line with &lt;html> tags</textarea></code-input>
         <input type="submit" value="Test HTML Form"/>
