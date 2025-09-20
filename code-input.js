@@ -558,24 +558,26 @@ var codeInput = {
         isColorOverridenSyncIfNot() {
             const oldTransition = this.style.transition;
             this.style.transition = "unset";
-            this.style.setProperty("--code-input_no-override-color", "rgb(0, 0, 0)");
-            if(getComputedStyle(this).color == "rgb(0, 0, 0)") {
-                // May not be overriden
-                this.style.setProperty("--code-input_no-override-color", "rgb(255, 255, 255)");
-                if(getComputedStyle(this).color == "rgb(255, 255, 255)") {
-                    // Definitely not overriden
-                    this.style.removeProperty("--code-input_no-override-color");
-                    this.style.transition = oldTransition;
+            window.requestAnimationFrame(() => {
+                this.style.setProperty("--code-input_no-override-color", "rgb(0, 0, 0)");
+                if(getComputedStyle(this).color == "rgb(0, 0, 0)") {
+                    // May not be overriden
+                    this.style.setProperty("--code-input_no-override-color", "rgb(255, 255, 255)");
+                    if(getComputedStyle(this).color == "rgb(255, 255, 255)") {
+                        // Definitely not overriden
+                        this.style.removeProperty("--code-input_no-override-color");
+                        this.style.transition = oldTransition;
 
-                    const highlightedTextColor = getComputedStyle(this.getStyledHighlightingElement()).color;
+                        const highlightedTextColor = getComputedStyle(this.getStyledHighlightingElement()).color;
 
-                    this.style.setProperty("--code-input_highlight-text-color", highlightedTextColor);
-                    this.style.setProperty("--code-input_default-caret-color", highlightedTextColor);
-                    return false;
+                        this.style.setProperty("--code-input_highlight-text-color", highlightedTextColor);
+                        this.style.setProperty("--code-input_default-caret-color", highlightedTextColor);
+                        return false;
+                    }
                 }
-            }
-            this.style.removeProperty("--code-input_no-override-color");
-            this.style.transition = oldTransition;
+                this.style.removeProperty("--code-input_no-override-color");
+                this.style.transition = oldTransition;
+            });
 
             return true;
         }
