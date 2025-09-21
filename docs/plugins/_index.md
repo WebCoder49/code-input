@@ -626,7 +626,7 @@ See https://github.com/WebCoder49/code-input/issues?q=is%3Aissue%20state%3Aopen%
                 new codeInput.plugins.Autodetect()
             ]));
         </script>
-        <p>Start typing code of any language. <st;;;rong>Detected language: <span id="language"></span></strong>. Inaccurate language detection should be reported to <a target="_blank" href="highlightjs.org">highlight.js</a>, not code-input-js.</p>
+        <p>Start typing code of any language. <strong>Detected language: <span id="language"></span></strong>. Inaccurate language detection should be reported to <a target="_blank" href="https://highlightjs.org">highlight.js</a>, not code-input-js.</p>
         <code-input oninput="document.getElementById('language').textContent = this.getAttribute('language');"></code-input>
         <p></p>
     </body>
