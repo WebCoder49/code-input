@@ -95,6 +95,7 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
                         let autocompleteButton = document.createElement("button");
                         autocompleteButton.innerHTML = "<i>" + tag.substring(0, start_tag.length) + "</i>" + tag.substring(start_tag.length, tag.length);
                         autocompleteButton.addEventListener("click", () => {
+                            textarea.parentElement.focus();
                             document.execCommand("insertText", false, tag.substring(start_tag.length, tag.length));
                             popupElem.innerHTML = ""; // On popup
                         });
@@ -103,18 +104,18 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
                 });
 
                 if(popupElem.firstElementChild != null) {
-                popupElem.firstElementChild.innerHTML += "[Tab]";
+                    popupElem.firstElementChild.innerHTML += "[Tab]";
                 }
                 textarea.addEventListener("keydown", (event) => {
-                if(event.key == "Tab" && popupElem.firstElementChild != null) {
-                    popupElem.firstElementChild.click();
-                    event.preventDefault();
-                }
+                    if(event.key == "Tab" && popupElem.firstElementChild != null) {
+                        popupElem.firstElementChild.click();
+                        event.preventDefault();
+                    }
                 })
             }
             // Pass at register
             codeInput.registerTemplate("syntax-highlighted", new codeInput.templates.Prism(Prism, [
-            new codeInput.plugins.Autocomplete(updatePopup) // See above
+                new codeInput.plugins.Autocomplete(updatePopup) // See above
             ]));
             </script>
         <p>Start typing some HTML tags to see the autocomplete in action. You can click an autocomplete suggestion, or press the Tab key to select the first.</p>
