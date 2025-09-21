@@ -21,4 +21,4 @@ codeInputElement.addEventListener("code-input_load", () => {
 });
 ```
 
-For backwards compatibility, you should also implement the subset of the functionality that doesn't require `code-input.js` on the `<textarea data-code-input-fallback>` element before load, if you have one. For backwards compatibility and technical reasons, event handlers registered in HTML attributes like `onchange` of the textarea will be passed to the code-input element when it is registered, but event listeners registered like that above will not.
+For backwards compatibility, you should also implement the subset of the functionality that doesn't require `code-input.js` on the `<textarea data-code-input-fallback>` element before load, if you have one. For backwards compatibility and technical reasons, event handlers registered in HTML attributes like `onchange` of the textarea will be passed to the code-input element when it is registered, but event listeners registered like that above will not - this should be cleaned up in major version 3.

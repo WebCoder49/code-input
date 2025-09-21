@@ -312,6 +312,8 @@ something like [CodeMirror](https://codemirror.net/),
 [Ace](https://ace.c9.io/) or
 [Monaco](https://microsoft.github.io/monaco-editor/).
 
+`code-input.js` is also improving and an even more lightweight, flexible and clean major version 3 is being planned. Please come and participate with your feedback/ideas [on GitHub](https://github.com/WebCoder49/code-input/issues/190) or [via email to code-input-js+v3@webcoder49.dev](mailto:code-input-js+v3@webcoder49.dev)!
+
 ## Read Enough?
 **If you don't need web framework integration, get started with the commented tutorials by example on this page, for [Prism.js](#playground-preset-prism), [highlight.js](#playground-preset-hljs), or [another highlighter](#playground-preset-custom). If you're using ECMAScript modules or a web framework, start [here](modules-and-frameworks).**
 
