@@ -15,6 +15,8 @@ more use cases.
 
 *code-input.js is free, libre, open source software under the MIT (AKA Expat) license.* **Download it [from the Git repository](https://github.com/WebCoder49/code-input/tree/v2.6.8), [in a ZIP archive](/release/code-input-js-v2.6.8.zip), [in a TAR.GZ archive](/release/code-input-js-v2.6.8.tar.gz), or from `@webcoder49/code-input` on the NPM registry ([Yarn](https://yarnpkg.com/package?name=@webcoder49/code-input), [NPM](https://npmjs.com/package/@webcoder49/code-input), etc.).**
 
+[Want to contribute to the code? You're very welcome to! See here.](#contributing)
+
 ## Get Started with a Demo
 
 {{< playground >}}
