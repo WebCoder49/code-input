@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>code-input should be global: highlight.js</title>
+
+        <meta charset="utf-8"/>
+
+        <!--Import Highlight.JS-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+
+        <!--Import code-input-->
+        <link rel="stylesheet" href="../code-input.css">
+        <script src="../code-input.js"></script>
+
+        <!--Import code-input plugins-->
+        <script src="../plugins/auto-close-brackets.js"></script>
+        <script src="../plugins/autocomplete.js"></script>
+        <script src="../plugins/autodetect.js"></script>
+        <link rel="stylesheet" href="../plugins/autocomplete.css">
+        <script src="../plugins/find-and-replace.js"></script>
+        <link rel="stylesheet" href="../plugins/find-and-replace.css">
+        <script src="../plugins/go-to-line.js"></script>
+        <link rel="stylesheet" href="../plugins/go-to-line.css">
+        <script src="../plugins/indent.js"></script>
+        <link rel="stylesheet" href="../plugins/prism-line-numbers.css">
+        <script src="../plugins/select-token-callbacks.js"></script>
+        <script src="../plugins/special-chars.js"></script>
+        <link rel="stylesheet" href="../plugins/special-chars.css">
+
+        <!--Register templates-->
+
+    </head>
+    <body>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+        </style>
+        <code-input dir="rtl" template="hljs" language="markdown"><textarea data-code-input-fallback placeholder="hljs rtl"></textarea></code-input>
+        <code-input dir="ltr" template="hljs" language="markdown"><textarea data-code-input-fallback placeholder="hljs ltr"></textarea></code-input>
+        <code-input dir="rtl" template="hljs+" language="markdown"><textarea data-code-input-fallback placeholder="hljs rtl"></textarea></code-input>
+        <code-input dir="ltr" template="hljs+" language="markdown"><textarea data-code-input-fallback placeholder="hljs ltr"></textarea></code-input>
+
+	<script src="i18n-common.js"></script>
+        <script>
+            codeInput.registerTemplate("hljs", new codeInput.templates.Hljs(hljs, []));
+            codeInput.registerTemplate("hljs+", new codeInput.templates.Hljs(hljs, [
+                new codeInput.plugins.AutoCloseBrackets(),
+                new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+                    if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+                        // Show popup
+                        popupElem.style.display = "block";
+                        popupElem.innerHTML = "Here's your popup!";
+                    } else {
+                        popupElem.style.display = "none";
+                    }
+                }),
+                new codeInput.plugins.Autodetect(),
+                new codeInput.plugins.FindAndReplace(true, true, findAndReplaceTranslations),
+                new codeInput.plugins.GoToLine(true, goToLineTranslations),
+                new codeInput.plugins.Indent(true, 2, {"(": ")", "[": "]", "{": "}"}, true, indentTranslations),
+                new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
+                //new codeInput.plugins.SpecialChars(true),
+            ]));
+        </script>
+    </body>
+</html>

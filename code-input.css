@@ -68,17 +68,15 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   grid-row: 1;
   grid-column: 1;
   display: block;
+}
+code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
+  height: max-content;
+  width: max-content;
 
   /* Allow colour change to reflect properly;
   transition-behavior: allow-discrete could be used but this is better supported and
   works with the color property. */
   transition: color 0.001s;
-}
-code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, code-input pre { 
-  border: 0;
-
-  height: max-content;
-  width: max-content;
 }
 
 code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-element-styled pre code {
