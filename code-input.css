@@ -61,25 +61,24 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   padding-right: var(--padding-right, 16px)!important;
   padding-top: var(--padding-top, 16px)!important;
   padding-bottom: var(--padding-bottom, 16px)!important;
-  border: 0;
+
   min-width: calc(100% - var(--padding-left, 16px) - var(--padding-right, 16px));
   min-height: calc(100% - var(--padding-top, 16px) - var(--padding-bottom, 16px));
-  overflow: hidden;
   resize: none;
   grid-row: 1;
   grid-column: 1;
   display: block;
-}
-
-code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
-  height: max-content;
-  width: max-content;
-
 
   /* Allow colour change to reflect properly;
   transition-behavior: allow-discrete could be used but this is better supported and
   works with the color property. */
   transition: color 0.001s;
+}
+code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, code-input pre { 
+  border: 0;
+
+  height: max-content;
+  width: max-content;
 }
 
 code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-element-styled pre code {
@@ -87,6 +86,9 @@ code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-el
   margin: 0!important;
   padding: 0!important;
   border: 0!important;
+
+  min-width: 100%;
+  min-height: 100%;
 }
 
 code-input textarea, code-input pre, code-input pre * {
@@ -96,6 +98,9 @@ code-input textarea, code-input pre, code-input pre * {
   line-height: inherit!important;
   tab-size: inherit!important;
   text-align: inherit!important;
+}
+code-input textarea, code-input pre, code-input pre code {
+  overflow: visible!important;
 }
 
 /* Make changing the text direction propogate */
