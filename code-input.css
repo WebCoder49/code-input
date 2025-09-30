@@ -20,7 +20,14 @@ code-input {
   top: 0;
   left: 0;
 
-  color: black;
+  /* CSS variables rather than inline styles used for values synced from JavaScript
+   to keep low precedence and thus overridability
+   The variable names may change and are for internal use. */
+  /* --code-input_highlight-text-color: Set by JS to be base text color of pre code element */
+  /* --code-input_no-override-color: Set by JS for very short time to get whether color has been overriden */
+  color: var(--code-input_no-override-color, black);
+  /* --code-input_default-caret-color: Set by JS to be same as color property - currentColor won't work because it's lazily evaluated so gives transparent for the textarea */
+  caret-color: var(--code-input_default-caret-color, inherit);
   background-color: white;
 
   /* Normal inline styles */
@@ -30,13 +37,13 @@ code-input {
   --padding-right: var(--padding, 16px);
   --padding-top: var(--padding, 16px);
   --padding-bottom: var(--padding, 16px);
+
   height: 250px;
   font-size: inherit;
   font-family: monospace;
   text-align: start;
   line-height: 1.5; /* Inherited to child elements */
   tab-size: 2;
-  caret-color: darkgrey;
   white-space: pre;
   padding: 0!important; /* Use --padding to set the code-input element's padding */
   display: grid;
@@ -44,7 +51,7 @@ code-input {
   grid-template-rows: 100%;
 }
 
-code-input * {
+code-input :not(.code-input_dialog-container *) {
   box-sizing: content-box; /* Make height, width work consistently no matter the box-sizing of ancestors; dialogs can be styled as wanted so are excluded. */
 }
 
@@ -56,18 +63,23 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   padding-top: var(--padding-top, 16px)!important;
   padding-bottom: var(--padding-bottom, 16px)!important;
   border: 0;
+
   min-width: calc(100% - var(--padding-left, 16px) - var(--padding-right, 16px));
   min-height: calc(100% - var(--padding-top, 16px) - var(--padding-bottom, 16px));
-  overflow: hidden;
   resize: none;
+  overflow: hidden;
   grid-row: 1;
   grid-column: 1;
   display: block;
 }
-
 code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
   height: max-content;
   width: max-content;
+
+  /* Allow colour change to reflect properly;
+  transition-behavior: allow-discrete could be used but this is better supported and
+  works with the color property. */
+  transition: color 0.001s;
 }
 
 code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-element-styled pre code {
@@ -75,6 +87,9 @@ code-input:not(.code-input_pre-element-styled) pre, code-input.code-input_pre-el
   margin: 0!important;
   padding: 0!important;
   border: 0!important;
+
+  min-width: 100%;
+  min-height: 100%;
 }
 
 code-input textarea, code-input pre, code-input pre * {
@@ -84,6 +99,9 @@ code-input textarea, code-input pre, code-input pre * {
   line-height: inherit!important;
   tab-size: inherit!important;
   text-align: inherit!important;
+}
+code-input textarea, code-input pre, code-input pre code {
+  overflow: visible!important;
 }
 
 /* Make changing the text direction propogate */
@@ -118,12 +136,13 @@ code-input pre {
 /* Make textarea almost completely transparent, except for caret and placeholder */
 
 code-input textarea:not([data-code-input-fallback]) {
-  color: transparent;
   background: transparent;
-  caret-color: inherit!important; /* Or choose your favourite color */
+  color: transparent;
+  caret-color: inherit;
 }
-code-input textarea::placeholder {
-  color: lightgrey;
+code-input textarea:not([data-code-input-fallback]):placeholder-shown {
+  /* Show placeholder */
+  color: var(--code-input_highlight-text-color, inherit);
 }
 
 /* Can be scrolled */
@@ -163,6 +182,11 @@ code-input .code-input_dialog-container {
 
   /* Dialog boxes' text is based on text-direction */
   text-align: inherit;
+
+  /* Allow colour change to reflect properly;
+   * transition-behavior: allow-discrete could be used but this is * better supported and works with the color property. */
+  color: inherit;
+  transition: color 0.001s;
 }
 
 [dir=rtl] code-input .code-input_dialog-container, code-input[dir=rtl] .code-input_dialog-container {
@@ -252,11 +276,13 @@ code-input:not(.code-input_loaded) pre, code-input:not(.code-input_loaded) texta
 code-input:has(textarea[data-code-input-fallback]) {
   padding: 0!important; /* Padding now in the textarea */
   box-sizing: content-box;
+
+  caret-color: revert; /* JS not setting the colour since no highlighting */
 }
 code-input textarea[data-code-input-fallback] {
   overflow: auto;
   background-color: inherit;
-  color: inherit;
+  color: var(--code-input_highlight-text-color, inherit);
 
   /* Don't overlap with message */
   min-height: calc(100% - var(--padding-top, 16px) - 2em - var(--padding-bottom, 16px));

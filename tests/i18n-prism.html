@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>code-input should be global: Prism.js</title>
+
+        <meta charset="utf-8"/>
+
+        <!--Import Prism-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+        <script src="prism-match-braces-compatibility.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/match-braces/prism-match-braces.min.css">
+
+        <!--Import code-input-->
+        <link rel="stylesheet" href="../code-input.css">
+        <script src="../code-input.js"></script>
+
+        <!--Import code-input plugins-->
+        <script src="../plugins/auto-close-brackets.js"></script>
+        <script src="../plugins/autocomplete.js"></script>
+        <script src="../plugins/autodetect.js"></script>
+        <link rel="stylesheet" href="../plugins/autocomplete.css">
+        <script src="../plugins/find-and-replace.js"></script>
+        <link rel="stylesheet" href="../plugins/find-and-replace.css">
+        <script src="../plugins/go-to-line.js"></script>
+        <link rel="stylesheet" href="../plugins/go-to-line.css">
+        <script src="../plugins/indent.js"></script>
+        <link rel="stylesheet" href="../plugins/prism-line-numbers.css">
+        <script src="../plugins/select-token-callbacks.js"></script>
+        <script src="../plugins/special-chars.js"></script>
+        <link rel="stylesheet" href="../plugins/special-chars.css">
+
+        <!--Register templates-->
+
+    </head>
+    <body>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+        </style>
+        <code-input dir="rtl" template="prism" language="markdown"><textarea data-code-input-fallback placeholder="prism rtl"></textarea></code-input>
+        <code-input dir="ltr" template="prism" language="markdown"><textarea data-code-input-fallback placeholder="prism ltr"></textarea></code-input>
+        <code-input dir="rtl" template="prism+" language="markdown"><textarea data-code-input-fallback placeholder="prism rtl"></textarea></code-input>
+        <code-input dir="ltr" template="prism+" language="markdown"><textarea data-code-input-fallback placeholder="prism ltr"></textarea></code-input>
+
+	<script src="i18n-common.js"></script>
+        <script>
+            codeInput.registerTemplate("prism", new codeInput.templates.Prism(Prism, []));
+            codeInput.registerTemplate("prism+", new codeInput.templates.Prism(Prism, [
+                new codeInput.plugins.AutoCloseBrackets(),
+                new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd) {
+                    if(textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
+                        // Show popup
+                        popupElem.style.display = "block";
+                        popupElem.innerHTML = "Here's your popup!";
+                    } else {
+                        popupElem.style.display = "none";
+                    }
+                }),
+                new codeInput.plugins.FindAndReplace(true, true, findAndReplaceTranslations),
+                new codeInput.plugins.GoToLine(true, goToLineTranslations),
+                new codeInput.plugins.Indent(true, 2, {"(": ")", "[": "]", "{": "}"}, true, indentTranslations),
+                new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
+                //new codeInput.plugins.SpecialChars(true),
+            ])); 
+        </script>
+    </body>
+</html>

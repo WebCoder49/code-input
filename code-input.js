@@ -152,6 +152,8 @@ var codeInput = {
         }
     },
 
+    stylesheetI: 0, // Increments to give different classes to each code-input element so they can have custom styles synchronised internally without affecting the inline style
+
     /**
      * Please see `codeInput.templates.prism` or `codeInput.templates.hljs`.
      * Templates are used in `<code-input>` elements and once registered with
@@ -446,6 +448,16 @@ var codeInput = {
         dialogContainerElement = null;
 
         /**
+         * Like style attribute, but with a specificity of 1
+         * element, 1 class. Present so styles can be set on only
+         * this element while giving other code freedom of use of
+         * the style attribute.
+         *
+         * For internal use only.
+         */
+        internalStyle = null;
+
+        /**
         * Form-Associated Custom Element Callbacks
         * https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-face-example
         */
@@ -530,21 +542,74 @@ var codeInput = {
             this.pluginEvt("afterHighlight");
         }
 
+        getStyledHighlightingElement() {
+            if(this.templateObject.preElementStyled) {
+                return this.preElement;
+            } else {
+                return this.codeElement;
+            }
+        }
+
         /**
          * Set the size of the textarea element to the size of the pre/code element.
          */
         syncSize() {
             // Synchronise the size of the pre/code and textarea elements
-            if(this.templateObject.preElementStyled) {
-                this.style.backgroundColor = getComputedStyle(this.preElement).backgroundColor;
-                this.textareaElement.style.height = getComputedStyle(this.preElement).height;
-                this.textareaElement.style.width = getComputedStyle(this.preElement).width;
-            } else {
-                this.style.backgroundColor = getComputedStyle(this.codeElement).backgroundColor;
-                this.textareaElement.style.height = getComputedStyle(this.codeElement).height;
-                this.textareaElement.style.width = getComputedStyle(this.codeElement).width;
+            this.textareaElement.style.height = getComputedStyle(this.getStyledHighlightingElement()).height;
+            this.textareaElement.style.width = getComputedStyle(this.getStyledHighlightingElement()).width;
+        }
+
+        /**
+         * If the color attribute has been defined on the
+         * code-input element by external code, return true.
+         * Otherwise, make the aspects the color affects
+         * (placeholder and caret colour) be the base colour
+         * of the highlighted text, for best contrast, and
+         * return false.
+         */
+        isColorOverridenSyncIfNot() {
+            const oldTransition = this.style.transition;
+            this.style.transition = "unset";
+            window.requestAnimationFrame(() => {
+                this.internalStyle.setProperty("--code-input_no-override-color", "rgb(0, 0, 0)");
+                if(getComputedStyle(this).color == "rgb(0, 0, 0)") {
+                    // May not be overriden
+                    this.internalStyle.setProperty("--code-input_no-override-color", "rgb(255, 255, 255)");
+                    if(getComputedStyle(this).color == "rgb(255, 255, 255)") {
+                        // Definitely not overriden
+                        this.internalStyle.removeProperty("--code-input_no-override-color");
+                        this.style.transition = oldTransition;
+
+                        const highlightedTextColor = getComputedStyle(this.getStyledHighlightingElement()).color;
+
+                        this.internalStyle.setProperty("--code-input_highlight-text-color", highlightedTextColor);
+                        this.internalStyle.setProperty("--code-input_default-caret-color", highlightedTextColor);
+                        return false;
+                    }
+                }
+                this.internalStyle.removeProperty("--code-input_no-override-color");
+                this.style.transition = oldTransition;
+            });
+
+            return true;
+        }
+
+        /**
+         * Update the aspects the color affects
+         * (placeholder and caret colour) to the correct
+         * colour: either that defined on the code-input
+         * element, or if none is defined externally the
+         * base colour of the highlighted text.
+         */
+        syncColorCompletely() {
+            // color of code-input element
+            if(this.isColorOverridenSyncIfNot()) {
+                // color overriden
+                this.internalStyle.removeProperty("--code-input_highlight-text-color");
+                this.internalStyle.setProperty("--code-input_default-caret-color", getComputedStyle(this).color);
             }
         }
+
 
         /**
          * Show some instructions to the user only if they are using keyboard navigation - for example, a prompt on how to navigate with the keyboard if Tab is repurposed.
@@ -741,7 +806,6 @@ var codeInput = {
             this.codeElement = code;
             pre.append(code);
             this.append(pre);
-
             if (this.templateObject.isCode) {
                 if (lang != undefined && lang != "") {
                     code.classList.add("language-" + lang.toLowerCase());
@@ -780,7 +844,44 @@ var codeInput = {
                 // The only element that could be resized is this code-input element.
                 this.syncSize();
             });
-            resizeObserver.observe(this.textareaElement);
+            resizeObserver.observe(this);
+
+
+            // Add internal style as non-externally-overridable alternative to style attribute for e.g. syncing color
+            this.classList.add("code-input_styles_" + codeInput.stylesheetI);
+            const stylesheet = document.createElement("style");
+            stylesheet.innerHTML = "code-input.code-input_styles_" + codeInput.stylesheetI + " {}";
+            this.appendChild(stylesheet);
+            this.internalStyle = stylesheet.sheet.cssRules[0].style;
+            codeInput.stylesheetI++;
+
+            // Synchronise colors
+            const preColorChangeCallback = (evt) => {
+                if(evt.propertyName == "color") {
+                    this.isColorOverridenSyncIfNot();
+                }
+            };
+            this.preElement.addEventListener("transitionend", preColorChangeCallback);
+            this.preElement.addEventListener("-webkit-transitionend", preColorChangeCallback);
+            const thisColorChangeCallback = (evt) => {
+                if(evt.propertyName == "color") {
+                    this.syncColorCompletely();
+                }
+                if(evt.target == this.dialogContainerElement) {
+                    evt.stopPropagation();
+                    // Prevent bubbling because code-input
+                    // transitionend is separate
+                }
+            };
+            // Not on this element so CSS transition property does not override publicly-visible one
+            this.dialogContainerElement.addEventListener("transitionend", thisColorChangeCallback);
+            this.dialogContainerElement.addEventListener("-webkit-transitionend", thisColorChangeCallback);
+
+            // For when this code-input element has an externally-defined, different-duration transition
+            this.addEventListener("transitionend", thisColorChangeCallback);
+            this.addEventListener("-webkit-transitionend", thisColorChangeCallback);
+
+            this.syncColorCompletely();
 
             this.classList.add("code-input_loaded");
         }
@@ -938,7 +1039,9 @@ var codeInput = {
                             code.classList.add("language-" + newValue);
                         }
 
-                        if (mainTextarea.placeholder == oldValue) mainTextarea.placeholder = newValue;
+                        if (mainTextarea.placeholder == oldValue || oldValue == null && mainTextarea.placeholder == "") {
+                            mainTextarea.placeholder = newValue;
+                        }
 
                         this.scheduleHighlight();
 

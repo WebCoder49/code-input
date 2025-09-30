@@ -9,7 +9,6 @@ code-input .code-input_autocomplete_popup {
     z-index: 100;
 }
 
-
-code-input .code-input_autocomplete_testpos {
-    opacity: 0;
+code-input pre.code-input_autocomplete_invisiblepre {
+    opacity: 0!important;
 }
