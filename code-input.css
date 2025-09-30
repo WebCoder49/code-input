@@ -37,6 +37,7 @@ code-input {
   --padding-right: var(--padding, 16px);
   --padding-top: var(--padding, 16px);
   --padding-bottom: var(--padding, 16px);
+
   height: 250px;
   font-size: inherit;
   font-family: monospace;
@@ -61,10 +62,12 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   padding-right: var(--padding-right, 16px)!important;
   padding-top: var(--padding-top, 16px)!important;
   padding-bottom: var(--padding-bottom, 16px)!important;
+  border: 0;
 
   min-width: calc(100% - var(--padding-left, 16px) - var(--padding-right, 16px));
   min-height: calc(100% - var(--padding-top, 16px) - var(--padding-bottom, 16px));
   resize: none;
+  overflow: hidden;
   grid-row: 1;
   grid-column: 1;
   display: block;
