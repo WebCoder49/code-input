@@ -146,6 +146,8 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
             let findAndReplacePlugin = new codeInput.plugins.FindAndReplace(
                 true, // Should Ctrl+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
                 true, // Should Ctrl+H be overriden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
+                {}, // Keep this as an empty object for the English UI, or add translations as in https://code-input-js.org/i18n/
+                false // Should Ctrl key be forced for keyboard shortcuts; setting this to false makes the keyboard shortcut follow the operating system (i.e. Cmd on Apple).
             );
             // Programatically opening the dialogs, to integrate with your user interface
             function find() {
@@ -196,6 +198,8 @@ Hickory dickory dock.</code-input>
         <script>
             let goToLinePlugin = new codeInput.plugins.GoToLine(
                 true, // Should Ctrl+G be overriden for go-to-line functionality? Either way, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
+                {}, // Keep this as an empty object for the English UI, or add translations as in https://code-input-js.org/i18n/
+                false // Should Ctrl key be forced for keyboard shortcuts; setting this to false makes the keyboard shortcut follow the operating system (i.e. Cmd on Apple).
             );
             // Programatically opening the dialogs, to integrate with your user interface
             function goToLine() {
