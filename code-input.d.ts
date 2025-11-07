@@ -138,6 +138,7 @@ export namespace plugins {
      * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
      * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the find-and-replace.js source code for the English text.
+     * @param {boolean} alwaysCtrl: if true always use Ctrl+F/H as the keyboard shortcut; if false use Cmd+F/H on Apple devices and Ctrl+F/H elsewhere. False highly recommended; defaults to true for backwards compatiblity.
      */
     constructor(useCtrlF?: boolean, useCtrlH?: boolean,
                 instructionTranslations?: {
@@ -159,7 +160,8 @@ export namespace plugins {
                   replaceAction?: string;
                   replaceAllActionShort?: string;
                   replaceAllAction?: string
-                }
+                },
+                alwaysCtrl?: boolean
               );
     /**
      * Show a find-and-replace dialog.
@@ -190,7 +192,9 @@ export namespace plugins {
                   guidanceColumnRange?: (line: Number, current: Number, max: Number) => string;
                   guidanceValidLine?: (line: Number) => string;
                   guidanceValidColumn?: (line: Number, column: Number) => string;
-                });
+                },
+                alwaysCtrl?: boolean
+              );
     /**
      * Show a search-like dialog prompting line number.
      * @param {codeInput.CodeInput} codeInput the `<code-input>` element.
@@ -213,6 +217,7 @@ export namespace plugins {
      * @param {Object} bracketPairs Opening brackets mapped to closing brackets, default and example {"(": ")", "[": "]", "{": "}"}. All brackets must only be one character, and this can be left as null to remove bracket-based indentation behaviour.
      * @param {boolean} escTabToChangeFocus Whether pressing the Escape key before (Shift+)Tab should make this keypress focus on a different element (Tab's default behaviour). You should always either enable this or use this plugin's disableTabIndentation and enableTabIndentation methods linked to other keyboard shortcuts, for accessibility.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the English text.
+     * @param {boolean} alwaysCtrl: if true always use Ctrl+G as the keyboard shortcut; if false use Cmd+G on Apple devices and Ctrl+G elsewhere. False highly recommended; defaults to true for backwards compatiblity.
      */
     constructor(defaultSpaces?: boolean, numSpaces?: Number, bracketPairs?: Object, escTabToChangeFocus?: boolean, instructionTranslations?: {
       tabForIndentation?: string;

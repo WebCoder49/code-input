@@ -120,8 +120,8 @@ function beginTest(isHLJS) {
                 }
             }),
             new codeInput.plugins.Autodetect(),
-            new codeInput.plugins.FindAndReplace(),
-            new codeInput.plugins.GoToLine(),
+            new codeInput.plugins.FindAndReplace(true, true, {}, false),
+            new codeInput.plugins.GoToLine(true, {}, false),
             new codeInput.plugins.Indent(true, 2),
             new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
             new codeInput.plugins.SpecialChars(true),
@@ -138,8 +138,8 @@ function beginTest(isHLJS) {
                     popupElem.style.display = "none";
                 }
             }),
-            new codeInput.plugins.FindAndReplace(),
-            new codeInput.plugins.GoToLine(),
+            new codeInput.plugins.FindAndReplace(true, true, {}, false),
+            new codeInput.plugins.GoToLine(true, {}, false),
             new codeInput.plugins.Indent(true, 2),
             new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
             new codeInput.plugins.SpecialChars(true),
@@ -489,7 +489,12 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     await waitAsync(50); // Wait for highlighting so text updates
 
     // Open dialog and get interactive elements
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "ctrlKey": true }));
+    // Thanks to https://developer.mozilla.org/en-US/docs/Web/API/Navigator/platform
+    if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "metaKey": true }));
+    } else {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "ctrlKey": true }));
+    }
     let inputBoxes = codeInputElement.querySelectorAll(".code-input_find-and-replace_dialog input");
     let findInput = inputBoxes[0];
     let regExpCheckbox = inputBoxes[1];
@@ -534,8 +539,11 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     assertEqual("FindAndReplace", "Selection End on Focused Match when Dialog Exited", textarea.selectionEnd, 8);
     
     // Open replace dialog; conduct a find and replace
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "h", "ctrlKey": true }));
-    findInput.value = "";
+    if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "h", "metaKey": true }));
+    } else {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "h", "ctrlKey": true }));
+    }    findInput.value = "";
     findInput.focus();
     allowInputEvents(findInput);
     addText(findInput, "hello");
@@ -575,33 +583,48 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     backspace(textarea);
     addText(textarea, "// 7 times table\nlet i = 1;\nwhile(i <= 12) { console.log(`7 x ${i} = ${7*i}`) }\n// That's my code.\n// This is another comment\n// Another\n// Line");
     
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-    let lineInput = codeInputElement.querySelector(".code-input_go-to-line_dialog input");
+    if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "metaKey": true }));
+    } else {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
+    }    let lineInput = codeInputElement.querySelector(".code-input_go-to-line_dialog input");
     lineInput.value = "1";
     lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
     lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
     assertEqual("GoToLine", "Line Only", textarea.selectionStart, 0);
 
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-    lineInput.value = "3:18";
+    if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "metaKey": true }));
+    } else {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
+    }    lineInput.value = "3:18";
     lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
     lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
     assertEqual("GoToLine", "Line and Column", textarea.selectionStart, 45);
     
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-    lineInput.value = "10";
+    if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "metaKey": true }));
+    } else {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
+    }    lineInput.value = "10";
     lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
     lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
     assertEqual("GoToLine", "Rejects Out-of-range Line", lineInput.classList.contains("code-input_go-to-line_error"), true);
 
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-    lineInput.value = "2:12";
+    if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "metaKey": true }));
+    } else {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
+    }    lineInput.value = "2:12";
     lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
     lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
     assertEqual("GoToLine", "Rejects Out-of-range Column", lineInput.classList.contains("code-input_go-to-line_error"), true);
 
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
-    lineInput.value = "sausages";
+    if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "metaKey": true }));
+    } else {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
+    }    lineInput.value = "sausages";
     lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
     lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
     assertEqual("GoToLine", "Rejects Invalid Input", lineInput.classList.contains("code-input_go-to-line_error"), true);

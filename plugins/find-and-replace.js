@@ -36,11 +36,13 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
      * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
      * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the find-and-replace.js source code for the English text and available keys.
+     * @param {boolean} alwaysCtrl: if true always use Ctrl+F/H as the keyboard shortcut; if false use Cmd+F/H on Apple devices and Ctrl+F/H elsewhere. False highly recommended; defaults to true for backwards compatiblity.
      */
-    constructor(useCtrlF = true, useCtrlH = true, instructionTranslations = {}) {
+    constructor(useCtrlF = true, useCtrlH = true, instructionTranslations = {}, alwaysCtrl = true) {
         super([]); // No observed attributes
         this.useCtrlF = useCtrlF;
         this.useCtrlH = useCtrlH;
+        this.alwaysCtrl = alwaysCtrl;
         this.addTranslations(this.instructions, instructionTranslations);
     }
 
@@ -420,9 +422,21 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
         this.updateFindMatches(dialog);
     }
 
+    hasModifier(event) {
+        if(this.alwaysCtrl) return event.ctrlKey;
+        // Thanks to https://developer.mozilla.org/en-US/docs/Web/API/Navigator/platform
+        if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+            // Command
+            return event.metaKey;
+        } else {
+            // Control
+            return event.ctrlKey;
+        }
+    }
+
     /* Event handler for keydown event that makes Ctrl+F open find dialog */
     checkCtrlF(codeInput, event) {
-        if (event.ctrlKey && event.key == 'f') {
+        if (this.hasModifier(event) && event.key == 'f') {
             event.preventDefault();
             this.showPrompt(codeInput, false);
         }
@@ -430,7 +444,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
 
     /* Event handler for keydown event that makes Ctrl+H open find+replace dialog */
     checkCtrlH(codeInput, event) {
-        if (event.ctrlKey && event.key == 'h') {
+        if (this.hasModifier(event) && event.key == 'h') {
             event.preventDefault();
             this.showPrompt(codeInput, true);
         }
