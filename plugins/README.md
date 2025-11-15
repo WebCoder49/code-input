@@ -13,49 +13,49 @@ is activated for.
 
 Files: [auto-close-brackets.js](./auto-close-brackets.js)
 
-[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/qBgGGKR)
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-auto-close-brackets)
 
 ### Autocomplete
 Display a popup under the caret using the text in the code-input element. This works well with autocomplete suggestions.
 
 Files: [autocomplete.js](./autocomplete.js) / [autocomplete.css](./autocomplete.css)
 
-[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/xxapjXB)
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-autocomplete)
 
 ### Autodetect
 Autodetect the language live and change the `lang` attribute using the syntax highlighter's autodetect capabilities. Works with highlight.js.
 
 Files: [autodetect.js](./autodetect.js)
 
-[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/eYLyMae)
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-autodetect)
 
 ### Find and Replace
 Add Find-and-Replace (Ctrl+F for find, Ctrl+H for replace by default, or when JavaScript triggers it) functionality to the code editor.
 
 Files: [find-and-replace.js](./find-and-replace.js) / [find-and-replace.css](./find-and-replace.css)
 
-[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/oNVVBBz)
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-find-and-replace)
 
 ### Go To Line
 Add a feature to go to a specific line when a line number is given (or column as well, in the format line no:column no) that appears when (optionally) Ctrl+G is pressed or when JavaScript triggers it.
 
 Files: [go-to-line.js](./go-to-line.js) / [go-to-line.css](./go-to-line.css)
 
-[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/YzBMOXP)
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-go-to-line)
 
 ### Indent
 Add indentation using the `Tab` key, and auto-indents after a newline, as well as making it possible to indent/unindent multiple lines using Tab/Shift+Tab. **Supports tab characters and custom numbers of spaces as indentation, as well as (optionally) brackets typed affecting indentation.**
 
 Files: [indent.js](./indent.js)
 
-[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/WNgdzar)
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-indent)
 
 ### Prism Line Numbers
 Allow code-input elements to be used with the Prism.js line-numbers plugin, as long as the code-input element or a parent element of it has the CSS class `line-numbers`. [Prism.js Plugin Docs](https://prismjs.com/plugins/line-numbers/)
 
 Files: [prism-line-numbers.css](./prism-line-numbers.css) (NO JS FILE)
 
-[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/XWPVrWv)
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-prism-line-numbers)
 
 ### Special Chars
 Render special characters and control characters as a symbol
@@ -65,14 +65,14 @@ with their hex code.
 
 Files: [special-chars.js](./special-chars.js) / [special-chars.css](./special-chars.css)
 
-[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/jOeYJbm)
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-special-chars)
 
 ### Select Token Callbacks
 Make tokens in the `<pre><code>` element that are included within the selected text of the `<code-input>` gain a CSS class while selected, or trigger JavaScript callbacks.
 
 Files: select-token-callbacks.js
 
-[🚀 *CodePen Demo*](https://codepen.io/WebCoder49/pen/WNVZXxM)
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-select-token-callbacks)
 
 ## Using Plugins
 Plugins allow you to add extra features to a template, like [automatic indentation](./indent.js) or [support for highlight.js's language autodetection](./autodetect.js). To use them, just:
