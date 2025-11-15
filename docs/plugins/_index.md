@@ -144,8 +144,8 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
 
         <script>
             let findAndReplacePlugin = new codeInput.plugins.FindAndReplace(
-                true, // Should Ctrl/Cmd+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
-                true, // Should Ctrl/Cmd+H be overriden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
+                true, // Should Ctrl+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
+                true, // Should Ctrl+H be overriden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
                 {}, // Keep this as an empty object for the English UI, or add translations as in https://code-input-js.org/i18n/
                 false // Setting this to false makes the keyboard shortcuts follow the operating system while avoiding clashes (right now: Cmd+F/Ctrl+H on Apple, Ctrl+F/Ctrl+H otherwise.) and is recommended; true forces Ctrl+F/Ctrl+H and is default for backwards compatibility.
             );
@@ -161,7 +161,7 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
                 findAndReplacePlugin
             ]));
         </script>
-        <p>When focused in the editor: Try Ctrl+F, or click <button onclick="find();">this</button> to find. Try Ctrl+H, or click <button onclick="replace();">this</button> to replace.</p>
+        <p>When focused in the editor: Try Ctrl/Cmd+F, or click <button onclick="find();">this</button> to find. Try Ctrl+H, or click <button onclick="replace();">this</button> to replace.</p>
         <code-input language="markdown"># Hickory dickory dock
 Hickory dickory dock.
 The mouse ran up the clock.
