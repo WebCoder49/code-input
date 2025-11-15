@@ -20,7 +20,7 @@ code-input:not(.code-input_registered)::after {
 
 It is only present for debugging and explanatory purposes when highlighting cannot be seen, and should not contain important or specific information about the editor state; if you need such information, especially for screen reader users, add separate text to your application which disappears after registering the code-input without errors.
 
-**Plugins** sometimes come with user interface features (e.g. the find-and-replace dialog) which contain text to be translated. The text is provided as an extra argument to the plugin constructor containing translated strings or functions to produce them for each translation key, with the keys and their English values found in either the `code-input.d.ts` or the plugin's source code file. Here's an example:
+**Plugins** sometimes come with user interface features (e.g. the find-and-replace dialog) which contain text to be translated. The text is provided as an argument to the plugin constructor containing translated strings or functions to produce them for each translation key, with the keys and their English values found in either the `code-input.d.ts` or the plugin's source code file. Here's an example:
 ```javascript
 // CC-BY; Attribution: Translated by Oliver Geer with some help from English Wiktionary
 let findAndReplaceTranslations = {
@@ -45,7 +45,7 @@ let findAndReplaceTranslations = {
 };
 // ...
 // passed when the plugin is constructed:
-new codeInput.plugins.FindAndReplace(true, true, findAndReplaceTranslations),
+new codeInput.plugins.FindAndReplace(true, true, findAndReplaceTranslations, false),
 ```
 
 ## Other

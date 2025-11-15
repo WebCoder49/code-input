@@ -1,5 +1,5 @@
 /**
- * Add basic Go-To-Line (Ctrl+G by default) functionality to the code editor.
+ * Add Go-To-Line (Ctrl/Cmd+G by default) functionality to the code editor.
  * Files: go-to-line.js / go-to-line.css
  */
 "use strict";
@@ -18,12 +18,11 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
     };
 
     /**
-     * Create a go-to-line command plugin to pass into a template
+     * Create a go-to-line command plugin to pass into a template.
      * @param {boolean} useCtrlG Should Ctrl/Cmd+G be overriden for go-to-line functionality? Either way, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
-     * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the available keys and English text.
-     * @param {boolean} alwaysCtrl: if true always use Ctrl+G as the keyboard shortcut; if false use Cmd+G on Apple devices and Ctrl+G elsewhere. False highly recommended; defaults to true for backwards compatiblity.
+     * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the English text.
      */
-    constructor(useCtrlG = true, instructionTranslations = {}, alwaysCtrl = true) {
+    constructor(useCtrlG = true, instructionTranslations = {}) {
         super([]); // No observed attributes
         this.useCtrlG = useCtrlG;
         this.addTranslations(this.instructions, instructionTranslations);
@@ -203,21 +202,9 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
         }
     }
 
-    hasModifier(event) {
-        if(this.alwaysCtrl) return event.ctrlKey;
-        // Thanks to https://developer.mozilla.org/en-US/docs/Web/API/Navigator/platform
-        if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
-            // Command
-            return event.metaKey;
-        } else {
-            // Control
-            return event.ctrlKey;
-        }
-    }
-
     /* Event handler for keydown event that makes Ctrl+G open go to line dialog */
     checkCtrlG(codeInput, event) {
-        if (this.hasModifier(event) && event.key == 'g') {
+        if (event.ctrlKey && event.key == 'g') {
             event.preventDefault();
             this.showPrompt(codeInput);
         }

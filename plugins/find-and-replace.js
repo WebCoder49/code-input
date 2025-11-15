@@ -1,5 +1,5 @@
 /**
- * Add Find-and-Replace (Ctrl+F for find, Ctrl+H for replace by default) functionality to the code editor.
+ * Add Find-and-Replace (Ctrl/Cmd+F for find, Ctrl+H for replace by default) functionality to the code editor.
  * Files: find-and-replace.js / find-and-replace.css
  */
 "use strict";
@@ -32,11 +32,11 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
     };
 
     /**
-     * Create a find-and-replace command plugin to pass into a template
-     * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
+     * Create a find-and-replace command plugin to pass into a template. To ensure keyboard shortcuts remain intuitive, set the alwaysCtrl parameter to false.
+     * @param {boolean} useCtrlF Should Ctrl/Cmd+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
      * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
-     * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the find-and-replace.js source code for the English text and available keys.
-     * @param {boolean} alwaysCtrl: if true always use Ctrl+F/H as the keyboard shortcut; if false use Cmd+F/H on Apple devices and Ctrl+F/H elsewhere. False highly recommended; defaults to true for backwards compatiblity.
+     * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the find-and-replace.js source code for the English text.
+     * @param {boolean} alwaysCtrl Setting this to false makes the keyboard shortcuts follow the operating system while avoiding clashes (right now: Cmd+F/Ctrl+H on Apple, Ctrl+F/Ctrl+H otherwise.) and is recommended; true forces Ctrl+F/Ctrl+H and is default for backwards compatibility.
      */
     constructor(useCtrlF = true, useCtrlH = true, instructionTranslations = {}, alwaysCtrl = true) {
         super([]); // No observed attributes
@@ -422,29 +422,24 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
         this.updateFindMatches(dialog);
     }
 
-    hasModifier(event) {
-        if(this.alwaysCtrl) return event.ctrlKey;
-        // Thanks to https://developer.mozilla.org/en-US/docs/Web/API/Navigator/platform
-        if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
-            // Command
-            return event.metaKey;
-        } else {
-            // Control
-            return event.ctrlKey;
-        }
-    }
-
-    /* Event handler for keydown event that makes Ctrl+F open find dialog */
+    /* Event handler for keydown event that makes Ctrl/Cmd+F open find dialog */
     checkCtrlF(codeInput, event) {
-        if (this.hasModifier(event) && event.key == 'f') {
-            event.preventDefault();
-            this.showPrompt(codeInput, false);
+        if(!this.alwaysCtrl && (navigator.platform.startsWith("Mac") || navigator.platform === "iPhone")) {
+            if (event.metaKey && event.key == 'f') { // Cmd+F
+                event.preventDefault();
+                this.showPrompt(codeInput, false);
+            }
+        } else {
+            if (event.ctrlKey && event.key == 'f') {
+                event.preventDefault();
+                this.showPrompt(codeInput, false);
+            }
         }
     }
 
     /* Event handler for keydown event that makes Ctrl+H open find+replace dialog */
     checkCtrlH(codeInput, event) {
-        if (this.hasModifier(event) && event.key == 'h') {
+        if (event.ctrlKey && event.key == 'h') {
             event.preventDefault();
             this.showPrompt(codeInput, true);
         }
