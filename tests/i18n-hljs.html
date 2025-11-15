@@ -62,8 +62,8 @@
                     }
                 }),
                 new codeInput.plugins.Autodetect(),
-                new codeInput.plugins.FindAndReplace(true, true, findAndReplaceTranslations),
-                new codeInput.plugins.GoToLine(true, goToLineTranslations),
+                new codeInput.plugins.FindAndReplace(true, true, findAndReplaceTranslations, false),
+                new codeInput.plugins.GoToLine(true, goToLineTranslations, false),
                 new codeInput.plugins.Indent(true, 2, {"(": ")", "[": "]", "{": "}"}, true, indentTranslations),
                 new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
                 //new codeInput.plugins.SpecialChars(true),

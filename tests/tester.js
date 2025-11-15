@@ -120,15 +120,15 @@ function beginTest(isHLJS) {
                 }
             }),
             new codeInput.plugins.Autodetect(),
-            new codeInput.plugins.FindAndReplace(),
-            new codeInput.plugins.GoToLine(),
+            new codeInput.plugins.FindAndReplace(true, true, {}, false),
+            new codeInput.plugins.GoToLine(true, {}),
             new codeInput.plugins.Indent(true, 2),
             new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
             new codeInput.plugins.SpecialChars(true),
         ]));
     } else {
         codeInput.registerTemplate("code-editor", new codeInput.templates.Prism(Prism, [
-            new codeInput.plugins.AutoCloseBrackets(), 
+            new codeInput.plugins.AutoCloseBrackets(),
             new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd, selectionStart) {
                 if(selectionStart == selectionEnd && textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
                     // Show popup
@@ -138,8 +138,8 @@ function beginTest(isHLJS) {
                     popupElem.style.display = "none";
                 }
             }),
-            new codeInput.plugins.FindAndReplace(),
-            new codeInput.plugins.GoToLine(),
+            new codeInput.plugins.FindAndReplace(true, true, {}, false),
+            new codeInput.plugins.GoToLine(true, {}),
             new codeInput.plugins.Indent(true, 2),
             new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
             new codeInput.plugins.SpecialChars(true),
@@ -489,7 +489,12 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     await waitAsync(50); // Wait for highlighting so text updates
 
     // Open dialog and get interactive elements
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "ctrlKey": true }));
+    // Thanks to https://developer.mozilla.org/en-US/docs/Web/API/Navigator/platform
+    if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "metaKey": true }));
+    } else {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "ctrlKey": true }));
+    }
     let inputBoxes = codeInputElement.querySelectorAll(".code-input_find-and-replace_dialog input");
     let findInput = inputBoxes[0];
     let regExpCheckbox = inputBoxes[1];
@@ -587,7 +592,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
     lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
     assertEqual("GoToLine", "Line and Column", textarea.selectionStart, 45);
-    
+
     textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
     lineInput.value = "10";
     lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));

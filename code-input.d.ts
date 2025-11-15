@@ -129,15 +129,16 @@ export namespace plugins {
 
   // ESM-SUPPORT-START-PLUGIN-find-and-replace Do not (re)move this - it's needed for ESM generation
   /**
-   * Add Find-and-Replace (Ctrl+F for find, Ctrl+H for replace by default) functionality to the code editor.
+   * Add Find-and-Replace (Ctrl/Cmd+F for find, Ctrl+H for replace by default) functionality to the code editor.
    * Files: find-and-replace.js / find-and-replace.css
    */
   class FindAndReplace extends Plugin {
     /**
-     * Create a find-and-replace command plugin to pass into a template
-     * @param {boolean} useCtrlF Should Ctrl+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
+     * Create a find-and-replace command plugin to pass into a template. To ensure keyboard shortcuts remain intuitive, set the alwaysCtrl parameter to false.
+     * @param {boolean} useCtrlF Should Ctrl/Cmd+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
      * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the find-and-replace.js source code for the English text.
+     * @param {boolean} alwaysCtrl Setting this to false makes the keyboard shortcuts follow the operating system while avoiding clashes (right now: Cmd+F/Ctrl+H on Apple, Ctrl+F/Ctrl+H otherwise.) and is recommended; true forces Ctrl+F/Ctrl+H and is default for backwards compatibility.
      */
     constructor(useCtrlF?: boolean, useCtrlH?: boolean,
                 instructionTranslations?: {
@@ -159,7 +160,8 @@ export namespace plugins {
                   replaceAction?: string;
                   replaceAllActionShort?: string;
                   replaceAllAction?: string
-                }
+                },
+                alwaysCtrl?: boolean
               );
     /**
      * Show a find-and-replace dialog.
@@ -172,13 +174,13 @@ export namespace plugins {
   
   // ESM-SUPPORT-START-PLUGIN-go-to-line Do not (re)move this - it's needed for ESM generation
   /**
-   * Add basic Go-To-Line (ctrl-G by default) functionality to the code editor.
+   * Add Go-To-Line (Ctrl/Cmd+G by default) functionality to the code editor.
    * Files: go-to-line.js / go-to-line.css
    */
   class GoToLine extends Plugin {
     /**
-     * Create a go-to-line command plugin to pass into a template
-     * @param {boolean} useCtrlG Should Ctrl+G be overriden for go-to-line functionality? Either way, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
+     * Create a go-to-line command plugin to pass into a template.
+     * @param {boolean} useCtrlG Should Ctrl/Cmd+G be overriden for go-to-line functionality? Either way, you can trigger it yourself using (instance of this plugin)`.showPrompt(code-input element)`.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the go-to-line.js source code for the English text.
      */
     constructor(useCtrlG?: boolean,
@@ -190,7 +192,8 @@ export namespace plugins {
                   guidanceColumnRange?: (line: Number, current: Number, max: Number) => string;
                   guidanceValidLine?: (line: Number) => string;
                   guidanceValidColumn?: (line: Number, column: Number) => string;
-                });
+                },
+              );
     /**
      * Show a search-like dialog prompting line number.
      * @param {codeInput.CodeInput} codeInput the `<code-input>` element.
