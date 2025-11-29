@@ -13,7 +13,9 @@
 
 code-input {
   /* Allow other elements to be inside */
-  display: block;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 100%;
   overflow-y: auto;
   overflow-x: auto;
   position: relative;
@@ -46,9 +48,6 @@ code-input {
   tab-size: 2;
   white-space: pre;
   padding: 0!important; /* Use --padding to set the code-input element's padding */
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: 100%;
 }
 
 code-input :not(.code-input_dialog-container *) {
