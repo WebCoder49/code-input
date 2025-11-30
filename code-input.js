@@ -555,8 +555,13 @@ var codeInput = {
          */
         syncSize() {
             // Synchronise the size of the pre/code and textarea elements
-            this.textareaElement.style.height = getComputedStyle(this.getStyledHighlightingElement()).height;
-            this.textareaElement.style.width = getComputedStyle(this.getStyledHighlightingElement()).width;
+            const height = getComputedStyle(this.getStyledHighlightingElement()).height;
+            this.textareaElement.style.height = height;
+            this.textareaElement.style.setProperty("--code-input_synced-height", height);
+
+            const width = getComputedStyle(this.getStyledHighlightingElement()).width;
+            this.textareaElement.style.width = width;
+            this.textareaElement.style.setProperty("--code-input_synced-width", width);
         }
 
         /**
