@@ -478,6 +478,76 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
         assertEqual("Autodetect", "Detects CSS", codeInputElement.getAttribute("language"), "css");
     }
 
+    // Autogrow
+    // Replace all code
+    textarea.selectionStart = 0;
+    textarea.selectionEnd = textarea.value.length;
+    backspace(textarea);
+    textarea.parentElement.classList.add("code-input_autogrow_height");
+    await waitAsync(100); // Wait for height to update
+
+    const emptyHeight = textarea.parentElement.clientHeight;
+    addText(textarea, "// a\n// b\n// c\n// d\n// e\n// f\n// g");
+    await waitAsync(100); // Wait for height to update
+
+    const fullHeight = textarea.parentElement.clientHeight;
+    testAssertion("Autogrow", "Content Increases Height", fullHeight > emptyHeight, `${fullHeight} should be > ${emptyHeight}`);
+    textarea.parentElement.style.setProperty("font-size", "50%");
+    await waitAsync(200); // Wait for height to update
+
+    testAssertion("Autogrow", "font-size Decrease Decreases Height", textarea.parentElement.clientHeight < fullHeight, `${textarea.parentElement.clientHeight} should be < ${fullHeight}`);
+    textarea.parentElement.style.setProperty("font-size", "100%");
+    textarea.parentElement.style.removeProperty("font-size");
+    textarea.parentElement.style.setProperty("--code-input_autogrow_min-height", (fullHeight + 10) + "px");
+    textarea.blur(); // Prevent focus instruction bar from affecting height
+    await waitAsync(200); // Wait for height to update
+
+    assertEqual("Autogrow", "--code-input_autogrow_min-height Sets Height", textarea.parentElement.clientHeight, fullHeight + 10);
+    textarea.focus(); // Enable inserting text again
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_min-height");
+    textarea.parentElement.style.setProperty("--code-input_autogrow_max-height", (fullHeight - 10) + "px");
+    await waitAsync(100); // Wait for height to update
+
+    assertEqual("Autogrow", "--code-input_autogrow_max-height Sets Height", textarea.parentElement.clientHeight, fullHeight - 10);
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_max-height");
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_max-height");
+    await waitAsync(100); // Wait for height to update
+
+    textarea.selectionStart = 0;
+    textarea.selectionEnd = textarea.value.length;
+    backspace(textarea);
+    textarea.parentElement.classList.add("code-input_autogrow_width");
+    await waitAsync(100); // Wait for width to update
+
+    const emptyWidth = textarea.parentElement.clientWidth;
+    addText(textarea, "// A very very very very extremely vastly very very very very long line of code is written here in this very comment; yes, this very comment!");
+    await waitAsync(100); // Wait for width to update
+
+    const fullWidth = textarea.parentElement.clientWidth;
+    testAssertion("Autogrow", "Content Increases Width", fullWidth > emptyWidth, `${fullWidth} should be > ${emptyWidth}`);
+    textarea.parentElement.style.setProperty("font-size", "50%");
+    await waitAsync(200); // Wait for width to update
+
+    testAssertion("Autogrow", "font-size Decrease Decreases Width", textarea.parentElement.clientWidth < fullWidth, `${textarea.parentElement.clientWidth} should be < ${fullWidth}`);
+    textarea.parentElement.style.setProperty("font-size", "100%");
+    textarea.parentElement.style.removeProperty("font-size");
+    textarea.parentElement.style.setProperty("--code-input_autogrow_min-width", (fullWidth + 10) + "px");
+    await waitAsync(200); // Wait for width to update
+
+    assertEqual("Autogrow", "--code-input_autogrow_min-width Sets Width", textarea.parentElement.clientWidth, fullWidth + 10);
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_min-width");
+    textarea.parentElement.style.setProperty("--code-input_autogrow_max-width", (fullWidth - 10) + "px");
+    await waitAsync(100); // Wait for width to update
+
+    assertEqual("Autogrow", "--code-input_autogrow_max-width Sets Width", textarea.parentElement.clientWidth, fullWidth - 10);
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_max-width");
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_max-width");
+
+    textarea.parentElement.classList.remove("code-input_autogrow_height");
+    textarea.parentElement.classList.remove("code-input_autogrow_width");
+
+    // TODO add reaons to above testAssertions; check why min-width failing; manual tests to check properly fits; prompt tests; fix no-content hljs.html autogrow-both-ways sizing; test with unregistered.
+
     // FindAndReplace
     // Replace all code
     textarea.selectionStart = 0;

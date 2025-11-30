@@ -29,6 +29,13 @@ Files: [autodetect.js](./autodetect.js)
 
 [🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-autodetect)
 
+### Autogrow
+Make code-input elements resize automatically and fit their content live using CSS classes, optionally between a minimum and maximum size specified using CSS variables.
+
+Files: [autogrow.css](./autogrow.css) (NO JS FILE)
+
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-autogrow)
+
 ### Find and Replace
 Add Find-and-Replace (Ctrl+F for find, Ctrl+H for replace by default, or when JavaScript triggers it) functionality to the code editor.
 
