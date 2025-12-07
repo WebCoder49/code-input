@@ -10,7 +10,7 @@ title = '`code-input` vs the `textarea` in JavaScript'
 
 If you want to replace a `textarea` with a `code-input` in an application that doesn't need JavaScript, [look here](../forms). We support HTML5 forms, and progressive enhancement so JavaScript isn't needed!
 
-## The `code-input_load` event {code-input_load}
+## The `code-input_load` event {#code-input_load}
 
 Each `code-input` element fires a `code-input_load` event when it, its template and its plugins have been fully registered. You should carry out initialisation code for `code-input` elements in a handler for this event:
 ```javascript
