@@ -558,12 +558,12 @@ var codeInput = {
             const height = getComputedStyle(this.getStyledHighlightingElement()).height;
             this.textareaElement.style.height = 0;
             this.textareaElement.style.height = height;
-            this.textareaElement.style.setProperty("--code-input_synced-height", height);
+            this.internalStyle.setProperty("--code-input_synced-height", height);
 
             const width = getComputedStyle(this.getStyledHighlightingElement()).width;
             this.textareaElement.style.width = 0;
             this.textareaElement.style.width = width;
-            this.textareaElement.style.setProperty("--code-input_synced-width", width);
+            this.internalStyle.setProperty("--code-input_synced-width", width);
         }
 
         /**
@@ -785,6 +785,14 @@ var codeInput = {
 
             this.innerHTML = ""; // Clear Content
 
+            // Add internal style as non-externally-overridable alternative to style attribute for e.g. syncing color
+            this.classList.add("code-input_styles_" + codeInput.stylesheetI);
+            const stylesheet = document.createElement("style");
+            stylesheet.innerHTML = "code-input.code-input_styles_" + codeInput.stylesheetI + " {}";
+            this.appendChild(stylesheet);
+            this.internalStyle = stylesheet.sheet.cssRules[0].style;
+            codeInput.stylesheetI++;
+
             // Synchronise attributes to textarea
             for(let i = 0; i < this.attributes.length; i++) {
                 let attribute = this.attributes[i].name;
@@ -852,15 +860,6 @@ var codeInput = {
                 this.syncSize();
             });
             resizeObserver.observe(this);
-
-
-            // Add internal style as non-externally-overridable alternative to style attribute for e.g. syncing color
-            this.classList.add("code-input_styles_" + codeInput.stylesheetI);
-            const stylesheet = document.createElement("style");
-            stylesheet.innerHTML = "code-input.code-input_styles_" + codeInput.stylesheetI + " {}";
-            this.appendChild(stylesheet);
-            this.internalStyle = stylesheet.sheet.cssRules[0].style;
-            codeInput.stylesheetI++;
 
             // Synchronise colors
             const preColorChangeCallback = (evt) => {

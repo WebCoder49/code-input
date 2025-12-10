@@ -39,3 +39,7 @@ code-input.line-numbers.code-input_autogrow_width textarea, .line-numbers code-i
   width: calc(var(--code-input_autogrow_min-width) - max(3.8em, var(--padding-left, 16px)) - var(--padding-right, 16px))!important; /* So minimum width possible while containing highlighted code */
   min-width: max(var(--code-input_synced-width), calc(100% - max(3.8em, var(--padding-left, 16px)) - var(--padding-right, 16px)));
 }
+code-input.code-input_autogrow_width pre code,
+code-input.code-input_autogrow_width pre {
+  min-width: calc(var(--code-input_autogrow_min-width) - max(3.8em, var(--padding-left, 16px)) - var(--padding-right, 16px));
+}

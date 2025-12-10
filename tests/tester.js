@@ -520,6 +520,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     await waitAsync(100); // Wait for width to update
 
     const emptyWidth = textarea.parentElement.clientWidth;
+    textarea.parentElement.style.setProperty("--code-input_autogrow_max-width", "calc(infinity * 1px)"); // So can grow beyond width of viewport - default CSS limits to width
     addText(textarea, "// A very very very very extremely vastly very very very very long line of code is written here in this very comment; yes, this very comment!");
     await waitAsync(100); // Wait for width to update
 
@@ -529,7 +530,6 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     await waitAsync(200); // Wait for width to update
 
     testAssertion("Autogrow", "font-size Decrease Decreases Width", textarea.parentElement.clientWidth < fullWidth, `${textarea.parentElement.clientWidth} should be < ${fullWidth}`);
-    textarea.parentElement.style.setProperty("font-size", "100%");
     textarea.parentElement.style.removeProperty("font-size");
     textarea.parentElement.style.setProperty("--code-input_autogrow_min-width", (fullWidth + 10) + "px");
     await waitAsync(200); // Wait for width to update

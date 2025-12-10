@@ -15,13 +15,14 @@
 /* Find-and-replace dialog */
 
 @keyframes code-input_find-and-replace_roll-in {
-    0% {opacity: 0; transform: translateY(-34px);}
-    100% {opacity: 1; transform: translateY(0px);}
-}
-
-@keyframes code-input_find-and-replace_roll-out {
-    0% {opacity: 1;top: 0;}
-    100% {opacity: 0;top: -34px;}
+    0% {
+      opacity: 0;
+      transform: translateY(-34px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0px);
+    }
 }
 
 .code-input_find-and-replace_dialog {
@@ -38,14 +39,11 @@
 
 .code-input_find-and-replace_dialog:not(.code-input_find-and-replace_hidden-dialog) {
   animation: code-input_find-and-replace_roll-in .2s;
-  opacity: 1;
-  pointer-events: all;
+  display: block;
 }
 
 .code-input_find-and-replace_dialog.code-input_find-and-replace_hidden-dialog {
-  animation: code-input_find-and-replace_roll-out .2s;
-  opacity: 0;
-  pointer-events: none;
+  display: none;
 }
 
 .code-input_find-and-replace_dialog input::placeholder {

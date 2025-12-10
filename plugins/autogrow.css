@@ -18,6 +18,10 @@ code-input.code-input_autogrow_height textarea {
     height: calc(var(--code-input_autogrow_min-height) - var(--padding-top, 16px) - var(--padding-bottom, 16px))!important; /* So minimum height possible while containing highlighted code */
     min-height: max(var(--code-input_synced-height), calc(100% - var(--padding-top, 16px) - var(--padding-bottom, 16px)));
 }
+code-input.code-input_autogrow_height > pre,
+code-input.code-input_autogrow_height > pre code {
+    min-height: calc(var(--code-input_autogrow_min-height) - var(--padding-top, 16px) - var(--padding-bottom, 16px));
+}
 
 code-input.code-input_autogrow_width {
     --code-input_autogrow_min-width: 100px;
@@ -25,8 +29,25 @@ code-input.code-input_autogrow_width {
     width: max-content; /* Using unset rather than max-content makes always 100% width. */
     max-width: var(--code-input_autogrow_max-width);
 }
-
 code-input.code-input_autogrow_width textarea {
     width: calc(var(--code-input_autogrow_min-width) - var(--padding-left, 16px) - var(--padding-right, 16px))!important; /* So minimum width possible while containing highlighted code */
     min-width: max(var(--code-input_synced-width), calc(100% - var(--padding-left, 16px) - var(--padding-right, 16px)));
+}
+code-input.code-input_autogrow_width pre code,
+code-input.code-input_autogrow_width pre {
+    min-width: calc(var(--code-input_autogrow_min-width) - var(--padding-left, 16px) - var(--padding-right, 16px));
+}
+
+/* FindAndReplace / GoToLine dialog visibility */
+code-input.code-input_autogrow_width:has(.code-input_go-to-line_dialog:not(.code-input_go-to-line_hidden-dialog)) {
+    --code-input_autogrow_min-width: 300px;
+}
+code-input.code-input_autogrow_height:has(.code-input_go-to-line_dialog:not(.code-input_go-to-line_hidden-dialog)) {
+    --code-input_autogrow_min-height: 150px;
+}
+code-input.code-input_autogrow_width:has(.code-input_find-and-replace_dialog:not(.code-input_find-and-replace_hidden-dialog)) {
+    --code-input_autogrow_min-width: 500px;
+}
+code-input.code-input_autogrow_height:has(.code-input_find-and-replace_dialog:not(.code-input_find-and-replace_hidden-dialog)) {
+    --code-input_autogrow_min-height: 170px;
 }

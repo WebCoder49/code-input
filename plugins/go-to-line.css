@@ -1,11 +1,12 @@
 @keyframes code-input_go-to-line_roll-in {
-    0% {opacity: 0; transform: translateY(-34px);}
-    100% {opacity: 1; transform: translateY(0px);}
-}
-
-@keyframes code-input_go-to-line_roll-out {
-    0% {opacity: 1; transform: translateY(0px);}
-    100% {opacity: 0; transform: translateY(-34px);}
+    0% {
+      opacity: 0;
+      transform: translateY(-34px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0px);
+    }
 }
 
 .code-input_go-to-line_dialog {
@@ -21,14 +22,11 @@
 
 .code-input_go-to-line_dialog:not(.code-input_go-to-line_hidden-dialog) {
   animation: code-input_go-to-line_roll-in .2s;
-  opacity: 1;
-  pointer-events: all;
+  display: block;
 }
 
 .code-input_go-to-line_dialog.code-input_go-to-line_hidden-dialog {
-  animation: code-input_go-to-line_roll-out .2s;
-  opacity: 0;
-  pointer-events: none;
+  display: none;
 }
 
 .code-input_go-to-line_dialog input::placeholder {
