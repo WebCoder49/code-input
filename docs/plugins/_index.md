@@ -124,7 +124,7 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
 </html>
 ```
 
-#### `Autogrow`: Let code-input elements resize to fit their content (optionally between limits) {#playground-preset-prism-line-numbers}
+#### `Autogrow`: Let code-input elements resize to fit their content (optionally between limits) {#playground-preset-autogrow}
 
 ```
 <!DOCTYPE html>
