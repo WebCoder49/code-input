@@ -3,7 +3,7 @@
 
 💡 Do you just want to get a quick editor working? We suggest the [Indent](#indent) and [Prism Line Numbers](#prism-line-numbers) plugins.
 
-**Lots of plugins are very customisable - please see the JavaScript files for parameters and if you want more features let us know via GitHub Issues.**
+**Lots of plugins are very customisable - please see the JavaScript files for parameters and if you want more features let us know via Issues.**
 
 ---
 

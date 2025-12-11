@@ -568,13 +568,15 @@ var codeInput = {
 
         /**
          * If the color attribute has been defined on the
-         * code-input element by external code, return true.
+         * code-input element by external code, run the callback
+         * provided.
          * Otherwise, make the aspects the color affects
          * (placeholder and caret colour) be the base colour
-         * of the highlighted text, for best contrast, and
-         * return false.
+         * of the highlighted text, for best contrast.
          */
-        isColorOverridenSyncIfNot() {
+        syncIfColorNotOverridden(callbackIfOverridden=function() {}) {
+            if(this.checkingColorOverridden) return;
+            this.checkingColorOverridden = true;
             const oldTransition = this.style.transition;
             this.style.transition = "unset";
             window.requestAnimationFrame(() => {
@@ -585,20 +587,28 @@ var codeInput = {
                     if(getComputedStyle(this).color == "rgb(255, 255, 255)") {
                         // Definitely not overriden
                         this.internalStyle.removeProperty("--code-input_no-override-color");
+                        console.log(this, "Autoadapt; " + oldTransition);
                         this.style.transition = oldTransition;
 
                         const highlightedTextColor = getComputedStyle(this.getStyledHighlightingElement()).color;
 
                         this.internalStyle.setProperty("--code-input_highlight-text-color", highlightedTextColor);
                         this.internalStyle.setProperty("--code-input_default-caret-color", highlightedTextColor);
-                        return false;
+                        this.checkingColorOverridden = false;
+                    } else {
+                        this.style.transition = oldTransition;
+                        this.checkingColorOverridden = false;
+                        callbackIfOverridden();
                     }
+                } else {
+                    this.style.transition = oldTransition;
+                    this.checkingColorOverridden = false;
+                    callbackIfOverridden();
                 }
                 this.internalStyle.removeProperty("--code-input_no-override-color");
+                console.log(this, "No autoadapt; " + oldTransition);
                 this.style.transition = oldTransition;
             });
-
-            return true;
         }
 
         /**
@@ -610,11 +620,11 @@ var codeInput = {
          */
         syncColorCompletely() {
             // color of code-input element
-            if(this.isColorOverridenSyncIfNot()) {
+            this.syncIfColorNotOverridden(() => {
                 // color overriden
                 this.internalStyle.removeProperty("--code-input_highlight-text-color");
                 this.internalStyle.setProperty("--code-input_default-caret-color", getComputedStyle(this).color);
-            }
+            });
         }
 
 
@@ -860,6 +870,7 @@ var codeInput = {
                 this.syncSize();
             });
             resizeObserver.observe(this);
+          
             // Must resize when this content resizes, for autogrow plugin
             // support.
             resizeObserver.observe(this.preElement);
@@ -868,7 +879,7 @@ var codeInput = {
             // Synchronise colors
             const preColorChangeCallback = (evt) => {
                 if(evt.propertyName == "color") {
-                    this.isColorOverridenSyncIfNot();
+                    this.syncIfColorNotOverridden();
                 }
             };
             this.preElement.addEventListener("transitionend", preColorChangeCallback);

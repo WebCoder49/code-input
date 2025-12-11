@@ -33,8 +33,8 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
 
     /**
      * Create a find-and-replace command plugin to pass into a template. To ensure keyboard shortcuts remain intuitive, set the alwaysCtrl parameter to false.
-     * @param {boolean} useCtrlF Should Ctrl/Cmd+F be overriden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
-     * @param {boolean} useCtrlH Should Ctrl+H be overriden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
+     * @param {boolean} useCtrlF Should Ctrl/Cmd+F be overridden for find-and-replace find functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, false)`.
+     * @param {boolean} useCtrlH Should Ctrl+H be overridden for find-and-replace replace functionality? Either way, you can also trigger it yourself using (instance of this plugin)`.showPrompt(code-input element, true)`.
      * @param {Object} instructionTranslations: user interface string keys mapped to translated versions for localisation. Look at the find-and-replace.js source code for the English text.
      * @param {boolean} alwaysCtrl Setting this to false makes the keyboard shortcuts follow the operating system while avoiding clashes (right now: Cmd+F/Ctrl+H on Apple, Ctrl+F/Ctrl+H otherwise.) and is recommended; true forces Ctrl+F/Ctrl+H and is default for backwards compatibility.
      */
