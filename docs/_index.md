@@ -8,7 +8,7 @@ title = 'Flexible Syntax Highlighted Editable Textareas'
 
 ## Download
 
-*`code-input.js` is free, libre, open source software under the MIT (AKA Expat) license.* You have choices! **Download it from the Git repository on [GitHub](https://github.com/WebCoder49/code-input/tree/v2.7.3) or [Codeberg](https://codeberg.org/code-input-js/code-input-js/), [in a ZIP archive](/release/code-input-js-v2.7.3.zip), [in a TAR.GZ archive](/release/code-input-js-v2.7.3.tar.gz), or from `@webcoder49/code-input` on the NPM registry ([Yarn](https://yarnpkg.com/package?name=@webcoder49/code-input), [NPM](https://npmjs.com/package/@webcoder49/code-input), etc.).**
+*`code-input.js` is free, libre, open source software under the MIT (AKA Expat) license.* You have choices! **Download it from the Git repository on [GitHub](https://github.com/WebCoder49/code-input/tree/v2.8.0) or [Codeberg](https://codeberg.org/code-input-js/code-input-js/), [in a ZIP archive](/release/code-input-js-v2.8.0.zip), [in a TAR.GZ archive](/release/code-input-js-v2.8.0.tar.gz), or from `@webcoder49/code-input` on the NPM registry ([Yarn](https://yarnpkg.com/package?name=@webcoder49/code-input), [NPM](https://npmjs.com/package/@webcoder49/code-input), etc.).**
 
 [Want to contribute to the code? You're very welcome to! See here.](#contributing)
 
@@ -32,9 +32,9 @@ title = 'Flexible Syntax Highlighted Editable Textareas'
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30/plugins/autoloader/prism-autoloader.min.js"></script>
         <!--2. Import code-input-js-->
-        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/code-input.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/code-input.min.css">
-        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/plugins/indent.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/code-input.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/code-input.min.css">
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/plugins/indent.min.js"></script>
         <!--3. Join code-input-js to highlighter-->
         <script>codeInput.registerTemplate("syntax-highlighted", new codeInput.templates.Prism(Prism, [new codeInput.plugins.Indent()]));</script>
     </head>
@@ -71,13 +71,13 @@ console.log("Hello, World!");</textarea></code-input>
 
         <!--Import code-input-->
         <!--The same goes for downloaded versions.-->
-        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/code-input.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/code-input.min.css">
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/code-input.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/code-input.min.css">
 
         <!--Import some code-input plugins-->
         <!--The same goes for downloaded versions.-->
         <!--Plugin files are here: https://code-input-js.org/plugins.-->
-        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/plugins/indent.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/plugins/indent.min.js"></script>
 
         <!--Register code-input template-->
         <!--This can be before the code-input element is created, in which case it will defer the registration of all code-input
@@ -131,13 +131,13 @@ console.log("Hello, World!");</textarea></code-input>
 
         <!--Import code-input-->
         <!--The same goes for downloaded versions.-->
-        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/code-input.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/code-input.min.css">
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/code-input.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/code-input.min.css">
 
         <!--Import some code-input plugins-->
         <!--The same goes for downloaded versions.-->
         <!--Plugin files are here: https://code-input-js.org/plugins.-->
-        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/plugins/indent.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/plugins/indent.min.js"></script>
 
         <!--Register code-input template-->
         <!--This can be before the code-input element is created, in which case it will defer the registration of all code-input
@@ -179,13 +179,13 @@ console.log("Hello, World!");</textarea></code-input>
 
         <!--Import code-input-->
         <!--The same goes for downloaded versions.-->
-        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/code-input.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/code-input.min.css">
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/code-input.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/code-input.min.css">
 
         <!--Import some code-input plugins-->
         <!--The same goes for downloaded versions.-->
         <!--Plugin files are here: https://code-input-js.org/plugins.-->
-        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/plugins/indent.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/plugins/indent.min.js"></script>
 
         <!--Register code-input template-->
         <!--This can be before the code-input element is created, in which case it will defer the registration of all code-input
