@@ -203,6 +203,7 @@ The mouse ran up the clock.
 The clock struck one,
 The mouse ran down,
 Hickory dickory dock.</code-input>
+        <p><small>When setting the size of <code>code-input</code> elements with this plugin, make sure they are large enough to fit the dialog, at least 500px wide and 170px tall with the default styling. (If you are using the <code>Autogrow</code> plugin, this will be done for you as long as your <code>--code-input_autogrow_max-width</code> and <code>--code-input_autogrow_max-height</code> are large enough.) For technical reasons the dialog cannot overflow the editing area.</small></p>
     </body>
 </html>
 ```
@@ -251,6 +252,7 @@ The mouse ran up the clock.
 The clock struck one,
 The mouse ran down,
 Hickory dickory dock.</code-input>
+        <p><small>When setting the size of <code>code-input</code> elements with this plugin, make sure they are large enough to fit the dialog, at least 300px wide and 150px tall with the default styling. (If you are using the <code>Autogrow</code> plugin, this will be done for you as long as your <code>--code-input_autogrow_max-width</code> and <code>--code-input_autogrow_max-height</code> are large enough.) For technical reasons the dialog cannot overflow the editing area.</small></p>
     </body>
 </html>
 ```
