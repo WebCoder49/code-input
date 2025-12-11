@@ -11,43 +11,53 @@ and the fact code-input.js already implements the article's main structure. */
 code-input.code-input_autogrow_height {
     --code-input_autogrow_min-height: 0px;
     --code-input_autogrow_max-height: calc(infinity * 1px);
+
+    /* See FindAndReplace/GoToLine dialog visibility */
+    --code-input_autogrow_internal-min-height: 0px;
+    --code-input_autogrow_true-min-height: max(var(--code-input_autogrow_min-height), var(--code-input_autogrow_internal-min-height));
+
     height: max-content;
     max-height: var(--code-input_autogrow_max-height);
 }
 code-input.code-input_autogrow_height textarea {
-    height: calc(var(--code-input_autogrow_min-height) - var(--padding-top, 16px) - var(--padding-bottom, 16px))!important; /* So minimum height possible while containing highlighted code */
+    height: calc(var(--code-input_autogrow_true-min-height) - var(--padding-top, 16px) - var(--padding-bottom, 16px))!important; /* So minimum height possible while containing highlighted code */
     min-height: max(var(--code-input_synced-height), calc(100% - var(--padding-top, 16px) - var(--padding-bottom, 16px)));
 }
 code-input.code-input_autogrow_height > pre,
 code-input.code-input_autogrow_height > pre code {
-    min-height: calc(var(--code-input_autogrow_min-height) - var(--padding-top, 16px) - var(--padding-bottom, 16px));
+    min-height: calc(var(--code-input_autogrow_true-min-height) - var(--padding-top, 16px) - var(--padding-bottom, 16px));
 }
 
 code-input.code-input_autogrow_width {
     --code-input_autogrow_min-width: 100px;
     --code-input_autogrow_max-width: 100%;
+
+    /* See FindAndReplace/GoToLine dialog visibility */
+    --code-input_autogrow_internal-min-width: 0px;
+    --code-input_autogrow_true-min-width: max(var(--code-input_autogrow_min-width), var(--code-input_autogrow_internal-min-width));
+
     width: max-content; /* Using unset rather than max-content makes always 100% width. */
     max-width: var(--code-input_autogrow_max-width);
 }
 code-input.code-input_autogrow_width textarea {
-    width: calc(var(--code-input_autogrow_min-width) - var(--padding-left, 16px) - var(--padding-right, 16px))!important; /* So minimum width possible while containing highlighted code */
+    width: calc(var(--code-input_autogrow_true-min-width) - var(--padding-left, 16px) - var(--padding-right, 16px))!important; /* So minimum width possible while containing highlighted code */
     min-width: max(var(--code-input_synced-width), calc(100% - var(--padding-left, 16px) - var(--padding-right, 16px)));
 }
 code-input.code-input_autogrow_width pre code,
 code-input.code-input_autogrow_width pre {
-    min-width: calc(var(--code-input_autogrow_min-width) - var(--padding-left, 16px) - var(--padding-right, 16px));
+    min-width: calc(var(--code-input_autogrow_true-min-width) - var(--padding-left, 16px) - var(--padding-right, 16px));
 }
 
 /* FindAndReplace / GoToLine dialog visibility */
 code-input.code-input_autogrow_width:has(.code-input_go-to-line_dialog:not(.code-input_go-to-line_hidden-dialog)) {
-    --code-input_autogrow_min-width: 300px;
+    --code-input_autogrow_internal-min-width: 300px;
 }
 code-input.code-input_autogrow_height:has(.code-input_go-to-line_dialog:not(.code-input_go-to-line_hidden-dialog)) {
-    --code-input_autogrow_min-height: 150px;
+    --code-input_autogrow_internal-min-height: 150px;
 }
 code-input.code-input_autogrow_width:has(.code-input_find-and-replace_dialog:not(.code-input_find-and-replace_hidden-dialog)) {
-    --code-input_autogrow_min-width: 500px;
+    --code-input_autogrow_internal-min-width: 500px;
 }
 code-input.code-input_autogrow_height:has(.code-input_find-and-replace_dialog:not(.code-input_find-and-replace_hidden-dialog)) {
-    --code-input_autogrow_min-height: 170px;
+    --code-input_autogrow_internal-min-height: 170px;
 }
