@@ -555,8 +555,15 @@ var codeInput = {
          */
         syncSize() {
             // Synchronise the size of the pre/code and textarea elements
-            this.textareaElement.style.height = getComputedStyle(this.getStyledHighlightingElement()).height;
-            this.textareaElement.style.width = getComputedStyle(this.getStyledHighlightingElement()).width;
+            // Set directly as well as via the variable so precedence
+            // not lowered, breaking CSS backwards compatibility.
+            const height = getComputedStyle(this.getStyledHighlightingElement()).height;
+            this.textareaElement.style.height = height;
+            this.internalStyle.setProperty("--code-input_synced-height", height);
+
+            const width = getComputedStyle(this.getStyledHighlightingElement()).width;
+            this.textareaElement.style.width = width;
+            this.internalStyle.setProperty("--code-input_synced-width", width);
         }
 
         /**
@@ -788,6 +795,14 @@ var codeInput = {
 
             this.innerHTML = ""; // Clear Content
 
+            // Add internal style as non-externally-overridable alternative to style attribute for e.g. syncing color
+            this.classList.add("code-input_styles_" + codeInput.stylesheetI);
+            const stylesheet = document.createElement("style");
+            stylesheet.innerHTML = "code-input.code-input_styles_" + codeInput.stylesheetI + " {}";
+            this.appendChild(stylesheet);
+            this.internalStyle = stylesheet.sheet.cssRules[0].style;
+            codeInput.stylesheetI++;
+
             // Synchronise attributes to textarea
             for(let i = 0; i < this.attributes.length; i++) {
                 let attribute = this.attributes[i].name;
@@ -855,14 +870,11 @@ var codeInput = {
                 this.syncSize();
             });
             resizeObserver.observe(this);
-
-
-            this.classList.add("code-input_styles_" + codeInput.stylesheetI);
-            const stylesheet = document.createElement("style");
-            stylesheet.innerHTML = "code-input.code-input_styles_" + codeInput.stylesheetI + " {}";
-            this.appendChild(stylesheet);
-            this.internalStyle = stylesheet.sheet.cssRules[0].style;
-            codeInput.stylesheetI++;
+          
+            // Must resize when this content resizes, for autogrow plugin
+            // support.
+            resizeObserver.observe(this.preElement);
+            resizeObserver.observe(this.codeElement);
 
             // Synchronise colors
             const preColorChangeCallback = (evt) => {

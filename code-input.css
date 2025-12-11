@@ -99,7 +99,7 @@ code-input textarea, code-input pre, code-input pre * {
   tab-size: inherit!important;
   text-align: inherit!important;
 }
-code-input textarea, code-input pre, code-input pre code {
+code-input pre, code-input pre code {
   overflow: visible!important;
 }
 

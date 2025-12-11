@@ -124,6 +124,41 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
 </html>
 ```
 
+#### `Autogrow`: Let code-input elements resize to fit their content (optionally between limits) {#playground-preset-prism-line-numbers}
+
+```
+<!DOCTYPE html>
+<html>
+    <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
+        <!--Prism+code-input-->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css"></link>
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/code-input.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/code-input.min.css">
+
+        
+        <!--Import-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.7/plugins/autogrow.min.css"/>
+
+        <script>
+            codeInput.registerTemplate("syntax-highlighted", new codeInput.templates.Prism(Prism, [
+                // CSS only - don't pass here
+            ]));
+        </script>
+        <p>Enter newlines to grow vertically:</p>
+        <code-input class="code-input_autogrow_height" language="Markdown"></code-input>
+        <p>Type to grow horizontally:</p>
+        <code-input class="code-input_autogrow_width" language="Markdown"></code-input>
+        <p>Grows vertically between 100px and 200px:</p>
+        <code-input class="code-input_autogrow_height" style="--code-input_autogrow_min-height: 100px; --code-input_autogrow_max-height: 200px;" language="Markdown"></code-input>
+        <p>Grows horizontally between 100px and 200px:</p>
+        <code-input class="code-input_autogrow_width" style="--code-input_autogrow_min-width: 100px; --code-input_autogrow_max-width: 200px;" language="Markdown"></code-input>
+    </body>
+</html>
+```
+
 #### `FindAndReplace`: Add an openable dialog to find and replace matches to a search term, including highlighting the matches {#playground-preset-find-and-replace}
 
 ```
