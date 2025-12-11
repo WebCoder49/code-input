@@ -555,13 +555,13 @@ var codeInput = {
          */
         syncSize() {
             // Synchronise the size of the pre/code and textarea elements
+            // Set directly as well as via the variable so precedence
+            // not lowered, breaking CSS backwards compatibility.
             const height = getComputedStyle(this.getStyledHighlightingElement()).height;
-            this.textareaElement.style.height = 0;
             this.textareaElement.style.height = height;
             this.internalStyle.setProperty("--code-input_synced-height", height);
 
             const width = getComputedStyle(this.getStyledHighlightingElement()).width;
-            this.textareaElement.style.width = 0;
             this.textareaElement.style.width = width;
             this.internalStyle.setProperty("--code-input_synced-width", width);
         }
@@ -860,6 +860,10 @@ var codeInput = {
                 this.syncSize();
             });
             resizeObserver.observe(this);
+            // Must resize when this content resizes, for autogrow plugin
+            // support.
+            resizeObserver.observe(this.preElement);
+            resizeObserver.observe(this.codeElement);
 
             // Synchronise colors
             const preColorChangeCallback = (evt) => {
