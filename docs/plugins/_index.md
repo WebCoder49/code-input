@@ -203,7 +203,9 @@ The mouse ran up the clock.
 The clock struck one,
 The mouse ran down,
 Hickory dickory dock.</textarea></code-input>
+        <h2>Please Note</h2>
         <p><small>When setting the size of <code>code-input</code> elements with this plugin, make sure they are large enough to fit the dialog, at least 500px wide and 170px tall with the default styling. (If you are using the <code>Autogrow</code> plugin, this will be done for you as long as your <code>--code-input_autogrow_max-width</code> and <code>--code-input_autogrow_max-height</code> are large enough.) For technical reasons the dialog cannot overflow the editing area.</small></p>
+        <p><small>The keyboard shortcuts may be intercepted by the browser and unable to be used by <code>code-input.js</code>, for example in GNOME Web or Konqueror. Thus if you want this plugin to be available to all users, provide separate buttons to trigger the dialogs as shown above.</small></p>
     </body>
 </html>
 ```
@@ -252,7 +254,9 @@ The mouse ran up the clock.
 The clock struck one,
 The mouse ran down,
 Hickory dickory dock.</textarea></code-input>
+        <h2>Please Note</h2>
         <p><small>When setting the size of <code>code-input</code> elements with this plugin, make sure they are large enough to fit the dialog, at least 300px wide and 150px tall with the default styling. (If you are using the <code>Autogrow</code> plugin, this will be done for you as long as your <code>--code-input_autogrow_max-width</code> and <code>--code-input_autogrow_max-height</code> are large enough.) For technical reasons the dialog cannot overflow the editing area.</small></p>
+        <p><small>The keyboard shortcuts may be intercepted by the browser and unable to be used by <code>code-input.js</code>, for example in GNOME Web or Konqueror. Thus if you want this plugin to be available to all users, provide a separate button to trigger the dialog as shown above.</small></p>
     </body>
 </html>
 ```
