@@ -20,5 +20,6 @@ Please do **not** use `className` in JavaScript referring to code-input elements
 `code-input` elements default to having a fixed height and filling the width of their container while the code inside scrolls, and you can set the ordinary CSS properties (for example `height` and `width`) to change this size. You can also make the size more flexible using CSS:
 
 * The [CSS `resize` property (see link)](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/resize) can be used on `code-input` elements to give them the manual resizing handle `textarea`s often come with, when the web browser supports it. For example, `<code-input style="resize: both;"`... gives:
+
 ![A syntax-highlighted code input element with diagonal lines in the corner, which can be dragged to resize the element.](resize-both-screenshot.png)
-* You can also make a `code-input` element resize automatically to fit its contents - use [the Autosize plugin](../../plugins/#playground-preset-autosize) for that.
+* You can also make a `code-input` element resize automatically to fit its contents - use [the Autogrow plugin](../../plugins/#playground-preset-autogrow) for that.
