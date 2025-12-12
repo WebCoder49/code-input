@@ -44,7 +44,7 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
             ]));
         </script>
         <p>This uses both the auto-close brackets and indent plugins. Try typing some brackets / double quotes!</p>
-        <code-input language="javascript"></code-input>
+        <code-input language="javascript"><textarea data-code-input-fallback></textarea></code-input>
     </body>
 </html>
 ```
@@ -119,7 +119,7 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
             ]));
             </script>
         <p>Start typing some HTML tags to see the autocomplete in action. You can click an autocomplete suggestion, or press the Tab key to select the first.</p>
-        <code-input language="html"></code-input>
+        <code-input language="html"><textarea data-code-input-fallback></textarea></code-input>
     </body>
 </html>
 ```
@@ -148,13 +148,13 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
             ]));
         </script>
         <p>Enter newlines to grow vertically:</p>
-        <code-input class="code-input_autogrow_height" language="Markdown"></code-input>
+        <code-input class="code-input_autogrow_height" language="Markdown"><textarea data-code-input-fallback></textarea></code-input>
         <p>Type to grow horizontally:</p>
-        <code-input class="code-input_autogrow_width" language="Markdown"></code-input>
+        <code-input class="code-input_autogrow_width" language="Markdown"><textarea data-code-input-fallback></textarea></code-input>
         <p>Grows vertically between 100px and 200px:</p>
-        <code-input class="code-input_autogrow_height" style="--code-input_autogrow_min-height: 100px; --code-input_autogrow_max-height: 200px;" language="Markdown"></code-input>
+        <code-input class="code-input_autogrow_height" style="--code-input_autogrow_min-height: 100px; --code-input_autogrow_max-height: 200px;" language="Markdown"><textarea data-code-input-fallback></textarea></code-input>
         <p>Grows horizontally between 100px and 200px:</p>
-        <code-input class="code-input_autogrow_width" style="--code-input_autogrow_min-width: 100px; --code-input_autogrow_max-width: 200px;" language="Markdown"></code-input>
+        <code-input class="code-input_autogrow_width" style="--code-input_autogrow_min-width: 100px; --code-input_autogrow_max-width: 200px;" language="Markdown"><textarea data-code-input-fallback></textarea></code-input>
     </body>
 </html>
 ```
@@ -197,12 +197,12 @@ Right now, you can only add one plugin of each type (e.g. one SelectTokenCallbac
             ]));
         </script>
         <p>When focused in the editor: Try Ctrl/Cmd+F, or click <button onclick="find();">this</button> to find. Try Ctrl+H, or click <button onclick="replace();">this</button> to replace.</p>
-        <code-input language="markdown"># Hickory dickory dock
+        <code-input language="markdown"><textarea data-code-input-fallback># Hickory dickory dock
 Hickory dickory dock.
 The mouse ran up the clock.
 The clock struck one,
 The mouse ran down,
-Hickory dickory dock.</code-input>
+Hickory dickory dock.</textarea></code-input>
         <p><small>When setting the size of <code>code-input</code> elements with this plugin, make sure they are large enough to fit the dialog, at least 500px wide and 170px tall with the default styling. (If you are using the <code>Autogrow</code> plugin, this will be done for you as long as your <code>--code-input_autogrow_max-width</code> and <code>--code-input_autogrow_max-height</code> are large enough.) For technical reasons the dialog cannot overflow the editing area.</small></p>
     </body>
 </html>
@@ -246,12 +246,12 @@ Hickory dickory dock.</code-input>
             ]));
         </script>
         <p>Try Ctrl+G when focused in the editor, or click <button onclick="goToLine()">this button</button></p>
-        <code-input class="line-numbers" language="markdown"># Hickory dickory dock
+        <code-input class="line-numbers" language="markdown"><textarea data-code-input-fallback># Hickory dickory dock
 Hickory dickory dock.
 The mouse ran up the clock.
 The clock struck one,
 The mouse ran down,
-Hickory dickory dock.</code-input>
+Hickory dickory dock.</textarea></code-input>
         <p><small>When setting the size of <code>code-input</code> elements with this plugin, make sure they are large enough to fit the dialog, at least 300px wide and 150px tall with the default styling. (If you are using the <code>Autogrow</code> plugin, this will be done for you as long as your <code>--code-input_autogrow_max-width</code> and <code>--code-input_autogrow_max-height</code> are large enough.) For technical reasons the dialog cannot overflow the editing area.</small></p>
     </body>
 </html>
@@ -290,13 +290,13 @@ Hickory dickory dock.</code-input>
             ]));
         </script>
         <p>Try Tab or Shift+Tab when selecting or editing text.</p>
-        <code-input class="line-numbers" language="json">{
+        <code-input class="line-numbers" language="json"><textarea data-code-input-fallback>{
     "hello": "world",
     1: 2,
     "foo": {
         "bar": "baz"
     }
-}</code-input>
+}</textarea></code-input>
   </body>
 </html>
 ```
@@ -575,14 +575,14 @@ Hickory dickory dock.</code-input>
             ]));
         </script>
         <p>Try selecting some code with a bracket. This is just one demo use of this very flexible plugin, which lets you use more features from your highlighter (here, Prism.js' match-braces plugin)!</p>
-        <code-input class="match-braces" language="javascript">function hello() {
+        <code-input class="match-braces" language="javascript"><textarea data-code-input-fallback>function hello() {
     let data = {
         "array": [
             "world"
         ]
     };
     console.log(data["array"][0]);
-}</code-input>
+}</textarea></code-input>
   </body>
 </html>
 ```
@@ -625,7 +625,7 @@ See https://github.com/WebCoder49/code-input/issues?q=is%3Aissue%20state%3Aopen%
                 )
             ]));
         </script>
-        <code-input class="line-numbers" language="json"></code-input>
+        <code-input class="line-numbers" language="json"><textarea data-code-input-fallback></textarea></code-input>
         <script>
         window.addEventListener("load", function() {
             document.querySelector("code-input").value += "[\n";
@@ -667,7 +667,7 @@ See https://github.com/WebCoder49/code-input/issues?q=is%3Aissue%20state%3Aopen%
             ]));
         </script>
         <p>Start typing code of any language. <strong>Detected language: <span id="language"></span></strong>. Inaccurate language detection should be reported to <a target="_blank" href="https://highlightjs.org">highlight.js</a>, not code-input-js.</p>
-        <code-input oninput="document.getElementById('language').textContent = this.getAttribute('language');"></code-input>
+        <code-input><textarea oninput="document.getElementById('language').textContent = this.getAttribute('language');" data-code-input-fallback></textarea></code-input>
         <p></p>
     </body>
 </html>
@@ -701,12 +701,12 @@ See https://github.com/WebCoder49/code-input/issues?q=is%3Aissue%20state%3Aopen%
             ]));
         </script>
         <p>The lines are numbered!</p>
-        <code-input class="line-numbers" language="markdown"># Hickory dickory dock
+        <code-input class="line-numbers" language="markdown"><textarea data-code-input-fallback># Hickory dickory dock
 Hickory dickory dock.
 The mouse ran up the clock.
 The clock struck one,
 The mouse ran down,
-Hickory dickory dock.</code-input>
+Hickory dickory dock.</textarea></code-input>
     </body>
 </html>
 ```
