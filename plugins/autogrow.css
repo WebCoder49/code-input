@@ -61,3 +61,17 @@ code-input.code-input_autogrow_width:has(.code-input_find-and-replace_dialog:not
 code-input.code-input_autogrow_height:has(.code-input_find-and-replace_dialog:not(.code-input_find-and-replace_hidden-dialog)) {
     --code-input_autogrow_internal-min-height: 170px;
 }
+
+/* Autogrow doesn't work with fallback textarea (since its functioning depends on
+synchronisation to pre code element). Stick to the minimum size. */
+
+/* At least one line high, leave space for no-JS instructions */
+code-input.code-input_autogrow_height:has(textarea[data-code-input-fallback]) {
+    --code-input_autogrow_internal-min-height: calc(4em + var(--padding-top, 16px) + var(--padding-bottom, 16px)); /* For browsers that don't support 1lh */
+    --code-input_autogrow_internal-min-height: calc(1lh + 2em + var(--padding-top, 16px) + var(--padding-bottom, 16px)); /* So minimum height possible while containing highlighted code */
+    height: var(--code-input_autogrow_true-min-height);
+}
+code-input textarea[data-code-input-fallback] {
+    height: calc(var(--code-input_autogrow_true-min-height) - var(--padding-top, 16px) - var(--padding-bottom, 16px) - 2em)!important; /* So minimum height possible while containing highlighted code */
+    min-height: calc(100% - var(--padding-top, 16px) - var(--padding-bottom, 16px) - 2em);
+}
