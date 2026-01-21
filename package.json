@@ -1,6 +1,6 @@
 {
   "name": "@webcoder49/code-input",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "An editable &lt;textarea&gt; that supports *any* syntax highlighting algorithm, for code or something else. Also, added plugins.",
   "browser": "code-input.js",
   "exports": {

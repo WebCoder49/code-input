@@ -8,7 +8,7 @@ title = 'Flexible Syntax Highlighted Editable Textareas'
 
 ## Download
 
-*`code-input.js` is free, libre, open source software under the MIT (AKA Expat) license.* You have choices! **Download it from the Git repository on [GitHub](https://github.com/WebCoder49/code-input/tree/v2.8.0) or [Codeberg](https://codeberg.org/code-input-js/code-input-js/), [in a ZIP archive](/release/code-input-js-v2.8.0.zip), [in a TAR.GZ archive](/release/code-input-js-v2.8.0.tar.gz), or from `@webcoder49/code-input` on the NPM registry ([Yarn](https://yarnpkg.com/package?name=@webcoder49/code-input), [NPM](https://npmjs.com/package/@webcoder49/code-input), etc.).**
+*`code-input.js` is free, libre, open source software under the MIT (AKA Expat) license.* You have choices! **Download it from the Git repository on [GitHub](https://github.com/WebCoder49/code-input/tree/v2.8.1) or [Codeberg](https://codeberg.org/code-input-js/code-input-js/), [in a ZIP archive](/release/code-input-js-v2.8.1.zip), [in a TAR.GZ archive](/release/code-input-js-v2.8.1.tar.gz), or from `@webcoder49/code-input` on the NPM registry ([Yarn](https://yarnpkg.com/package?name=@webcoder49/code-input), [NPM](https://npmjs.com/package/@webcoder49/code-input), etc.).**
 
 [Want to contribute to the code? You're very welcome to! See here.](#contributing)
 
