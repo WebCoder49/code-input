@@ -587,7 +587,6 @@ var codeInput = {
                     if(getComputedStyle(this).color == "rgb(255, 255, 255)") {
                         // Definitely not overriden
                         this.internalStyle.removeProperty("--code-input_no-override-color");
-                        console.log(this, "Autoadapt; " + oldTransition);
                         this.style.transition = oldTransition;
 
                         const highlightedTextColor = getComputedStyle(this.getStyledHighlightingElement()).color;
@@ -606,7 +605,6 @@ var codeInput = {
                     callbackIfOverridden();
                 }
                 this.internalStyle.removeProperty("--code-input_no-override-color");
-                console.log(this, "No autoadapt; " + oldTransition);
                 this.style.transition = oldTransition;
             });
         }
