@@ -49,23 +49,23 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
     /* Add keystroke events */
     afterElementsAdded(codeInput) {
         const textarea = codeInput.textareaElement;
-        if(this.useCtrlF) {
+        if (this.useCtrlF) {
             textarea.addEventListener('keydown', (event) => { this.checkCtrlF(codeInput, event); });
         }
-        if(this.useCtrlH) {
+        if (this.useCtrlH) {
             textarea.addEventListener('keydown', (event) => { this.checkCtrlH(codeInput, event); });
         }
     }
 
     /* After highlight, retry match highlighting */
     afterHighlight(codeInput) {
-        if(codeInput.pluginData.findAndReplace != undefined && codeInput.pluginData.findAndReplace.dialog != undefined) {
-            if(!codeInput.pluginData.findAndReplace.dialog.classList.contains("code-input_find-and-replace_hidden-dialog")) {
+        if (codeInput.pluginData.findAndReplace != undefined && codeInput.pluginData.findAndReplace.dialog != undefined) {
+            if (!codeInput.pluginData.findAndReplace.dialog.classList.contains("code-input_find-and-replace_hidden-dialog")) {
                 // Code updated and dialog open - re-highlight find matches
                 codeInput.pluginData.findAndReplace.dialog.findMatchState.rehighlightMatches();
                 this.updateMatchDescription(codeInput.pluginData.findAndReplace.dialog);
 
-                if(codeInput.pluginData.findAndReplace.dialog.findMatchState.numMatches == 0) {
+                if (codeInput.pluginData.findAndReplace.dialog.findMatchState.numMatches == 0) {
                     // No more matches after editing
                     codeInput.pluginData.findAndReplace.dialog.findInput.classList.add('code-input_find-and-replace_error');
                 }
@@ -82,14 +82,14 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
     /* Update the dialog description to show the find matches */
     updateMatchDescription(dialog) {
         // 1-indexed
-        if(dialog.findInput.value.length == 0) {
+        if (dialog.findInput.value.length == 0) {
             dialog.matchDescription.textContent = this.instructions.start;
-        } else if(dialog.findMatchState.numMatches <= 0) {
+        } else if (dialog.findMatchState.numMatches <= 0) {
             dialog.matchDescription.textContent = this.instructions.none;
-        } else if(dialog.findMatchState.numMatches == 1) {
+        } else if (dialog.findMatchState.numMatches == 1) {
             dialog.matchDescription.textContent = this.instructions.oneFound;
         } else {
-            dialog.matchDescription.textContent = this.instructions.matchIndex(dialog.findMatchState.focusedMatchID+1, dialog.findMatchState.numMatches);
+            dialog.matchDescription.textContent = this.instructions.matchIndex(dialog.findMatchState.focusedMatchID + 1, dialog.findMatchState.numMatches);
         }
     }
 
@@ -98,26 +98,26 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
         // Update matches for find functionality; debounce it to prevent delay with single-character search
         let oldValue = dialog.findInput.value;
         setTimeout(() => {
-            if(oldValue == dialog.findInput.value) {
+            if (oldValue == dialog.findInput.value) {
                 // Stopped typing
                 dialog.findMatchState.clearMatches();
-                if(oldValue.length > 0) {
+                if (oldValue.length > 0) {
                     try {
                         dialog.findMatchState.updateMatches(this.text2RegExp(dialog.findInput.value, dialog.findCaseSensitiveCheckbox.checked, dialog.findRegExpCheckbox.checked));
                     } catch (err) {
-                        if(err instanceof SyntaxError) {
+                        if (err instanceof SyntaxError) {
                             // Syntax error due to malformed RegExp
                             dialog.findInput.classList.add('code-input_find-and-replace_error');
                             // Only show last part of error message
                             let messageParts = err.message.split(": ");
-                            dialog.matchDescription.textContent = this.instructions.error(messageParts[messageParts.length-1]); // Show only last part of error.
+                            dialog.matchDescription.textContent = this.instructions.error(messageParts[messageParts.length - 1]); // Show only last part of error.
                             return;
                         } else {
                             throw err;
                         }
                     }
 
-                    if(dialog.findMatchState.numMatches > 0) {
+                    if (dialog.findMatchState.numMatches > 0) {
                         dialog.findInput.classList.remove('code-input_find-and-replace_error');
                     } else {
                         // No matches - error
@@ -151,7 +151,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
         }
     }
 
-    /* Called with a dialog box keyup event to close and clear the dialog box */    
+    /* Called with a dialog box keyup event to close and clear the dialog box */
     cancelPrompt(dialog, codeInput, event) {
         event.preventDefault();
 
@@ -169,18 +169,18 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
         dialog.setAttribute("tabindex", -1); // Hide from keyboard navigation when closed.
         dialog.setAttribute("aria-hidden", true); // Hide from screen reader when closed.
 
-        if(dialog.findMatchState.numMatches > 0) {
+        if (dialog.findMatchState.numMatches > 0) {
             // Select focused match
             codeInput.textareaElement.selectionStart = dialog.findMatchState.matchStartIndexes[dialog.findMatchState.focusedMatchID];
             codeInput.textareaElement.selectionEnd = dialog.findMatchState.matchEndIndexes[dialog.findMatchState.focusedMatchID];
         } else {
             // Select text selected before
             codeInput.textareaElement.selectionStart = dialog.selectionStart;
-            codeInput.textareaElement.selectionEnd = dialog.selectionEnd;    
+            codeInput.textareaElement.selectionEnd = dialog.selectionEnd;
         }
 
         dialog.findMatchState.clearMatches();
-        
+
         // Remove dialog after animation
         dialog.classList.add('code-input_find-and-replace_hidden-dialog');
     }
@@ -192,7 +192,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
     */
     showPrompt(codeInputElement, replacePartExpanded) {
         let dialog;
-        if(codeInputElement.pluginData.findAndReplace == undefined || codeInputElement.pluginData.findAndReplace.dialog == undefined) {
+        if (codeInputElement.pluginData.findAndReplace == undefined || codeInputElement.pluginData.findAndReplace.dialog == undefined) {
             const textarea = codeInputElement.textareaElement;
 
             dialog = document.createElement('div');
@@ -248,7 +248,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
 
             matchDescription.textContent = this.instructions.start;
             matchDescription.classList.add("code-input_find-and-replace_match-description");
-            
+
 
             replaceSummary.innerText = this.instructions.replaceTitle;
             replaceInput.spellcheck = false;
@@ -321,7 +321,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             dialog.replaceInput = replaceInput;
             dialog.replaceDropdown = replaceDropdown;
 
-            if(this.checkCtrlH) {
+            if (this.checkCtrlH) {
                 findInput.addEventListener('keydown', (event) => {
                     /* Open replace part on Ctrl+H */
                     if (event.ctrlKey && event.key == 'h') {
@@ -341,10 +341,10 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             });
             replaceInput.addEventListener('input', (event) => {
                 // Ctrl+Z can trigger this. If the dialog/replace dropdown aren't open, open them!
-                if(dialog.classList.contains("code-input_find-and-replace_hidden-dialog")) {
+                if (dialog.classList.contains("code-input_find-and-replace_hidden-dialog")) {
                     // Show prompt
                     this.showPrompt(dialog.codeInput, true);
-                } else if(!dialog.replaceDropdown.hasAttribute("open")) {
+                } else if (!dialog.replaceDropdown.hasAttribute("open")) {
                     // Open dropdown
                     dialog.replaceDropdown.setAttribute("open", true);
                 }
@@ -354,19 +354,19 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
                 /* Close prompt on Enter pressed */
                 if (event.key == 'Escape') this.cancelPrompt(dialog, codeInputElement, event);
             });
-            
+
             findInput.addEventListener('keyup', (event) => { this.checkFindPrompt(dialog, codeInputElement, event); });
-            findInput.addEventListener('input', (event) => { 
-                if(this.findMatchesOnValueChange) this.updateFindMatches(dialog);
+            findInput.addEventListener('input', (event) => {
+                if (this.findMatchesOnValueChange) this.updateFindMatches(dialog);
                 // Ctrl+Z can trigger this. If the dialog isn't open, open it!
-                if(dialog.classList.contains("code-input_find-and-replace_hidden-dialog")) {
+                if (dialog.classList.contains("code-input_find-and-replace_hidden-dialog")) {
                     this.showPrompt(dialog.codeInput, false);
                 }
             });
             findCaseSensitiveCheckbox.addEventListener('click', (event) => { this.updateFindMatches(dialog); });
             findRegExpCheckbox.addEventListener('click', (event) => { this.updateFindMatches(dialog); });
 
-            replaceInput.addEventListener('keyup', (event) => { 
+            replaceInput.addEventListener('keyup', (event) => {
                 this.checkReplacePrompt(dialog, codeInputElement, event);
                 replaceInput.focus();
             });
@@ -374,10 +374,10 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             cancel.addEventListener('keypress', (event) => { if (event.key == "Space" || event.key == "Enter") this.cancelPrompt(dialog, codeInputElement, event); });
 
             codeInputElement.dialogContainerElement.appendChild(dialog);
-            codeInputElement.pluginData.findAndReplace = {dialog: dialog};
+            codeInputElement.pluginData.findAndReplace = { dialog: dialog };
             findInput.focus();
 
-            if(replacePartExpanded) {
+            if (replacePartExpanded) {
                 replaceDropdown.setAttribute("open", true);
             }
 
@@ -385,7 +385,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             dialog.selectionStart = codeInputElement.textareaElement.selectionStart;
             dialog.selectionEnd = codeInputElement.textareaElement.selectionEnd;
 
-            if(dialog.selectionStart < dialog.selectionEnd) {
+            if (dialog.selectionStart < dialog.selectionEnd) {
                 // Copy selected text to Find input
                 let textToFind = codeInputElement.textareaElement.value.substring(dialog.selectionStart, dialog.selectionEnd);
                 dialog.findInput.focus();
@@ -401,7 +401,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             dialog.setAttribute("tabindex", 0); // Show to keyboard navigation when open.
             dialog.removeAttribute("aria-hidden"); // Show to screen reader when open.
             dialog.findInput.focus();
-            if(replacePartExpanded) {
+            if (replacePartExpanded) {
                 dialog.replaceDropdown.setAttribute("open", true);
             } else {
                 dialog.replaceDropdown.removeAttribute("open");
@@ -412,7 +412,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
         dialog.selectionStart = codeInputElement.textareaElement.selectionStart;
         dialog.selectionEnd = codeInputElement.textareaElement.selectionEnd;
 
-        if(dialog.selectionStart < dialog.selectionEnd) {
+        if (dialog.selectionStart < dialog.selectionEnd) {
             // Copy selected text to Find input
             let textToFind = codeInputElement.textareaElement.value.substring(dialog.selectionStart, dialog.selectionEnd);
             dialog.findInput.focus();
@@ -420,14 +420,14 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             dialog.findInput.selectionEnd = dialog.findInput.value.length;
             document.execCommand("insertText", false, textToFind);
         }
-        
+
         // Highlight matches
         this.updateFindMatches(dialog);
     }
 
     /* Event handler for keydown event that makes Ctrl/Cmd+F open find dialog */
     checkCtrlF(codeInput, event) {
-        if(!this.alwaysCtrl && (navigator.platform.startsWith("Mac") || navigator.platform === "iPhone")) {
+        if (!this.alwaysCtrl && (navigator.platform.startsWith("Mac") || navigator.platform === "iPhone")) {
             if (event.metaKey && event.key == 'f') { // Cmd+F
                 event.preventDefault();
                 this.showPrompt(codeInput, false);
@@ -462,7 +462,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
     matchStartIndexes = []; // For each match in order
     matchEndIndexes = []; // For each match in order
     focusedMatchStartIndex = 0;
-    
+
     matchBlocksHighlighted = []; // Each block represents a CODE_INPUT_FIND_AND_REPLACE_MATCH_BLOCK_SIZE number of matches (up to it for the last), and is highlighted separately to prevent excessive delay.
 
     constructor(codeInputElement) {
@@ -474,65 +474,33 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
     clearMatches() {
         // Delete match information saved here
         this.numMatches = 0;
-        this.matchStartIndexes = []; 
-        this.matchEndIndexes = []; 
+        this.matchStartIndexes = [];
+        this.matchEndIndexes = [];
 
         // Remove generated spans to hold matches
         let tempSpans = this.codeInput.codeElement.querySelectorAll(".code-input_find-and-replace_temporary-span");
-        for(let i = 0; i < tempSpans.length; i++) {
+        for (let i = 0; i < tempSpans.length; i++) {
             // Replace with textContent as Text node
             tempSpans[i].parentElement.replaceChild(new Text(tempSpans[i].textContent), tempSpans[i]);
         }
 
         // Remove old matches
         let oldMatches = this.codeInput.codeElement.querySelectorAll(".code-input_find-and-replace_find-match");
-        for(let i = 0; i < oldMatches.length; i++) {
+        for (let i = 0; i < oldMatches.length; i++) {
             oldMatches[i].removeAttribute("data-code-input_find-and-replace_match-id"); // No match ID
             oldMatches[i].classList.remove("code-input_find-and-replace_find-match"); // No highlighting
             oldMatches[i].classList.remove("code-input_find-and-replace_find-match-focused"); // No focused highlighting
-        }        
+        }
     }
 
     /* Refresh the matches of find functionality with a new search term Regular Expression. */
     updateMatches(searchRegexp) {
         this.lastSearchRegexp = searchRegexp;
         this.lastValue = this.codeInput.value;
-        // Add matches
-        let matchID = 0;
-        let match; // Search result
-        this.matchStartIndexes = [];
-        this.matchEndIndexes = [];
-        this.matchBlocksHighlighted = [];
 
-        // Make all match blocks be not highlighted except for currently focused
-        let focusedMatchBlock = Math.floor(this.focusedMatchID / CODE_INPUT_FIND_AND_REPLACE_MATCH_BLOCK_SIZE);
-        for(let i = 0; i < focusedMatchBlock; i++) {
-            this.matchBlocksHighlighted.push(false);
-        }
-        this.matchBlocksHighlighted.push(true);
+        this.numMatches = this.highlightMatches(0, this.codeInput.codeElement, searchRegexp)
 
-        while ((match = searchRegexp.exec(this.codeInput.value)) !== null) {
-            let matchText = match[0];
-            if(matchText.length == 0) {
-                throw SyntaxError(this.instructions.infiniteLoopError);
-            }
-
-            // Add next match block if needed
-            let currentMatchBlock = Math.floor(matchID / CODE_INPUT_FIND_AND_REPLACE_MATCH_BLOCK_SIZE);
-            if(this.matchBlocksHighlighted.length < currentMatchBlock) {
-                this.matchBlocksHighlighted.push(false);
-            }
-
-            if(this.matchBlocksHighlighted[currentMatchBlock]) {
-                this.highlightMatch(matchID, this.codeInput.codeElement, match.index, match.index + matchText.length);
-            }
-            this.matchStartIndexes.push(match.index);
-            this.matchEndIndexes.push(match.index + matchText.length);
-            matchID++;
-        }
-        this.numMatches = matchID;
-
-        if(this.numMatches > 0) {
+        if (this.numMatches > 0) {
             this.focusMatch();
         }
     }
@@ -545,7 +513,7 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
 
     /* Replace one match with the replacementText given */
     replaceOnce(replacementText) {
-        if(this.numMatches > 0 && replacementText != this.codeInput.value.substring(0, this.matchStartIndexes[this.focusedMatchID], this.matchEndIndexes[this.focusedMatchID])) {
+        if (this.numMatches > 0 && replacementText != this.codeInput.value.substring(0, this.matchStartIndexes[this.focusedMatchID], this.matchEndIndexes[this.focusedMatchID])) {
             // Go to next match
             this.focusedMatchStartIndex += replacementText.length;
 
@@ -566,9 +534,9 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
         const replacementNumChars = replacementText.length;
         let numCharsAdded = 0; // So can adjust match positions
 
-        for(let i = 0; i < this.numMatches; i++) {
+        for (let i = 0; i < this.numMatches; i++) {
             // Replace each match
-            
+
             // Select the match, taking into account characters added before
             this.codeInput.handleEventsFromTextarea = false;
             this.codeInput.textareaElement.focus();
@@ -595,33 +563,33 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
 
     /* Change the focused match to the match with ID matchID. */
     focusMatch(matchID = undefined) {
-        if(matchID === undefined) {
+        if (matchID === undefined) {
             // Focus on first match after focusedMatchStartIndex
             matchID = 0;
-            while(matchID < this.matchStartIndexes.length && this.matchStartIndexes[matchID] < this.focusedMatchStartIndex) {
+            while (matchID < this.matchStartIndexes.length && this.matchStartIndexes[matchID] < this.focusedMatchStartIndex) {
                 matchID++;
             }
-            if(matchID >= this.matchStartIndexes.length) {
+            if (matchID >= this.matchStartIndexes.length) {
                 // After last match, move back to first match
                 matchID = 0;
             }
         }
-        
+
         // Save focusedMatchStartIndex so if code changed match stays at same place
         this.focusedMatchStartIndex = this.matchStartIndexes[matchID];
         this.focusedMatchID = matchID;
 
         // Delete old focus
         let oldFocused = this.codeInput.codeElement.querySelectorAll(".code-input_find-and-replace_find-match-focused");
-        for(let i = 0; i < oldFocused.length; i++) {
+        for (let i = 0; i < oldFocused.length; i++) {
             oldFocused[i].classList.remove("code-input_find-and-replace_find-match-focused");
         }
 
         // Highlight match block if needed
         let highlightedMatchBlock = Math.floor(matchID / CODE_INPUT_FIND_AND_REPLACE_MATCH_BLOCK_SIZE);
-        if(!this.matchBlocksHighlighted[highlightedMatchBlock]) {
+        if (!this.matchBlocksHighlighted[highlightedMatchBlock]) {
             this.matchBlocksHighlighted[highlightedMatchBlock] = true;
-            for(let i = CODE_INPUT_FIND_AND_REPLACE_MATCH_BLOCK_SIZE*highlightedMatchBlock; i < CODE_INPUT_FIND_AND_REPLACE_MATCH_BLOCK_SIZE*(highlightedMatchBlock+1); i++) {
+            for (let i = CODE_INPUT_FIND_AND_REPLACE_MATCH_BLOCK_SIZE * highlightedMatchBlock; i < CODE_INPUT_FIND_AND_REPLACE_MATCH_BLOCK_SIZE * (highlightedMatchBlock + 1); i++) {
                 // Highlight match
                 this.highlightMatch(i, this.codeInput.codeElement, this.matchStartIndexes[i], this.matchEndIndexes[i])
             }
@@ -629,14 +597,57 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
 
         // Add new focus
         let newFocused = this.codeInput.codeElement.querySelectorAll(`.code-input_find-and-replace_find-match[data-code-input_find-and-replace_match-id="${matchID}"]`);
-        for(let i = 0; i < newFocused.length; i++) {
+        for (let i = 0; i < newFocused.length; i++) {
             newFocused[i].classList.add("code-input_find-and-replace_find-match-focused");
         }
-        
-        if(newFocused.length > 0) {
+
+        if (newFocused.length > 0) {
             this.codeInput.scrollTo(newFocused[0].offsetLeft - this.codeInput.offsetWidth / 2, newFocused[0].offsetTop - this.codeInput.offsetHeight / 2); // So focused match in centre of screen
         }
     }
+
+    /* Highlight all matches meeting a given Regular Expression (findRegexp). Start from the currentElement.
+     * Give the matches class names using integers incrementing from and including firstMatchID, and returning the
+     * next class name integer that has not yet been used = matchID + number of matches.
+     */
+    highlightMatches(firstMatchID, currentElement, searchRegexp) {
+        // Add matches
+        let matchID = firstMatchID;
+        let match; // Search result
+        this.matchStartIndexes = [];
+        this.matchEndIndexes = [];
+        this.matchBlocksHighlighted = [];
+
+        // Make all match blocks be not highlighted except for currently focused
+        let focusedMatchBlock = Math.floor(this.focusedMatchID / CODE_INPUT_FIND_AND_REPLACE_MATCH_BLOCK_SIZE);
+        for (let i = 0; i < focusedMatchBlock; i++) {
+            this.matchBlocksHighlighted.push(false);
+        }
+        this.matchBlocksHighlighted.push(true);
+
+        while ((match = searchRegexp.exec(this.codeInput.value)) !== null) {
+            let matchText = match[0];
+            if (matchText.length == 0) {
+                throw SyntaxError(this.instructions.infiniteLoopError);
+            }
+
+            // Add next match block if needed
+            let currentMatchBlock = Math.floor(matchID / CODE_INPUT_FIND_AND_REPLACE_MATCH_BLOCK_SIZE);
+            if (this.matchBlocksHighlighted.length < currentMatchBlock) {
+                this.matchBlocksHighlighted.push(false);
+            }
+
+            if (this.matchBlocksHighlighted[currentMatchBlock]) {
+                this.highlightMatch(matchID, currentElement, match.index, match.index + matchText.length);
+            }
+            this.matchStartIndexes.push(match.index);
+            this.matchEndIndexes.push(match.index + matchText.length);
+            matchID++;
+        }
+        console.log("Found ", matchID, " matches.....")
+        return matchID;
+    }
+
 
     /* Highlight a match from the find functionality given its start and end indexes in the text.
     Start from the currentElement. Use the matchID in the class name
@@ -645,12 +656,12 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
     highlightMatch(matchID, currentElement, startIndex, endIndex) {
         const lines = currentElement.textContent.substring(startIndex, endIndex).split("\n");
         let lineStartIndex = startIndex;
-        for(let i = 0; i < lines.length; i++) {
-            if(i == 0) {
-                this.highlightMatchNewlineOnlyAtStart(matchID, currentElement, lineStartIndex, lineStartIndex+lines[i].length);
+        for (let i = 0; i < lines.length; i++) {
+            if (i == 0) {
+                this.highlightMatchNewlineOnlyAtStart(matchID, currentElement, lineStartIndex, lineStartIndex + lines[i].length);
             } else {
                 // Include previous newline character too
-                this.highlightMatchNewlineOnlyAtStart(matchID, currentElement, lineStartIndex-1, lineStartIndex+lines[i].length);
+                this.highlightMatchNewlineOnlyAtStart(matchID, currentElement, lineStartIndex - 1, lineStartIndex + lines[i].length);
             }
 
             lineStartIndex += lines[i].length + 1; // +1 for newline character
@@ -660,18 +671,23 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
     /* Same as highlightMatch, but assumes any newlines in the
     match are at the startIndex (for simpler code). */
     highlightMatchNewlineOnlyAtStart(matchID, currentElement, startIndex, endIndex) {
-        for(let i = 0; i < currentElement.childNodes.length; i++) {
-            let childElement = currentElement.childNodes[i];
-            let childText = childElement.textContent;
+        console.log("Call")
+        let node = currentElement.firstChild;
+        if (node == null) return;
+        while (node != currentElement) {
+            let childText = node.textContent
 
             let noInnerElements = false;
-            if(childElement.nodeType == 3) {
+            if (node.nodeType == 3) {
                 // Text node
-                if(i + 1 < currentElement.childNodes.length && currentElement.childNodes[i+1].nodeType == 3) {
+                if (node.nextSibling != null && node.nextSibling.nodeType == 3) {
                     // Can merge with next text node
-                    currentElement.childNodes[i+1].textContent = childElement.textContent + currentElement.childNodes[i+1].textContent; // Merge textContent with next node
-                    currentElement.removeChild(childElement); // Delete this node
-                    i--; // As an element removed
+                    const nextNode = node.nextSibling;
+                    nextNode.textContent = node.textContent + nextNode.textContent; // Merge textContent with next node
+                    node.parentNode.removeChild(node); // Delete this node
+                    node = nextNode; // As this node removed
+                    childText = node.textContent;
+
                     continue; // Move to next node
                 }
                 // Text node - replace with span
@@ -680,52 +696,56 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
                 let replacementElement = document.createElement("span");
                 replacementElement.textContent = childText;
                 replacementElement.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
-                
-                currentElement.replaceChild(replacementElement, childElement);
-                childElement = replacementElement;
+
+                node.parentNode.replaceChild(replacementElement, node);
+                node = replacementElement;
+                childText = node.textContent;
             }
 
-            if(startIndex <= 0) {
+            if (startIndex <= 0) {
                 // Started highlight
-                if(childText.length >= endIndex) {
+                if (childText.length >= endIndex) {
                     // Match ends in childElement
-                    if(noInnerElements) {
+                    if (noInnerElements) {
                         // Text node - highlight first part
                         let startSpan = document.createElement("span");
                         startSpan.classList.add("code-input_find-and-replace_find-match"); // Highlighted
                         startSpan.setAttribute("data-code-input_find-and-replace_match-id", matchID);
                         startSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
                         startSpan.textContent = childText.substring(0, endIndex);
-                        if(startSpan.textContent[0] == "\n") {
+                        if (startSpan.textContent[0] == "\n") {
                             // Newline at start - make clear
                             startSpan.classList.add("code-input_find-and-replace_start-newline");
                         }
 
                         let endText = childText.substring(endIndex);
-                        childElement.textContent = endText;
-                        
-                        childElement.insertAdjacentElement('beforebegin', startSpan);
-                        i++; // An extra element has been added
-                        return;
+                        node.textContent = endText;
+
+                        node.insertAdjacentElement('beforebegin', startSpan);
                     } else {
-                        this.highlightMatchNewlineOnlyAtStart(matchID, childElement, 0, endIndex);
+                        if (node.firstChild != null) {
+                            node = node.firstChild;
+                            startIndex = 0;
+                            continue;
+                        }
+                        // this.highlightMatchNewlineOnlyAtStart(matchID, node, 0, endIndex);
                     }
 
                     // Match ended - nothing to do after backtracking
-                    return;
+                    // return;
                 } else {
                     // Match goes through child element
-                    childElement.classList.add("code-input_find-and-replace_find-match"); // Highlighted
-                    childElement.setAttribute("data-code-input_find-and-replace_match-id", matchID);
-                    if(childElement.textContent[0] == "\n") {
+                    node.classList.add("code-input_find-and-replace_find-match"); // Highlighted
+                    node.setAttribute("data-code-input_find-and-replace_match-id", matchID);
+                    if (node.textContent[0] == "\n") {
                         // Newline at start - make clear
-                        childElement.classList.add("code-input_find-and-replace_start-newline");
+                        node.classList.add("code-input_find-and-replace_start-newline");
                     }
                 }
-            } else if(childText.length > startIndex) {
+            } else if (childText.length > startIndex) {
                 // Match starts in childElement
-                if(noInnerElements) {
-                    if(childText.length > endIndex) {
+                if (noInnerElements) {
+                    if (childText.length > endIndex) {
                         // Match starts and ends in childElement - highlight middle part
                         // Text node - highlight last part
                         let startSpan = document.createElement("span");
@@ -733,52 +753,64 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
                         startSpan.textContent = childText.substring(0, startIndex);
 
                         let middleText = childText.substring(startIndex, endIndex);
-                        childElement.textContent = middleText;
-                        childElement.classList.add("code-input_find-and-replace_find-match"); // Highlighted
-                        childElement.setAttribute("data-code-input_find-and-replace_match-id", matchID);
-                        if(childElement.textContent[0] == "\n") {
+                        node.textContent = middleText;
+                        node.classList.add("code-input_find-and-replace_find-match"); // Highlighted
+                        node.setAttribute("data-code-input_find-and-replace_match-id", matchID);
+                        if (node.textContent[0] == "\n") {
                             // Newline at start - make clear
-                            childElement.classList.add("code-input_find-and-replace_start-newline");
+                            node.classList.add("code-input_find-and-replace_start-newline");
                         }
 
                         let endSpan = document.createElement("span");
                         endSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
                         endSpan.textContent = childText.substring(endIndex);
-                        
-                        childElement.insertAdjacentElement('beforebegin', startSpan);
-                        childElement.insertAdjacentElement('afterend', endSpan);
-                        i++; // 2 extra elements have been added
+
+                        node.insertAdjacentElement('beforebegin', startSpan);
+                        node.insertAdjacentElement('afterend', endSpan);
                     } else {
                         // Text node - highlight last part
                         let startText = childText.substring(0, startIndex);
-                        childElement.textContent = startText;
+                        node.textContent = startText;
 
                         let endSpan = document.createElement("span");
                         endSpan.classList.add("code-input_find-and-replace_find-match"); // Highlighted
                         endSpan.setAttribute("data-code-input_find-and-replace_match-id", matchID);
                         endSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
                         endSpan.textContent = childText.substring(startIndex);
-                        if(endSpan.textContent[0] == "\n") {
+                        if (endSpan.textContent[0] == "\n") {
                             // Newline at start - make clear
                             endSpan.classList.add("code-input_find-and-replace_start-newline");
                         }
 
-                        childElement.insertAdjacentElement('afterend', endSpan);
-                        i++; // An extra element has been added
+                        node.insertAdjacentElement('afterend', endSpan);
+                        node = node.nextSibling; // An extra node has been added
+                        childText = node.textContent;
                     }
                 } else {
-                    this.highlightMatchNewlineOnlyAtStart(matchID, childElement, startIndex, endIndex);
+                    if (node.firstChild != null) {
+                        node = node.firstChild;
+                        continue;
+                    }
+                    // this.highlightMatchNewlineOnlyAtStart(matchID, node, startIndex, endIndex);
                 }
-                
-                if(childText.length > endIndex) {
+
+                if (childText.length > endIndex) {
                     // Match completely in childElement - nothing to do after backtracking
-                    return;
+                    // return;
                 }
             }
 
             // Make indexes skip the element
             startIndex -= childText.length;
             endIndex -= childText.length;
+
+            while (node.nextSibling == null && node != currentElement) {
+                // Backtrack
+                node = node.parentNode;
+            }
+            if(node != currentElement) {
+                node = node.nextSibling;
+            }
         }
     }
 }
