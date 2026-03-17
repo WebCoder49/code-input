@@ -60,7 +60,7 @@
 }
 
 .code-input_find-and-replace_dialog input.code-input_find-and-replace_error {
-  color: #ff0000aa;
+  color: #b60000;
 }
 
 .code-input_find-and-replace_dialog button, .code-input_find-and-replace_dialog input[type="checkbox"] {
