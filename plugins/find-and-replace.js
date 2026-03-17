@@ -625,6 +625,10 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
         }
         this.matchBlocksHighlighted.push(true);
 
+        console.log("Call")
+        let node = currentElement.firstChild;
+
+        let lastMatchEndIndex = 0;
         while ((match = searchRegexp.exec(this.codeInput.value)) !== null) {
             let matchText = match[0];
             if (matchText.length == 0) {
@@ -638,7 +642,152 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
             }
 
             if (this.matchBlocksHighlighted[currentMatchBlock]) {
-                this.highlightMatch(matchID, currentElement, match.index, match.index + matchText.length);
+                let startIndex = match.index - lastMatchEndIndex;
+                let endIndex = startIndex + matchText.length;
+                lastMatchEndIndex += endIndex;
+                // startIndex = 1;
+                // let endIndex = 2;
+
+                while (node != currentElement) {
+                    let childText = node.textContent
+
+                    let noInnerElements = false;
+                    if (node.nodeType == 3) {
+                        // Text node
+                        if (node.nextSibling != null && node.nextSibling.nodeType == 3) {
+                            // Can merge with next text node
+                            const nextNode = node.nextSibling;
+                            nextNode.textContent = node.textContent + nextNode.textContent; // Merge textContent with next node
+                            node.parentNode.removeChild(node); // Delete this node
+                            node = nextNode; // As this node removed
+                            childText = node.textContent;
+
+                            continue; // Move to next node
+                        }
+                        // Text node - replace with span
+                        noInnerElements = true;
+
+                        let replacementElement = document.createElement("span");
+                        replacementElement.textContent = childText;
+                        replacementElement.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
+
+                        node.parentNode.replaceChild(replacementElement, node);
+                        node = replacementElement;
+                    }
+
+                    if (startIndex <= 0) {
+                        // Started highlight
+                        if (childText.length >= endIndex) {
+                            // Match ends in childElement
+                            if (noInnerElements) {
+                                // Text node - highlight first part
+                                let startSpan = document.createElement("span");
+                                startSpan.classList.add("code-input_find-and-replace_find-match"); // Highlighted
+                                startSpan.setAttribute("data-code-input_find-and-replace_match-id", matchID);
+                                startSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
+                                startSpan.textContent = childText.substring(0, endIndex);
+                                if (startSpan.textContent[0] == "\n") {
+                                    // Newline at start - make clear
+                                    startSpan.classList.add("code-input_find-and-replace_start-newline");
+                                }
+
+                                let endText = childText.substring(endIndex);
+                                node.textContent = endText;
+
+                                node.insertAdjacentElement('beforebegin', startSpan);
+                            } else {
+                                if (node.firstChild != null) {
+                                    node = node.firstChild;
+                                    startIndex = 0;
+                                    continue;
+                                }
+                                // this.highlightMatchNewlineOnlyAtStart(matchID, node, 0, endIndex);
+                            }
+
+                            // Match ended - nothing to do after backtracking
+                            break;
+                        } else {
+                            // Match goes through child element
+                            node.classList.add("code-input_find-and-replace_find-match"); // Highlighted
+                            node.setAttribute("data-code-input_find-and-replace_match-id", matchID);
+                            if (node.textContent[0] == "\n") {
+                                // Newline at start - make clear
+                                node.classList.add("code-input_find-and-replace_start-newline");
+                            }
+                        }
+                    } else if (childText.length > startIndex) {
+                        // Match starts in childElement
+                        if (noInnerElements) {
+                            if (childText.length > endIndex) {
+                                // Match starts and ends in childElement - highlight middle part
+                                // Text node - highlight last part
+                                let startSpan = document.createElement("span");
+                                startSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
+                                startSpan.textContent = childText.substring(0, startIndex);
+
+                                let middleText = childText.substring(startIndex, endIndex);
+                                node.textContent = middleText;
+                                node.classList.add("code-input_find-and-replace_find-match"); // Highlighted
+                                node.setAttribute("data-code-input_find-and-replace_match-id", matchID);
+                                if (node.textContent[0] == "\n") {
+                                    // Newline at start - make clear
+                                    node.classList.add("code-input_find-and-replace_start-newline");
+                                }
+
+                                let endSpan = document.createElement("span");
+                                endSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
+                                endSpan.textContent = childText.substring(endIndex);
+
+                                node.insertAdjacentElement('beforebegin', startSpan);
+                                node.insertAdjacentElement('afterend', endSpan);
+                                node = endSpan; // An extra node has been added
+                            } else {
+                                // Text node - highlight last part
+                                let startText = childText.substring(0, startIndex);
+                                node.textContent = startText;
+
+                                let endSpan = document.createElement("span");
+                                endSpan.classList.add("code-input_find-and-replace_find-match"); // Highlighted
+                                endSpan.setAttribute("data-code-input_find-and-replace_match-id", matchID);
+                                endSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
+                                endSpan.textContent = childText.substring(startIndex);
+                                if (endSpan.textContent[0] == "\n") {
+                                    // Newline at start - make clear
+                                    endSpan.classList.add("code-input_find-and-replace_start-newline");
+                                }
+
+                                node.insertAdjacentElement('afterend', endSpan);
+                                node = endSpan; // An extra node has been added
+                            }
+                        } else {
+                            if (node.firstChild != null) {
+                                node = node.firstChild;
+                                continue;
+                            }
+                            // this.highlightMatchNewlineOnlyAtStart(matchID, node, startIndex, endIndex);
+                        }
+
+                        if (childText.length > endIndex) {
+                            // Match completely in childElement - nothing to do after backtracking
+                            break;
+                        }
+                    }
+
+                    // Make indexes skip the element
+                    startIndex -= childText.length;
+                    endIndex -= childText.length;
+
+                    while (node.nextSibling == null && node != currentElement) {
+                        // Backtrack
+                        node = node.parentNode;
+                    }
+                    if(node != currentElement) {
+                        node = node.nextSibling;
+                    }
+                }
+
+
+                // this.highlightMatch(matchID, currentElement, match.index, match.index + matchText.length);
             }
             this.matchStartIndexes.push(match.index);
             this.matchEndIndexes.push(match.index + matchText.length);
@@ -671,146 +820,5 @@ codeInput.plugins.FindAndReplace.FindMatchState = class {
     /* Same as highlightMatch, but assumes any newlines in the
     match are at the startIndex (for simpler code). */
     highlightMatchNewlineOnlyAtStart(matchID, currentElement, startIndex, endIndex) {
-        console.log("Call")
-        let node = currentElement.firstChild;
-        if (node == null) return;
-        while (node != currentElement) {
-            let childText = node.textContent
-
-            let noInnerElements = false;
-            if (node.nodeType == 3) {
-                // Text node
-                if (node.nextSibling != null && node.nextSibling.nodeType == 3) {
-                    // Can merge with next text node
-                    const nextNode = node.nextSibling;
-                    nextNode.textContent = node.textContent + nextNode.textContent; // Merge textContent with next node
-                    node.parentNode.removeChild(node); // Delete this node
-                    node = nextNode; // As this node removed
-                    childText = node.textContent;
-
-                    continue; // Move to next node
-                }
-                // Text node - replace with span
-                noInnerElements = true;
-
-                let replacementElement = document.createElement("span");
-                replacementElement.textContent = childText;
-                replacementElement.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
-
-                node.parentNode.replaceChild(replacementElement, node);
-                node = replacementElement;
-                childText = node.textContent;
-            }
-
-            if (startIndex <= 0) {
-                // Started highlight
-                if (childText.length >= endIndex) {
-                    // Match ends in childElement
-                    if (noInnerElements) {
-                        // Text node - highlight first part
-                        let startSpan = document.createElement("span");
-                        startSpan.classList.add("code-input_find-and-replace_find-match"); // Highlighted
-                        startSpan.setAttribute("data-code-input_find-and-replace_match-id", matchID);
-                        startSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
-                        startSpan.textContent = childText.substring(0, endIndex);
-                        if (startSpan.textContent[0] == "\n") {
-                            // Newline at start - make clear
-                            startSpan.classList.add("code-input_find-and-replace_start-newline");
-                        }
-
-                        let endText = childText.substring(endIndex);
-                        node.textContent = endText;
-
-                        node.insertAdjacentElement('beforebegin', startSpan);
-                    } else {
-                        if (node.firstChild != null) {
-                            node = node.firstChild;
-                            startIndex = 0;
-                            continue;
-                        }
-                        // this.highlightMatchNewlineOnlyAtStart(matchID, node, 0, endIndex);
-                    }
-
-                    // Match ended - nothing to do after backtracking
-                    // return;
-                } else {
-                    // Match goes through child element
-                    node.classList.add("code-input_find-and-replace_find-match"); // Highlighted
-                    node.setAttribute("data-code-input_find-and-replace_match-id", matchID);
-                    if (node.textContent[0] == "\n") {
-                        // Newline at start - make clear
-                        node.classList.add("code-input_find-and-replace_start-newline");
-                    }
-                }
-            } else if (childText.length > startIndex) {
-                // Match starts in childElement
-                if (noInnerElements) {
-                    if (childText.length > endIndex) {
-                        // Match starts and ends in childElement - highlight middle part
-                        // Text node - highlight last part
-                        let startSpan = document.createElement("span");
-                        startSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
-                        startSpan.textContent = childText.substring(0, startIndex);
-
-                        let middleText = childText.substring(startIndex, endIndex);
-                        node.textContent = middleText;
-                        node.classList.add("code-input_find-and-replace_find-match"); // Highlighted
-                        node.setAttribute("data-code-input_find-and-replace_match-id", matchID);
-                        if (node.textContent[0] == "\n") {
-                            // Newline at start - make clear
-                            node.classList.add("code-input_find-and-replace_start-newline");
-                        }
-
-                        let endSpan = document.createElement("span");
-                        endSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
-                        endSpan.textContent = childText.substring(endIndex);
-
-                        node.insertAdjacentElement('beforebegin', startSpan);
-                        node.insertAdjacentElement('afterend', endSpan);
-                    } else {
-                        // Text node - highlight last part
-                        let startText = childText.substring(0, startIndex);
-                        node.textContent = startText;
-
-                        let endSpan = document.createElement("span");
-                        endSpan.classList.add("code-input_find-and-replace_find-match"); // Highlighted
-                        endSpan.setAttribute("data-code-input_find-and-replace_match-id", matchID);
-                        endSpan.classList.add("code-input_find-and-replace_temporary-span"); // Can remove span later
-                        endSpan.textContent = childText.substring(startIndex);
-                        if (endSpan.textContent[0] == "\n") {
-                            // Newline at start - make clear
-                            endSpan.classList.add("code-input_find-and-replace_start-newline");
-                        }
-
-                        node.insertAdjacentElement('afterend', endSpan);
-                        node = node.nextSibling; // An extra node has been added
-                        childText = node.textContent;
-                    }
-                } else {
-                    if (node.firstChild != null) {
-                        node = node.firstChild;
-                        continue;
-                    }
-                    // this.highlightMatchNewlineOnlyAtStart(matchID, node, startIndex, endIndex);
-                }
-
-                if (childText.length > endIndex) {
-                    // Match completely in childElement - nothing to do after backtracking
-                    // return;
-                }
-            }
-
-            // Make indexes skip the element
-            startIndex -= childText.length;
-            endIndex -= childText.length;
-
-            while (node.nextSibling == null && node != currentElement) {
-                // Backtrack
-                node = node.parentNode;
-            }
-            if(node != currentElement) {
-                node = node.nextSibling;
-            }
-        }
     }
 }
