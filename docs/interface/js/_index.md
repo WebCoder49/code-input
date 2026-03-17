@@ -22,3 +22,13 @@ codeInputElement.addEventListener("code-input_load", () => {
 ```
 
 For backwards compatibility, you should also implement the subset of the functionality that doesn't require `code-input.js` on the `<textarea data-code-input-fallback>` element before load, if you have one. For backwards compatibility and technical reasons, event handlers registered in HTML attributes like `onchange` of the textarea will be passed to the code-input element when it is registered, but event listeners registered like that above will not - this should be cleaned up in major version 3.
+
+## Caching in Single-Page Applications
+
+Some JavaScript Single-Page App libraries, such as [Turbo](https://turbo.hotwired.dev/), will try to cache the `code-input` element and render it again on the page in the same state as when it was cached. This can break functionality, but that is easy to fix.
+
+Run this code ***just before*** any `code-input` elements are ***cached*** (in Turbo, on the `turbo:before-cache` event):
+
+```javascript
+document.querySelectorAll("code-input textarea").forEach((el) => el.setAttribute("data-code-input-fallback", true));
+```
