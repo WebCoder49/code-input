@@ -105,8 +105,74 @@ function waitAsync(milliseconds) {
 /* --- Running the tests --- */
 
 /* Start the test, for Prism.js if isHLJS is false, or for highlight.js if isHLJS is true. */
-function beginTest(isHLJS) {
+var loadEventFired = false; // Global variable so can check the load event is fired in startLoad function
+async function beginTest(isHLJS) {
     let codeInputElem = document.querySelector("code-input");
+    codeInputElem.addEventListener("code-input_load", () => {
+        loadEventFired = true;
+        testAssertion("Load", "code-input_load Event Fired Late Enough", codeInputElem.querySelector("textarea:not([data-code-input-fallback])") != null, "code-input_load event fired before non-fallback textarea element appeared");
+    });
+    const fallbackTextarea = codeInputElem.querySelector("textarea[data-code-input-fallback]");
+
+
+    startLoad(codeInputElem, isHLJS);
+    codeInputElem.style.height = "calc(1lh + 2em)"; // 2em for the "No highlighting." message
+    codeInputElem.style.setProperty("--padding", "0px");
+    await waitAsync(50); // Wait for display to update
+    // Select the "A" in the fallback textarea's last line
+    fallbackTextarea.selectionStart = 50;
+    fallbackTextarea.selectionEnd = 51;
+    fallbackTextarea.focus();
+    fallbackTextarea.scrollTo(0, codeInputElem.clientHeight * 3); // At least 3 lines
+
+    await waitAsync(50); // Wait for scroll to occur
+    testAssertion("FallbackTextarea", "Scrolls Correctly", confirm("Is the phrase 'A third', with 'A' highlighted, visible? "), "user-judged");
+    codeInputElem.style.removeProperty("--padding");
+    codeInputElem.style.removeProperty("height");
+
+    // Select the "log" in the fallback textarea's initial line
+    fallbackTextarea.selectionStart = 8;
+    fallbackTextarea.selectionEnd = 11;
+    fallbackTextarea.focus();
+
+    codeInputElem.style.setProperty("--padding", "100px");
+    await waitAsync(50); // Wait for display to update
+    testAssertion("FallbackTextarea", "Displayed Correctly With More Padding", confirm("Is the highlighted 'log' properly aligned after the 'console.', which is then properly aligned inside the visible (non-highlighted) textarea? Also, there should be a lot of padding."), "user-judged");
+    codeInputElem.style.setProperty("--padding", "0px");
+    await waitAsync(50); // Wait for display to update
+    testAssertion("FallbackTextarea", "Displayed Correctly With No Padding", confirm("Does the element have zero padding, but otherwise the display remains correct?"), "user-judged");
+    codeInputElem.style.removeProperty("--padding");
+    await waitAsync(50); // Wait for display to update
+    testAssertion("FallbackTextarea", "Displayed Correctly By Default", confirm("Is the highlighted 'log' properly aligned after the 'console.', which is then properly aligned inside the visible (non-highlighted) textarea?"), "user-judged");
+
+
+    codeInputElem.classList.add("code-input_autogrow_height");
+    await waitAsync(50); // Wait for display to update
+    testAssertion("FallbackTextarea-Autogrow", "Displayed Correctly With Default Autogrow Height", confirm("Is the element not very tall (but tall enough to properly show some code), but otherwise the display remains correct?"), "user-judged");
+
+    codeInputElem.style.setProperty("--code-input_autogrow_min-height", "200px");
+    await waitAsync(50); // Wait for display to update
+    assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-height Sets Height", codeInputElem.clientHeight, 200);
+    codeInputElem.style.removeProperty("--code-input_autogrow_min-height");
+    codeInputElem.classList.remove("code-input_autogrow_height");
+
+    codeInputElem.classList.add("code-input_autogrow_width");
+    await waitAsync(50); // Wait for display to update
+    testAssertion("FallbackTextarea-Autogrow", "Displayed Correctly With Default Autogrow Width", confirm("Is the element a sensible but narrow width, and otherwise the display remains correct?"), "user-judged");
+
+    codeInputElem.style.setProperty("--code-input_autogrow_min-width", "200px");
+    await waitAsync(50); // Wait for display to update
+    assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-height Sets Height", codeInputElem.clientWidth, 200);
+    codeInputElem.style.removeProperty("--code-input_autogrow_min-width");
+    codeInputElem.classList.remove("code-input_autogrow_width");
+
+
+    if(!isHLJS) {
+        codeInputElem.classList.add("line-numbers");
+        await waitAsync(50); // Wait for display to update
+        testAssertion("FallbackTextarea-PrismLineNumbers", "Displayed Correctly With line-numbers Class", confirm("Is there more padding to the left now, but otherwise the display remains correct?"), "user-judged");
+    }
+
     if(isHLJS) {
         codeInput.registerTemplate("code-editor", new codeInput.templates.Hljs(hljs, [
             new codeInput.plugins.AutoCloseBrackets(), 
@@ -145,7 +211,6 @@ function beginTest(isHLJS) {
             new codeInput.plugins.SpecialChars(true),
         ]));
     }
-    startLoad(codeInputElem, isHLJS);
 }
 
 /* Start loading the tests, using the codeInput load time as one of the tests. */
@@ -153,11 +218,14 @@ function startLoad(codeInputElem, isHLJS) {
     let textarea;
     let timeToLoad = 0;
     let interval = window.setInterval(() => {
-        textarea = codeInputElem.querySelector("textarea");
-        if(textarea != null) window.clearInterval(interval);
-        timeToLoad += 10;
-        testData("TimeTaken", "Textarea Appears", timeToLoad+"ms (nearest 10)");
-        startTests(textarea, isHLJS);
+        textarea = codeInputElem.querySelector("textarea:not([data-code-input-fallback])");
+        if(textarea != null) {
+            testAssertion("Load", "code-input_load Event Fired Early Enough", loadEventFired, "non-fallback textarea element appeared before code-input_load event");
+            window.clearInterval(interval);
+            timeToLoad += 10;
+            testData("Load", "Time Taken for Textarea to Appear", timeToLoad+"ms (nearest 10)");
+            beginTestsAfterLoad(textarea, isHLJS);
+        }
     }, 10);
 }
 
@@ -178,8 +246,16 @@ function allowInputEvents(inputElement, codeInputElement=undefined) {
 }
 
 /* Start the tests using the textarea inside the code-input element and whether highlight.js is being used (as the Autodetect plugin only works with highlight.js, for example) */
-async function startTests(textarea, isHLJS) {
+async function beginTestsAfterLoad(textarea, isHLJS) {
     textarea.focus();
+    if(!isHLJS) {
+        await waitAsync(200); // Wait for display to update
+        testAssertion("FallbackTextarea-PrismLineNumbers", "Alignment between Fallback and Loaded Texareas", confirm("Now with the highlighting, is all the code in the same horizontal position (don't mind the vertical offset by keyboard navigation instructions) as with the last question?"), "user-judged");
+
+    } else {
+        await waitAsync(200); // Wait for display to update
+        testAssertion("FallbackTextarea+PrismLineNumbers", "Alignment between Fallback and Loaded Texareas", confirm("Now with the highlighting, is all the code in the same horizontal position (don't mind the vertical offset by keyboard navigation instructions) as with the last question?"), "user-judged");
+    }
 
     codeInputElement = textarea.parentElement;
     allowInputEvents(textarea, codeInputElement);
@@ -187,7 +263,10 @@ async function startTests(textarea, isHLJS) {
     /*--- Tests for core functionality ---*/
 
     // Textarea's initial value should be correct.
-    assertEqual("Core", "Initial Textarea Value", textarea.value, `console.log("Hello, World!");
+    assertEqual("FallbackTextarea", "Textarea selectionStart Once Loaded same as Fallback Textarea's", textarea.selectionStart, 8);
+    assertEqual("FallbackTextarea", "Textarea selectionEnd Once Loaded same as Fallback Textarea's", textarea.selectionEnd, 11);
+
+    assertEqual("FallbackTextarea", "Textarea Value Once Loaded same as Fallback Textarea's", textarea.value, `console.log("Hello, World!");
 // A second line
 // A third line with <html> tags`);
     // Code element's displayed value, ignoring appearance with HTML tags, should be the initial value but HTML-escaped
