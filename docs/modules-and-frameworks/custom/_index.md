@@ -1,5 +1,5 @@
 +++
-title = 'Using code-input.js with custom highlighting algorihms in projects which use modules or frameworks'
+title = 'Using code-input.js with custom highlighting algorithms in projects which use modules or frameworks'
 +++
 
 # Using code-input.js with custom highlighting algorithms in projects which use modules or frameworks

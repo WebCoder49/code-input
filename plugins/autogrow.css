@@ -71,7 +71,7 @@ code-input.code-input_autogrow_height:has(textarea[data-code-input-fallback]) {
     --code-input_autogrow_internal-min-height: calc(1lh + 2em + var(--padding-top, 16px) + var(--padding-bottom, 16px)); /* So minimum height possible while containing highlighted code */
     height: var(--code-input_autogrow_true-min-height);
 }
-code-input textarea[data-code-input-fallback] {
-    height: calc(var(--code-input_autogrow_true-min-height) - var(--padding-top, 16px) - var(--padding-bottom, 16px) - 2em)!important; /* So minimum height possible while containing highlighted code */
-    min-height: calc(100% - var(--padding-top, 16px) - var(--padding-bottom, 16px) - 2em);
+code-input.code-input_autogrow_height textarea[data-code-input-fallback] {
+    height: calc(var(--code-input_autogrow_true-min-height) - var(--padding-top, 16px) - max(2em, var(--padding-bottom, 16px)))!important;
+    min-height: calc(var(--code-input_autogrow_true-min-height) - var(--padding-top, 16px) - max(2em, var(--padding-bottom, 16px)));
 }

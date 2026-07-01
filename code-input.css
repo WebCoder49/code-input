@@ -5,7 +5,7 @@
  *
  * License of whole library for bundlers:
  *
- * Copyright 2021-2025 Oliver Geer and contributors
+ * Copyright 2021-2026 Oliver Geer and contributors
  * @license MIT
  *
  * **<https://code-input-js.org>**
@@ -284,5 +284,7 @@ code-input textarea[data-code-input-fallback] {
   color: var(--code-input_highlight-text-color, inherit);
 
   /* Don't overlap with message */
-  min-height: calc(100% - var(--padding-top, 16px) - 2em - var(--padding-bottom, 16px));
+  min-height: calc(100% - var(--padding-top, 16px) - max(2em, var(--padding-bottom, 16px)));
+  height: calc(100% - var(--padding-top, 16px) - max(2em, var(--padding-bottom, 16px)));
+  padding-bottom: max(2em, var(--padding-bottom, 16px))!important;
 }
