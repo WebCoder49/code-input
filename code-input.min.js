@@ -5,7 +5,7 @@
  *
  * License of whole library for bundlers:
  *
- * Copyright 2021-2025 Oliver Geer and contributors
+ * Copyright 2021-2026 Oliver Geer and contributors
  * @license MIT
  *
  * **<https://code-input-js.org>**
