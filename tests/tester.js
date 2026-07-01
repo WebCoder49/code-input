@@ -106,6 +106,7 @@ function waitAsync(milliseconds) {
 
 /* Start the test, for Prism.js if isHLJS is false, or for highlight.js if isHLJS is true. */
 var loadEventFired = false; // Global variable so can check the load event is fired in startLoad function
+var popupClicked = false; // Global variable for Autocomplete plugin
 async function beginTest(isHLJS) {
     let codeInputElem = document.querySelector("code-input");
     codeInputElem.addEventListener("code-input_load", () => {
@@ -180,7 +181,7 @@ async function beginTest(isHLJS) {
                 if(selectionStart == selectionEnd && textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
                     // Show popup
                     popupElem.style.display = "block";
-                    popupElem.innerHTML = "Here's your popup!";
+                    popupElem.innerHTML = '<button onclick="event.preventDefault(); popupClicked = true;">This is the popup.</button>';
                 } else {
                     popupElem.style.display = "none";
                 }
@@ -199,7 +200,7 @@ async function beginTest(isHLJS) {
                 if(selectionStart == selectionEnd && textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
                     // Show popup
                     popupElem.style.display = "block";
-                    popupElem.innerHTML = "Here's your popup!";
+                    popupElem.innerHTML = '<button onclick="event.preventDefault(); popupClicked = true;">This is the popup.</button>';
                 } else {
                     popupElem.style.display = "none";
                 }
@@ -518,12 +519,31 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     await waitAsync(50); // Wait for popup to be rendered
 
     testAssertion("Autocomplete", "Popup Shows on arrow key", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
+
+
     backspace(textarea);
-
     await waitAsync(50); // Wait for popup disappearance to be rendered
-
     testAssertion("Autocomplete", "Popup Disappears on backspace", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
-    move(textarea, 1);
+
+    addText(textarea, "p");
+    await waitAsync(50);
+
+    const beforeClickSelectionStart = textarea.selectionStart;
+    const beforeClickSelectionEnd = textarea.selectionEnd;
+    alert("Dismiss this alert, then click the popup in the next 3 seconds.");
+    // To speed up test, wait until 3s have passed or a click has fired, whichever is earlier.
+    let timePassed = 0;
+    while(timePassed < 3000 && !popupClicked) {
+        await waitAsync(10);
+        timePassed += 10;
+    }
+    testAssertion("Autocomplete", "Popup Clickable", popupClicked, "The onclick event of the popup element didn't fire");
+    // In case clicking the popup moved the caret inside the textarea:
+    textarea.selectionStart = beforeClickSelectionStart;
+    textarea.selectionEnd = beforeClickSelectionEnd;
+    textarea.focus();
+
+    backspace(textarea);
     backspace(textarea);
     backspace(textarea);
     backspace(textarea);
