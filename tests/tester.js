@@ -491,6 +491,25 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
 
     codeInputElement.style.removeProperty("caret-color");
 
+    if(!isHLJS) {
+      // These tests require autodetect plugin to be absent
+
+      codeInputElement.setAttribute("language", "css");
+      await waitAsync(50); // Wait for language to propogate to class
+      testAssertion("Core", "Language Class Propogates", codeInputElement.querySelector("pre").classList.contains("language-css"), `Class name of pre element was "${codeInputElement.querySelector("pre").className}" but code-input element had language="css"`);
+
+      window.requestAnimationFrame(function() {
+        codeInputElement.setAttribute("placeholder", "Gimme some HTML!");
+        codeInputElement.setAttribute("language", "html");
+      });
+      await waitAsync(500); // Wait for animation frame; language to propogate to class
+      testAssertion("Core", "Language Class Propogates When Set Immediately After Placeholder Set", codeInputElement.querySelector("pre").classList.contains("language-html"), `Class name of pre element was "${codeInputElement.querySelector("pre").className}" but code-input element had language="css"`);
+
+      codeInputElement.removeAttribute("placeholder");
+      codeInputElement.setAttribute("language", "JavaScript");
+      await waitAsync(50); // Wait for language to propogate to class
+    }
+
     /*--- Tests for plugins ---*/
     // AutoCloseBrackets
     testAddingText("AutoCloseBrackets", textarea, function(textarea) {
