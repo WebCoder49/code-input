@@ -986,16 +986,16 @@ var codeInput = {
                 /* Check regular attributes */
                 for(let i = 0; i < codeInput.observedAttributes.length; i++) {
                     if (mutation.attributeName == codeInput.observedAttributes[i]) {
-                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
+                        this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                     }
                 }
                 for(let i = 0; i < codeInput.textareaSyncAttributes.length; i++) {
                     if (mutation.attributeName == codeInput.textareaSyncAttributes[i]) {
-                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
+                        this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                     }
 		}
                 if (mutation.attributeName.substring(0, 5) == "aria-") {
-                    return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
+                    this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                 }
             }
         }
@@ -1059,7 +1059,13 @@ var codeInput = {
                         }
 
                         if (mainTextarea.placeholder == oldValue || oldValue == null && mainTextarea.placeholder == "") {
-                            mainTextarea.placeholder = newValue;
+                            if(newValue === null) {
+                                mainTextarea.removeAttribute("placeholder");
+                                // If always setAttribute, would set it to the string
+                                // "null" here, which isn't wanted.'
+                            } else {
+                                mainTextarea.setAttribute("placeholder", newValue);
+                            }
                         }
 
                         this.scheduleHighlight();
