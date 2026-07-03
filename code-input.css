@@ -5,7 +5,7 @@
  *
  * License of whole library for bundlers:
  *
- * Copyright 2021-2025 Oliver Geer and contributors
+ * Copyright 2021-2026 Oliver Geer and contributors
  * @license MIT
  *
  * **<https://code-input-js.org>**
@@ -13,7 +13,9 @@
 
 code-input {
   /* Allow other elements to be inside */
-  display: block;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 100%;
   overflow-y: auto;
   overflow-x: auto;
   position: relative;
@@ -46,9 +48,6 @@ code-input {
   tab-size: 2;
   white-space: pre;
   padding: 0!important; /* Use --padding to set the code-input element's padding */
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: 100%;
 }
 
 code-input :not(.code-input_dialog-container *) {
@@ -100,7 +99,7 @@ code-input textarea, code-input pre, code-input pre * {
   tab-size: inherit!important;
   text-align: inherit!important;
 }
-code-input textarea, code-input pre, code-input pre code {
+code-input pre, code-input pre code {
   overflow: visible!important;
 }
 
@@ -285,5 +284,7 @@ code-input textarea[data-code-input-fallback] {
   color: var(--code-input_highlight-text-color, inherit);
 
   /* Don't overlap with message */
-  min-height: calc(100% - var(--padding-top, 16px) - 2em - var(--padding-bottom, 16px));
+  min-height: calc(100% - var(--padding-top, 16px) - max(2em, var(--padding-bottom, 16px)));
+  height: calc(100% - var(--padding-top, 16px) - max(2em, var(--padding-bottom, 16px)));
+  padding-bottom: max(2em, var(--padding-bottom, 16px))!important;
 }

@@ -105,8 +105,75 @@ function waitAsync(milliseconds) {
 /* --- Running the tests --- */
 
 /* Start the test, for Prism.js if isHLJS is false, or for highlight.js if isHLJS is true. */
-function beginTest(isHLJS) {
+var loadEventFired = false; // Global variable so can check the load event is fired in startLoad function
+var popupClicked = false; // Global variable for Autocomplete plugin
+async function beginTest(isHLJS) {
     let codeInputElem = document.querySelector("code-input");
+    codeInputElem.addEventListener("code-input_load", () => {
+        loadEventFired = true;
+        testAssertion("Load", "code-input_load Event Fired Late Enough", codeInputElem.querySelector("textarea:not([data-code-input-fallback])") != null, "code-input_load event fired before non-fallback textarea element appeared");
+    });
+    const fallbackTextarea = codeInputElem.querySelector("textarea[data-code-input-fallback]");
+
+
+    startLoad(codeInputElem, isHLJS);
+    codeInputElem.style.height = "calc(1lh + 2em)"; // 2em for the "No highlighting." message
+    codeInputElem.style.setProperty("--padding", "0px");
+    await waitAsync(50); // Wait for display to update
+    // Select the "A" in the fallback textarea's last line
+    fallbackTextarea.selectionStart = 50;
+    fallbackTextarea.selectionEnd = 51;
+    fallbackTextarea.focus();
+    fallbackTextarea.scrollTo(0, codeInputElem.clientHeight * 3); // At least 3 lines
+
+    await waitAsync(50); // Wait for scroll to occur
+    testAssertion("FallbackTextarea", "Scrolls Correctly", confirm("Is the phrase 'A third', with 'A' highlighted, visible? "), "user-judged");
+    codeInputElem.style.removeProperty("--padding");
+    codeInputElem.style.removeProperty("height");
+
+    // Select the "log" in the fallback textarea's initial line
+    fallbackTextarea.selectionStart = 8;
+    fallbackTextarea.selectionEnd = 11;
+    fallbackTextarea.focus();
+
+    codeInputElem.style.setProperty("--padding", "100px");
+    await waitAsync(50); // Wait for display to update
+    testAssertion("FallbackTextarea", "Displayed Correctly With More Padding", confirm("Is the highlighted 'log' properly aligned after the 'console.', which is then properly aligned inside the visible (non-highlighted) textarea? Also, there should be a lot of padding."), "user-judged");
+    codeInputElem.style.setProperty("--padding", "0px");
+    await waitAsync(50); // Wait for display to update
+    testAssertion("FallbackTextarea", "Displayed Correctly With No Padding", confirm("Does the element have zero padding, but otherwise the display remains correct?"), "user-judged");
+    codeInputElem.style.removeProperty("--padding");
+    await waitAsync(50); // Wait for display to update
+    testAssertion("FallbackTextarea", "Displayed Correctly By Default", confirm("Is the highlighted 'log' properly aligned after the 'console.', which is then properly aligned inside the visible (non-highlighted) textarea?"), "user-judged");
+
+
+    codeInputElem.classList.add("code-input_autogrow_height");
+    await waitAsync(50); // Wait for display to update
+    testAssertion("FallbackTextarea-Autogrow", "Displayed Correctly With Default Autogrow Height", confirm("Is the element not very tall (but tall enough to properly show some code), but otherwise the display remains correct?"), "user-judged");
+
+    codeInputElem.style.setProperty("--code-input_autogrow_min-height", "200px");
+    await waitAsync(50); // Wait for display to update
+    assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-height Sets Height", codeInputElem.clientHeight, 200);
+    codeInputElem.style.removeProperty("--code-input_autogrow_min-height");
+    codeInputElem.classList.remove("code-input_autogrow_height");
+
+    codeInputElem.classList.add("code-input_autogrow_width");
+    await waitAsync(50); // Wait for display to update
+    testAssertion("FallbackTextarea-Autogrow", "Displayed Correctly With Default Autogrow Width", confirm("Is the element a sensible but narrow width, and otherwise the display remains correct?"), "user-judged");
+
+    codeInputElem.style.setProperty("--code-input_autogrow_min-width", "200px");
+    await waitAsync(50); // Wait for display to update
+    assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-height Sets Height", codeInputElem.clientWidth, 200);
+    codeInputElem.style.removeProperty("--code-input_autogrow_min-width");
+    codeInputElem.classList.remove("code-input_autogrow_width");
+
+
+    if(!isHLJS) {
+        codeInputElem.classList.add("line-numbers");
+        await waitAsync(50); // Wait for display to update
+        testAssertion("FallbackTextarea-PrismLineNumbers", "Displayed Correctly With line-numbers Class", confirm("Is there more padding to the left now, but otherwise the display remains correct?"), "user-judged");
+    }
+
     if(isHLJS) {
         codeInput.registerTemplate("code-editor", new codeInput.templates.Hljs(hljs, [
             new codeInput.plugins.AutoCloseBrackets(), 
@@ -114,38 +181,37 @@ function beginTest(isHLJS) {
                 if(selectionStart == selectionEnd && textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
                     // Show popup
                     popupElem.style.display = "block";
-                    popupElem.innerHTML = "Here's your popup!";
+                    popupElem.innerHTML = '<button onclick="event.preventDefault(); popupClicked = true;">This is the popup.</button>';
                 } else {
                     popupElem.style.display = "none";
                 }
             }),
             new codeInput.plugins.Autodetect(),
-            new codeInput.plugins.FindAndReplace(),
-            new codeInput.plugins.GoToLine(),
+            new codeInput.plugins.FindAndReplace(true, true, {}, false),
+            new codeInput.plugins.GoToLine(true, {}),
             new codeInput.plugins.Indent(true, 2),
             new codeInput.plugins.SelectTokenCallbacks(codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks.createClassSynchronisation("in-selection"), false, true, true, true, true, false),
             new codeInput.plugins.SpecialChars(true),
         ]));
     } else {
         codeInput.registerTemplate("code-editor", new codeInput.templates.Prism(Prism, [
-            new codeInput.plugins.AutoCloseBrackets(), 
+            new codeInput.plugins.AutoCloseBrackets(),
             new codeInput.plugins.Autocomplete(function(popupElem, textarea, selectionEnd, selectionStart) {
                 if(selectionStart == selectionEnd && textarea.value.substring(selectionEnd-5, selectionEnd) == "popup") {
                     // Show popup
                     popupElem.style.display = "block";
-                    popupElem.innerHTML = "Here's your popup!";
+                    popupElem.innerHTML = '<button onclick="event.preventDefault(); popupClicked = true;">This is the popup.</button>';
                 } else {
                     popupElem.style.display = "none";
                 }
             }),
-            new codeInput.plugins.FindAndReplace(),
-            new codeInput.plugins.GoToLine(),
+            new codeInput.plugins.FindAndReplace(true, true, {}, false),
+            new codeInput.plugins.GoToLine(true, {}),
             new codeInput.plugins.Indent(true, 2),
             new codeInput.plugins.SelectTokenCallbacks(new codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks(selectBrace, deselectAllBraces), true),
             new codeInput.plugins.SpecialChars(true),
         ]));
     }
-    startLoad(codeInputElem, isHLJS);
 }
 
 /* Start loading the tests, using the codeInput load time as one of the tests. */
@@ -153,11 +219,14 @@ function startLoad(codeInputElem, isHLJS) {
     let textarea;
     let timeToLoad = 0;
     let interval = window.setInterval(() => {
-        textarea = codeInputElem.querySelector("textarea");
-        if(textarea != null) window.clearInterval(interval);
-        timeToLoad += 10;
-        testData("TimeTaken", "Textarea Appears", timeToLoad+"ms (nearest 10)");
-        startTests(textarea, isHLJS);
+        textarea = codeInputElem.querySelector("textarea:not([data-code-input-fallback])");
+        if(textarea != null) {
+            testAssertion("Load", "code-input_load Event Fired Early Enough", loadEventFired, "non-fallback textarea element appeared before code-input_load event");
+            window.clearInterval(interval);
+            timeToLoad += 10;
+            testData("Load", "Time Taken for Textarea to Appear", timeToLoad+"ms (nearest 10)");
+            beginTestsAfterLoad(textarea, isHLJS);
+        }
     }, 10);
 }
 
@@ -178,8 +247,16 @@ function allowInputEvents(inputElement, codeInputElement=undefined) {
 }
 
 /* Start the tests using the textarea inside the code-input element and whether highlight.js is being used (as the Autodetect plugin only works with highlight.js, for example) */
-async function startTests(textarea, isHLJS) {
+async function beginTestsAfterLoad(textarea, isHLJS) {
     textarea.focus();
+    if(!isHLJS) {
+        await waitAsync(200); // Wait for display to update
+        testAssertion("FallbackTextarea-PrismLineNumbers", "Alignment between Fallback and Loaded Texareas", confirm("Now with the highlighting, is all the code in the same horizontal position (don't mind the vertical offset by keyboard navigation instructions) as with the last question?"), "user-judged");
+
+    } else {
+        await waitAsync(200); // Wait for display to update
+        testAssertion("FallbackTextarea+PrismLineNumbers", "Alignment between Fallback and Loaded Texareas", confirm("Now with the highlighting, is all the code in the same horizontal position (don't mind the vertical offset by keyboard navigation instructions) as with the last question?"), "user-judged");
+    }
 
     codeInputElement = textarea.parentElement;
     allowInputEvents(textarea, codeInputElement);
@@ -187,7 +264,10 @@ async function startTests(textarea, isHLJS) {
     /*--- Tests for core functionality ---*/
 
     // Textarea's initial value should be correct.
-    assertEqual("Core", "Initial Textarea Value", textarea.value, `console.log("Hello, World!");
+    assertEqual("FallbackTextarea", "Textarea selectionStart Once Loaded same as Fallback Textarea's", textarea.selectionStart, 8);
+    assertEqual("FallbackTextarea", "Textarea selectionEnd Once Loaded same as Fallback Textarea's", textarea.selectionEnd, 11);
+
+    assertEqual("FallbackTextarea", "Textarea Value Once Loaded same as Fallback Textarea's", textarea.value, `console.log("Hello, World!");
 // A second line
 // A third line with <html> tags`);
     // Code element's displayed value, ignoring appearance with HTML tags, should be the initial value but HTML-escaped
@@ -411,6 +491,25 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
 
     codeInputElement.style.removeProperty("caret-color");
 
+    if(!isHLJS) {
+      // These tests require autodetect plugin to be absent
+
+      codeInputElement.setAttribute("language", "css");
+      await waitAsync(50); // Wait for language to propogate to class
+      testAssertion("Core", "Language Class Propogates", codeInputElement.querySelector("pre").classList.contains("language-css"), `Class name of pre element was "${codeInputElement.querySelector("pre").className}" but code-input element had language="css"`);
+
+      window.requestAnimationFrame(function() {
+        codeInputElement.setAttribute("placeholder", "Gimme some HTML!");
+        codeInputElement.setAttribute("language", "html");
+      });
+      await waitAsync(500); // Wait for animation frame; language to propogate to class
+      testAssertion("Core", "Language Class Propogates When Set Immediately After Placeholder Set", codeInputElement.querySelector("pre").classList.contains("language-html"), `Class name of pre element was "${codeInputElement.querySelector("pre").className}" but code-input element had language="css"`);
+
+      codeInputElement.removeAttribute("placeholder");
+      codeInputElement.setAttribute("language", "JavaScript");
+      await waitAsync(50); // Wait for language to propogate to class
+    }
+
     /*--- Tests for plugins ---*/
     // AutoCloseBrackets
     testAddingText("AutoCloseBrackets", textarea, function(textarea) {
@@ -439,12 +538,31 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     await waitAsync(50); // Wait for popup to be rendered
 
     testAssertion("Autocomplete", "Popup Shows on arrow key", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
+
+
     backspace(textarea);
-
     await waitAsync(50); // Wait for popup disappearance to be rendered
-
     testAssertion("Autocomplete", "Popup Disappears on backspace", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
-    move(textarea, 1);
+
+    addText(textarea, "p");
+    await waitAsync(50);
+
+    const beforeClickSelectionStart = textarea.selectionStart;
+    const beforeClickSelectionEnd = textarea.selectionEnd;
+    alert("Dismiss this alert, then click the popup in the next 3 seconds.");
+    // To speed up test, wait until 3s have passed or a click has fired, whichever is earlier.
+    let timePassed = 0;
+    while(timePassed < 3000 && !popupClicked) {
+        await waitAsync(10);
+        timePassed += 10;
+    }
+    testAssertion("Autocomplete", "Popup Clickable", popupClicked, "The onclick event of the popup element didn't fire");
+    // In case clicking the popup moved the caret inside the textarea:
+    textarea.selectionStart = beforeClickSelectionStart;
+    textarea.selectionEnd = beforeClickSelectionEnd;
+    textarea.focus();
+
+    backspace(textarea);
     backspace(textarea);
     backspace(textarea);
     backspace(textarea);
@@ -478,6 +596,76 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
         assertEqual("Autodetect", "Detects CSS", codeInputElement.getAttribute("language"), "css");
     }
 
+    // Autogrow
+    // Replace all code
+    textarea.selectionStart = 0;
+    textarea.selectionEnd = textarea.value.length;
+    backspace(textarea);
+    textarea.parentElement.classList.add("code-input_autogrow_height");
+    await waitAsync(100); // Wait for height to update
+
+    const emptyHeight = textarea.parentElement.clientHeight;
+    addText(textarea, "// a\n// b\n// c\n// d\n// e\n// f\n// g");
+    await waitAsync(100); // Wait for height to update
+
+    const fullHeight = textarea.parentElement.clientHeight;
+    testAssertion("Autogrow", "Content Increases Height", fullHeight > emptyHeight, `${fullHeight} should be > ${emptyHeight}`);
+    textarea.parentElement.style.setProperty("font-size", "50%");
+    await waitAsync(200); // Wait for height to update
+
+    testAssertion("Autogrow", "font-size Decrease Decreases Height", textarea.parentElement.clientHeight < fullHeight, `${textarea.parentElement.clientHeight} should be < ${fullHeight}`);
+    textarea.parentElement.style.setProperty("font-size", "100%");
+    textarea.parentElement.style.removeProperty("font-size");
+    textarea.parentElement.style.setProperty("--code-input_autogrow_min-height", (fullHeight + 10) + "px");
+    textarea.blur(); // Prevent focus instruction bar from affecting height
+    await waitAsync(200); // Wait for height to update
+
+    assertEqual("Autogrow", "--code-input_autogrow_min-height Sets Height", textarea.parentElement.clientHeight, fullHeight + 10);
+    textarea.focus(); // Enable inserting text again
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_min-height");
+    textarea.parentElement.style.setProperty("--code-input_autogrow_max-height", (fullHeight - 10) + "px");
+    await waitAsync(100); // Wait for height to update
+
+    assertEqual("Autogrow", "--code-input_autogrow_max-height Sets Height", textarea.parentElement.clientHeight, fullHeight - 10);
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_max-height");
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_max-height");
+    await waitAsync(100); // Wait for height to update
+
+    textarea.selectionStart = 0;
+    textarea.selectionEnd = textarea.value.length;
+    backspace(textarea);
+    textarea.parentElement.classList.add("code-input_autogrow_width");
+    await waitAsync(100); // Wait for width to update
+
+    const emptyWidth = textarea.parentElement.clientWidth;
+    textarea.parentElement.style.setProperty("--code-input_autogrow_max-width", "calc(infinity * 1px)"); // So can grow beyond width of viewport - default CSS limits to width
+    addText(textarea, "// A very very very very extremely vastly very very very very long line of code is written here in this very comment; yes, this very comment!");
+    await waitAsync(100); // Wait for width to update
+
+    const fullWidth = textarea.parentElement.clientWidth;
+    testAssertion("Autogrow", "Content Increases Width", fullWidth > emptyWidth, `${fullWidth} should be > ${emptyWidth}`);
+    textarea.parentElement.style.setProperty("font-size", "50%");
+    await waitAsync(200); // Wait for width to update
+
+    testAssertion("Autogrow", "font-size Decrease Decreases Width", textarea.parentElement.clientWidth < fullWidth, `${textarea.parentElement.clientWidth} should be < ${fullWidth}`);
+    textarea.parentElement.style.removeProperty("font-size");
+    textarea.parentElement.style.setProperty("--code-input_autogrow_min-width", (fullWidth + 10) + "px");
+    await waitAsync(200); // Wait for width to update
+
+    assertEqual("Autogrow", "--code-input_autogrow_min-width Sets Width", textarea.parentElement.clientWidth, fullWidth + 10);
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_min-width");
+    textarea.parentElement.style.setProperty("--code-input_autogrow_max-width", (fullWidth - 10) + "px");
+    await waitAsync(100); // Wait for width to update
+
+    assertEqual("Autogrow", "--code-input_autogrow_max-width Sets Width", textarea.parentElement.clientWidth, fullWidth - 10);
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_max-width");
+    textarea.parentElement.style.removeProperty("--code-input_autogrow_max-width");
+
+    textarea.parentElement.classList.remove("code-input_autogrow_height");
+    textarea.parentElement.classList.remove("code-input_autogrow_width");
+
+    // TODO add reaons to above testAssertions; check why min-width failing; manual tests to check properly fits; prompt tests; fix no-content hljs.html autogrow-both-ways sizing; test with unregistered.
+
     // FindAndReplace
     // Replace all code
     textarea.selectionStart = 0;
@@ -489,7 +677,12 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     await waitAsync(50); // Wait for highlighting so text updates
 
     // Open dialog and get interactive elements
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "ctrlKey": true }));
+    // Thanks to https://developer.mozilla.org/en-US/docs/Web/API/Navigator/platform
+    if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "metaKey": true }));
+    } else {
+        textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "ctrlKey": true }));
+    }
     let inputBoxes = codeInputElement.querySelectorAll(".code-input_find-and-replace_dialog input");
     let findInput = inputBoxes[0];
     let regExpCheckbox = inputBoxes[1];
@@ -587,7 +780,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));
     lineInput.dispatchEvent(new KeyboardEvent("keyup", { "key": "Enter" }));
     assertEqual("GoToLine", "Line and Column", textarea.selectionStart, 45);
-    
+
     textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "g", "ctrlKey": true }));
     lineInput.value = "10";
     lineInput.dispatchEvent(new KeyboardEvent("keydown", { "key": "Enter" }));

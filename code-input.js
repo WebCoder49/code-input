@@ -5,7 +5,7 @@
  *
  * License of whole library for bundlers:
  *
- * Copyright 2021-2025 Oliver Geer and contributors
+ * Copyright 2021-2026 Oliver Geer and contributors
  * @license MIT
  *
  * **<https://code-input-js.org>**
@@ -555,19 +555,28 @@ var codeInput = {
          */
         syncSize() {
             // Synchronise the size of the pre/code and textarea elements
-            this.textareaElement.style.height = getComputedStyle(this.getStyledHighlightingElement()).height;
-            this.textareaElement.style.width = getComputedStyle(this.getStyledHighlightingElement()).width;
+            // Set directly as well as via the variable so precedence
+            // not lowered, breaking CSS backwards compatibility.
+            const height = getComputedStyle(this.getStyledHighlightingElement()).height;
+            this.textareaElement.style.height = height;
+            this.internalStyle.setProperty("--code-input_synced-height", height);
+
+            const width = getComputedStyle(this.getStyledHighlightingElement()).width;
+            this.textareaElement.style.width = width;
+            this.internalStyle.setProperty("--code-input_synced-width", width);
         }
 
         /**
          * If the color attribute has been defined on the
-         * code-input element by external code, return true.
+         * code-input element by external code, run the callback
+         * provided.
          * Otherwise, make the aspects the color affects
          * (placeholder and caret colour) be the base colour
-         * of the highlighted text, for best contrast, and
-         * return false.
+         * of the highlighted text, for best contrast.
          */
-        isColorOverridenSyncIfNot() {
+        syncIfColorNotOverridden(callbackIfOverridden=function() {}) {
+            if(this.checkingColorOverridden) return;
+            this.checkingColorOverridden = true;
             const oldTransition = this.style.transition;
             this.style.transition = "unset";
             window.requestAnimationFrame(() => {
@@ -584,14 +593,20 @@ var codeInput = {
 
                         this.internalStyle.setProperty("--code-input_highlight-text-color", highlightedTextColor);
                         this.internalStyle.setProperty("--code-input_default-caret-color", highlightedTextColor);
-                        return false;
+                        this.checkingColorOverridden = false;
+                    } else {
+                        this.style.transition = oldTransition;
+                        this.checkingColorOverridden = false;
+                        callbackIfOverridden();
                     }
+                } else {
+                    this.style.transition = oldTransition;
+                    this.checkingColorOverridden = false;
+                    callbackIfOverridden();
                 }
                 this.internalStyle.removeProperty("--code-input_no-override-color");
                 this.style.transition = oldTransition;
             });
-
-            return true;
         }
 
         /**
@@ -603,11 +618,11 @@ var codeInput = {
          */
         syncColorCompletely() {
             // color of code-input element
-            if(this.isColorOverridenSyncIfNot()) {
+            this.syncIfColorNotOverridden(() => {
                 // color overriden
                 this.internalStyle.removeProperty("--code-input_highlight-text-color");
                 this.internalStyle.setProperty("--code-input_default-caret-color", getComputedStyle(this).color);
-            }
+            });
         }
 
 
@@ -778,6 +793,14 @@ var codeInput = {
 
             this.innerHTML = ""; // Clear Content
 
+            // Add internal style as non-externally-overridable alternative to style attribute for e.g. syncing color
+            this.classList.add("code-input_styles_" + codeInput.stylesheetI);
+            const stylesheet = document.createElement("style");
+            stylesheet.innerHTML = "code-input.code-input_styles_" + codeInput.stylesheetI + " {}";
+            this.appendChild(stylesheet);
+            this.internalStyle = stylesheet.sheet.cssRules[0].style;
+            codeInput.stylesheetI++;
+
             // Synchronise attributes to textarea
             for(let i = 0; i < this.attributes.length; i++) {
                 let attribute = this.attributes[i].name;
@@ -845,20 +868,16 @@ var codeInput = {
                 this.syncSize();
             });
             resizeObserver.observe(this);
-
-
-            // Add internal style as non-externally-overridable alternative to style attribute for e.g. syncing color
-            this.classList.add("code-input_styles_" + codeInput.stylesheetI);
-            const stylesheet = document.createElement("style");
-            stylesheet.innerHTML = "code-input.code-input_styles_" + codeInput.stylesheetI + " {}";
-            this.appendChild(stylesheet);
-            this.internalStyle = stylesheet.sheet.cssRules[0].style;
-            codeInput.stylesheetI++;
+          
+            // Must resize when this content resizes, for autogrow plugin
+            // support.
+            resizeObserver.observe(this.preElement);
+            resizeObserver.observe(this.codeElement);
 
             // Synchronise colors
             const preColorChangeCallback = (evt) => {
                 if(evt.propertyName == "color") {
-                    this.isColorOverridenSyncIfNot();
+                    this.syncIfColorNotOverridden();
                 }
             };
             this.preElement.addEventListener("transitionend", preColorChangeCallback);
@@ -967,16 +986,16 @@ var codeInput = {
                 /* Check regular attributes */
                 for(let i = 0; i < codeInput.observedAttributes.length; i++) {
                     if (mutation.attributeName == codeInput.observedAttributes[i]) {
-                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
+                        this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                     }
                 }
                 for(let i = 0; i < codeInput.textareaSyncAttributes.length; i++) {
                     if (mutation.attributeName == codeInput.textareaSyncAttributes[i]) {
-                        return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
+                        this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                     }
 		}
                 if (mutation.attributeName.substring(0, 5) == "aria-") {
-                    return this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
+                    this.attributeChangedCallback(mutation.attributeName, mutation.oldValue, super.getAttribute(mutation.attributeName));
                 }
             }
         }
@@ -1040,7 +1059,13 @@ var codeInput = {
                         }
 
                         if (mainTextarea.placeholder == oldValue || oldValue == null && mainTextarea.placeholder == "") {
-                            mainTextarea.placeholder = newValue;
+                            if(newValue === null) {
+                                mainTextarea.removeAttribute("placeholder");
+                                // If always setAttribute, would set it to the string
+                                // "null" here, which isn't wanted.'
+                            } else {
+                                mainTextarea.setAttribute("placeholder", newValue);
+                            }
                         }
 
                         this.scheduleHighlight();
