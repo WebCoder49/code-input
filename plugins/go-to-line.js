@@ -116,6 +116,9 @@ codeInput.plugins.GoToLine = class extends codeInput.Plugin {
             const textarea = codeInput.textareaElement;
 
             const dialog = document.createElement('div');
+            dialog.addEventListener('input', (event) => {
+                event.stopImmediatePropagation(); // Don't bubble input events up to the code-input element
+            });
 
             const input = document.createElement('input');
 

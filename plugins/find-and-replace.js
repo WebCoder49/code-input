@@ -196,6 +196,10 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
             const textarea = codeInputElement.textareaElement;
 
             dialog = document.createElement('div');
+            dialog.addEventListener('input', (event) => {
+                event.stopImmediatePropagation(); // Don't bubble input events up to the code-input element
+            });
+
             const findInput = document.createElement('input');
             const findCaseSensitiveCheckbox = document.createElement('input');
             const findRegExpCheckbox = document.createElement('input');
