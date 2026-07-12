@@ -59,11 +59,9 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   margin: 0px!important;
   padding-left: var(--padding-left, 16px)!important;
   padding-right: var(--padding-right, 16px)!important;
-  padding-top: var(--padding-top, 16px)!important;
-  padding-bottom: var(--padding-bottom, 16px)!important;
   border: 0;
 
-  min-width: calc(100% - var(--padding-left, 16px) - var(--padding-right, 16px));
+  min-width: max(calc(100% - var(--padding-left, 16px) - var(--padding-right, 16px)), var(--code-input_force-width, 0px));
   min-height: calc(100% - var(--padding-top, 16px) - var(--padding-bottom, 16px));
   resize: none;
   overflow: hidden;
@@ -71,7 +69,15 @@ code-input textarea, code-input:not(.code-input_pre-element-styled) pre code, co
   grid-column: 1;
   display: block;
 }
+code-input textarea {
+  padding-top: var(--padding-top, 16px)!important;
+  padding-bottom: var(--padding-bottom, 16px)!important;
+
+}
 code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
+  padding-top: calc(var(--padding-top, 16px) + var(--code-input_missing-lines-height-top, 0px))!important;
+  padding-bottom: calc(var(--padding-bottom, 16px) + var(--code-input_missing-lines-height-bottom, 0px))!important;
+
   height: max-content;
   width: max-content;
 
@@ -226,10 +232,13 @@ code-input .code-input_dialog-container .code-input_keyboard-navigation-instruct
 }
 
 /* Things with padding when instructions are present */
-code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused) textarea,
+code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused) textarea {
+  padding-top: calc(var(--padding-top, 16px) + 3em)!important;
+  min-height: calc(100% - var(--padding-top, 16px) - 3em - var(--padding-bottom, 16px));
+}
 code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused):not(.code-input_pre-element-styled) pre code,
 code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused).code-input_pre-element-styled pre {
-  padding-top: calc(var(--padding-top, 16px) + 3em)!important;
+  padding-top: calc(var(--padding-top, 16px) + 3em + var(--code-input_missing-lines-height-top, 0px))!important;
   min-height: calc(100% - var(--padding-top, 16px) - 3em - var(--padding-bottom, 16px));
 }
 

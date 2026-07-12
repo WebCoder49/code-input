@@ -1,3 +1,6 @@
+// Currently assumes that no other plugin is disabling
+// viewporting. TODO: Fix.
+
 /**
  * Add Find-and-Replace (Ctrl/Cmd+F for find, Ctrl+H for replace by default) functionality to the code editor.
  * Files: find-and-replace.js / find-and-replace.css
@@ -59,7 +62,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
 
     /* After highlight, retry match highlighting */
     afterHighlight(codeInput) {
-        if(codeInput.pluginData.findAndReplace != undefined && codeInput.pluginData.findAndReplace.dialog != undefined) {
+      if(codeInput.pluginData.findAndReplace != undefined && codeInput.pluginData.findAndReplace.dialog != undefined) {
             if(!codeInput.pluginData.findAndReplace.dialog.classList.contains("code-input_find-and-replace_hidden-dialog")) {
                 // Code updated and dialog open - re-highlight find matches
                 codeInput.pluginData.findAndReplace.dialog.findMatchState.rehighlightMatches();
@@ -152,8 +155,8 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
     }
 
     /* Called with a dialog box keyup event to close and clear the dialog box */    
-    cancelPrompt(dialog, codeInput, event) {
-        event.preventDefault();
+    cancelPrompt(dialog, codeInput) {
+        codeInput.enableViewporting()
 
         // Add current value of find/replace to Ctrl+Z stack.
         this.findMatchesOnValueChange = false;
@@ -191,6 +194,7 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
      * @param {boolean} replacePartExpanded whether the replace part of the find-and-replace dialog should be expanded
     */
     showPrompt(codeInputElement, replacePartExpanded) {
+        codeInputElement.disableViewporting()
         let dialog;
         if(codeInputElement.pluginData.findAndReplace == undefined || codeInputElement.pluginData.findAndReplace.dialog == undefined) {
             const textarea = codeInputElement.textareaElement;
@@ -374,8 +378,8 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
                 this.checkReplacePrompt(dialog, codeInputElement, event);
                 replaceInput.focus();
             });
-            cancel.addEventListener('click', (event) => { this.cancelPrompt(dialog, codeInputElement, event); });
-            cancel.addEventListener('keypress', (event) => { if (event.key == "Space" || event.key == "Enter") this.cancelPrompt(dialog, codeInputElement, event); });
+            cancel.addEventListener('click', (event) => { event.preventDefault(); this.cancelPrompt(dialog, codeInputElement); });
+            cancel.addEventListener('keypress', (event) => { event.preventDefault(); if (event.key == "Space" || event.key == "Enter") this.cancelPrompt(dialog, codeInputElement, event); });
 
             codeInputElement.dialogContainerElement.appendChild(dialog);
             codeInputElement.pluginData.findAndReplace = {dialog: dialog};

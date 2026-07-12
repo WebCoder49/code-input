@@ -27,11 +27,11 @@ code-input pre[class*=language-].line-numbers>code {
 /* Line numbers now positioned relative to the pre element not the code element. */
 code-input .line-numbers .line-numbers-rows {
   left: max(0em, calc(var(--padding-left, 16px) - 3.8em));
-  top: var(--padding-top);
+  top: calc(var(--padding-top) + var(--code-input_missing-lines-height-top));
 }
 /* Things with padding when instructions are present */
 code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused) .line-numbers .line-numbers-rows {
-  top: calc(var(--padding-top) + 3em);
+  top: calc(var(--padding-top) + 3em + var(--code-input_missing-lines-height-top));
 }
 
 /* Compatibility with autogrow plugin */

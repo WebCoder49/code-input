@@ -525,17 +525,17 @@ var codeInput = {
          * Update the text value to the result element, after the textarea contents have changed.
          */
         update() {
-            let resultElement = this.codeElement;
             let value = this.value;
             value += "\n"; // Placeholder for next line
 
+            this.createViewport()
+
             // Update code
-            resultElement.innerHTML = this.escapeHtml(value);
             this.pluginEvt("beforeHighlight");
 
             // Syntax Highlight
-            if (this.templateObject.includeCodeInputInHighlightFunc) this.templateObject.highlight(resultElement, this);
-            else this.templateObject.highlight(resultElement);
+            if (this.templateObject.includeCodeInputInHighlightFunc) this.templateObject.highlight(this.codeElement, this);
+            else this.templateObject.highlight(this.codeElement);
 
             this.syncSize();
 
@@ -557,11 +557,11 @@ var codeInput = {
             // Synchronise the size of the pre/code and textarea elements
             // Set directly as well as via the variable so precedence
             // not lowered, breaking CSS backwards compatibility.
-            const height = getComputedStyle(this.getStyledHighlightingElement()).height;
+            const height = this.getStyledHighlightingElement().offsetHeight+"px";
             this.textareaElement.style.height = height;
             this.internalStyle.setProperty("--code-input_synced-height", height);
 
-            const width = getComputedStyle(this.getStyledHighlightingElement()).width;
+            const width = this.getStyledHighlightingElement().offsetWidth+"px";
             this.textareaElement.style.width = width;
             this.internalStyle.setProperty("--code-input_synced-width", width);
         }
@@ -682,6 +682,102 @@ var codeInput = {
             }
         }
 
+        // TODO: Make the performance fix work with the rest of the code and be properly documented.
+        viewportLineRange = null;
+        viewportingDisabled = false;
+        viewportCoversWholeElement = false;
+        viewportStartCharacterIndex = 0;
+        viewportEndCharacterIndex = 0;
+
+        disableViewporting() {
+          this.viewportingDisabled = true;
+          if(!this.viewportCoversWholeElement) {
+            // Highlight
+            this.pluginEvt("beforeHighlight");
+            this.createViewport();
+            if (this.templateObject.includeCodeInputInHighlightFunc) this.templateObject.highlight(this.codeElement, this);
+            else this.templateObject.highlight(this.codeElement);
+            this.pluginEvt("afterHighlight");
+          }
+        }
+
+        enableViewporting() {
+          this.viewportingDisabled = false;
+        }
+
+        getVisibleLineRange() {
+          const paddingTop = Number(getComputedStyle(this.textareaElement).paddingTop.match(/^(\d+(\.\d+)?)px$/)[1]);
+          const paddingBottom = Number(getComputedStyle(this.textareaElement).paddingBottom.match(/^(\d+(\.\d+)?)px$/)[1]);
+          const lineHeight = Number(getComputedStyle(this).lineHeight.match(/^(\d+(\.\d+)?)px$/)[1]);
+          const realScrollTop = this.scrollTop - paddingTop;
+          const firstLine = Math.floor(realScrollTop / lineHeight);
+          const lastLine = Math.ceil((realScrollTop + this.clientHeight) / lineHeight);
+          return {first: firstLine, last: lastLine, lineHeight };
+        }
+
+        /**
+         * Set up the codeElement for highlighting so it only
+         * contains the lines around those currently viewed.
+        */
+        createViewport() {
+          if(this.viewportingDisabled) {
+            this.viewportStartCharacterIndex = 0;
+            this.viewportEndCharacterIndex = this.value.length;
+            this.codeElement.innerHTML = this.escapeHtml(this.value)+"\n";
+            return;
+          }
+
+          const lines = this.value.split("\n");
+
+          const viewportLineRange = this.getVisibleLineRange();
+          viewportLineRange.first -= 100;
+          viewportLineRange.last += 100;
+          if(viewportLineRange.first < 0) viewportLineRange.first = 0;
+          if(viewportLineRange.last >= lines.length) viewportLineRange.last = lines.length - 1;
+
+          if(viewportLineRange.first == 0 && viewportLineRange.last == lines.length - 1) {
+            this.viewportCoversWholeElement = true
+          } else {
+            this.viewportCoversWholeElement = false
+          }
+
+          const textInViewport = lines.slice(viewportLineRange.first, viewportLineRange.last+1).join("\n");
+
+          this.viewportLineRange = viewportLineRange;
+          let startCharIndex = 0;
+          for(let i = 0; i < viewportLineRange.first; i++) {
+            startCharIndex += lines[i].length+1; // 1 for \n
+          }
+          this.viewportStartCharacterIndex = startCharIndex;
+          this.viewportEndCharacterIndex = startCharIndex+textInViewport.length;
+
+          this.codeElement.innerHTML = this.escapeHtml(textInViewport)+"\n";
+          // \n for the final line
+
+          this.internalStyle.setProperty("--code-input_missing-lines-height-top", (viewportLineRange.first * viewportLineRange.lineHeight)+"px");
+
+          this.internalStyle.setProperty("--code-input_missing-lines-height-bottom", ((lines.length-viewportLineRange.last-1) * viewportLineRange.lineHeight)+"px");
+
+          this.internalStyle.setProperty("--code-input_force-width", Math.max(...lines.map(line => line.length))+"ch");
+
+          // For prism-line-numbers. TODO: Move to own
+          // plugin.
+          this.getStyledHighlightingElement().dataset.start = viewportLineRange.first+1; // 1-indexed
+        }
+
+        /**
+         * Reurn true if the code-input element has been scrolled out of the current
+         * viewport lines, so a new viewport needs to be created and highlighted.
+         */
+        leftViewport() {
+          if(this.viewportingDisabled) return false;
+
+          const visibleLineRange = this.getVisibleLineRange();
+          if(visibleLineRange.first-50 < this.viewportLineRange.first) return true;
+          if(visibleLineRange.last+50 > this.viewportLineRange.last) return true;
+          return false;
+        }
+
         /**
          * Set up and initialise the textarea.
          * This will be called once the template has been added.
@@ -790,6 +886,17 @@ var codeInput = {
                     this.syncSize();
                 }, 0);
             });
+            this.addEventListener("scroll", () => {
+              if(this.leftViewport()) {
+                // Highlight
+                this.codeElement.innerHTML = this.escapeHtml(this.value);
+                this.pluginEvt("beforeHighlight");
+                this.createViewport();
+                if (this.templateObject.includeCodeInputInHighlightFunc) this.templateObject.highlight(this.codeElement, this);
+                else this.templateObject.highlight(this.codeElement);
+                this.pluginEvt("afterHighlight");
+              }
+            })
 
             this.innerHTML = ""; // Clear Content
 
