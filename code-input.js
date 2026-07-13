@@ -740,8 +740,21 @@ var codeInput = {
           const viewportLineRange = this.getVisibleLineRange();
           viewportLineRange.first -= 100;
           viewportLineRange.last += 100;
-          if(viewportLineRange.first < 0) viewportLineRange.first = 0;
-          if(viewportLineRange.last >= lines.length) viewportLineRange.last = lines.length - 1;
+
+          // The value has changed but the code-input element has not changed yet.
+          // Force a scroll of the viewport to the last lines of the code but no further upwards.
+          if(viewportLineRange.last >= lines.length) {
+            const numberLinesRenderedMinus1 = viewportLineRange.last - viewportLineRange.first;
+            viewportLineRange.first = lines.length - 1 - numberLinesRenderedMinus1;
+            viewportLineRange.last = lines.length - 1;
+          }
+
+          if(viewportLineRange.first < 0) {
+            viewportLineRange.first = 0;
+          }
+          if(viewportLineRange.last < 0) {
+            viewportLineRange.last = 0;
+          }
 
           if(viewportLineRange.first == 0 && viewportLineRange.last == lines.length - 1) {
             this.viewportCoversWholeElement = true
