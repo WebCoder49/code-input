@@ -3,6 +3,8 @@
  * classes, optionally between a minimum and maximum size specified using CSS variables.
  *
  * Files: autogrow.css
+ *
+ * TODO: Update for viewporting.
  */
 
 /* Inspired greatly by https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/

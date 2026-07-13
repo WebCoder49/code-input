@@ -73,6 +73,8 @@ code-input textarea {
   padding-top: var(--padding-top, 16px)!important;
   padding-bottom: var(--padding-bottom, 16px)!important;
 
+  height: calc(var(--code-input_synced-height) - var(--padding-top, 16px) - var(--padding-bottom, 16px))!important;
+  width: calc(var(--code-input_synced-height) - var(--padding-left, 16px) - var(--padding-right, 16px))!important;
 }
 code-input:not(.code-input_pre-element-styled) pre code, code-input.code-input_pre-element-styled pre {
   padding-top: calc(var(--padding-top, 16px) + var(--code-input_missing-lines-height-top, 0px))!important;

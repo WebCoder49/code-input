@@ -558,11 +558,9 @@ var codeInput = {
             // Set directly as well as via the variable so precedence
             // not lowered, breaking CSS backwards compatibility.
             const height = this.getStyledHighlightingElement().offsetHeight+"px";
-            this.textareaElement.style.height = height;
             this.internalStyle.setProperty("--code-input_synced-height", height);
 
             const width = this.getStyledHighlightingElement().offsetWidth+"px";
-            this.textareaElement.style.width = width;
             this.internalStyle.setProperty("--code-input_synced-width", width);
         }
 
