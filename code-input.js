@@ -724,6 +724,16 @@ var codeInput = {
             this.viewportStartCharacterIndex = 0;
             this.viewportEndCharacterIndex = this.value.length;
             this.codeElement.innerHTML = this.escapeHtml(this.value)+"\n";
+
+            this.internalStyle.setProperty("--code-input_missing-lines-height-top", "0px");
+
+            this.internalStyle.setProperty("--code-input_missing-lines-height-bottom", "0px");
+
+            this.internalStyle.setProperty("--code-input_force-width", "0px"); // Element contains all the text so sets its width correctly
+
+            // For prism-line-numbers. TODO: Move to own
+            // plugin.
+            this.getStyledHighlightingElement().dataset.start = 1; // 1-indexed
             return;
           }
 
