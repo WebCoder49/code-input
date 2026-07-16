@@ -305,6 +305,51 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     await waitAsync(50);
     assertEqual("Core", "Programmatically-created element rendered value", programmaticCodeInput.preElement.textContent, "Hello, World!\n");
 
+    const switchableCodeInput = document.createElement("code-input");
+    switchableCodeInput.setAttribute("template", "code-editor");
+    switchableCodeInput.textContent = "before";
+    document.body.append(switchableCodeInput);
+    await waitAsync(50);
+
+    const staleTemplateName = "test-unregistered-stale";
+    const recoveredTemplateName = "test-unregistered-recovered";
+    switchableCodeInput.setAttribute("template", staleTemplateName);
+    switchableCodeInput.value = "after";
+    await waitAsync(50);
+    assertEqual("Core", "Unregistered template has no active template object", switchableCodeInput.templateObject, undefined);
+    assertEqual("Core", "Unregistered template preserves editable plain-text rendering", switchableCodeInput.codeElement.textContent, "after\n");
+    assertEqual("Core", "Unregistered template returns to fallback display", switchableCodeInput.classList.contains("code-input_loaded"), false);
+    assertEqual("Core", "Unregistered template keeps its textarea editable", switchableCodeInput.textareaElement.hasAttribute("data-code-input-fallback"), true);
+
+    switchableCodeInput.setAttribute("template", recoveredTemplateName);
+    await waitAsync(50);
+    assertEqual("Core", "Stale unregistered template is removed from the waiting queue", staleTemplateName in codeInput.templateNotYetRegisteredQueue, false);
+    const staleTemplate = new codeInput.Template((codeElement) => {
+        codeElement.classList.add("test-stale-template-highlighted");
+    });
+    codeInput.registerTemplate(staleTemplateName, staleTemplate);
+    await waitAsync(50);
+    assertEqual("Core", "Stale queued template does not replace current missing template", switchableCodeInput.templateObject, undefined);
+    assertEqual("Core", "Stale queued template does not highlight the element", switchableCodeInput.codeElement.classList.contains("test-stale-template-highlighted"), false);
+
+    const recoveredTemplate = new codeInput.Template((codeElement) => {
+        codeElement.classList.add("test-recovered-template-highlighted");
+    }, true, true, false, [new codeInput.plugins.Indent()]);
+    codeInput.registerTemplate(recoveredTemplateName, recoveredTemplate);
+    await waitAsync(50);
+    assertEqual("Core", "Registered missing template becomes active", switchableCodeInput.templateObject, recoveredTemplate);
+    assertEqual("Core", "Registered missing template resumes highlighting", switchableCodeInput.codeElement.classList.contains("test-recovered-template-highlighted"), true);
+    assertEqual("Core", "Registered missing template preserves the edited value", switchableCodeInput.value, "after");
+    assertEqual("Core", "Registered missing template is removed from the waiting queue", recoveredTemplateName in codeInput.templateNotYetRegisteredQueue, false);
+    assertEqual("Core", "Registered missing template restores the loaded display", switchableCodeInput.classList.contains("code-input_loaded"), true);
+    assertEqual("Core", "Registered missing template removes the fallback marker", switchableCodeInput.textareaElement.hasAttribute("data-code-input-fallback"), false);
+
+    switchableCodeInput.setAttribute("template", "code-editor");
+    await waitAsync(50);
+    assertEqual("Core", "Existing registered template can be selected after recovery", switchableCodeInput.templateObject, codeInput.usedTemplates["code-editor"]);
+    assertEqual("Core", "Existing registered template keeps the loaded display", switchableCodeInput.classList.contains("code-input_loaded"), true);
+    switchableCodeInput.remove();
+
     // Event Listener Tests
 
     let numTimesInputCalled = {"listener": 0, "idl": 0, "content": 0};

@@ -130,25 +130,35 @@ var codeInput = {
 
         
         codeInput.usedTemplates[templateName] = template;
-        // Add waiting code-input elements wanting this template from queue
-        if (templateName in codeInput.templateNotYetRegisteredQueue) {
-            for (let i in codeInput.templateNotYetRegisteredQueue[templateName]) {
-                const elem = codeInput.templateNotYetRegisteredQueue[templateName][i];
+        const activateQueuedElements = function (queueName) {
+            if (!(queueName in codeInput.templateNotYetRegisteredQueue)) return;
+
+            for (let i in codeInput.templateNotYetRegisteredQueue[queueName]) {
+                const elem = codeInput.templateNotYetRegisteredQueue[queueName][i];
+                const requestedTemplateName = elem.getAttribute("template") || codeInput.defaultTemplate;
+                if (requestedTemplateName != templateName) continue;
+
                 elem.templateObject = template;
-                elem.setup();
+                if (elem.textareaElement == null) {
+                    elem.setup();
+                } else {
+                    elem.textareaElement.removeAttribute("data-code-input-fallback");
+                    elem.classList.add("code-input_loaded");
+                    if (template.preElementStyled) elem.classList.add("code-input_pre-element-styled");
+                    else elem.classList.remove("code-input_pre-element-styled");
+                    elem.scheduleHighlight();
+                }
             }
-        }
+            delete codeInput.templateNotYetRegisteredQueue[queueName];
+        };
+
+        // Add waiting code-input elements wanting this template from queue
+        activateQueuedElements(templateName);
 
         if (codeInput.defaultTemplate == undefined) {
             codeInput.defaultTemplate = templateName;
             // Add elements with default template from queue
-            if (undefined in codeInput.templateNotYetRegisteredQueue) {
-                for (let i in codeInput.templateNotYetRegisteredQueue[undefined]) {
-                    const elem = codeInput.templateNotYetRegisteredQueue[undefined][i];
-                    elem.templateObject = template;
-                    elem.setup();
-                }
-            }
+            activateQueuedElements(undefined);
         }
     },
 
@@ -478,6 +488,8 @@ var codeInput = {
          * @param {Array} args - the arguments to pass into the event callback in the template after the code-input element. Normally left empty
         */
         pluginEvt(eventName, args) {
+            if (this.templateObject == undefined) return;
+
             for (let i in this.templateObject.plugins) {
                 let plugin = this.templateObject.plugins[i];
                 if (eventName in plugin) {
@@ -531,6 +543,11 @@ var codeInput = {
 
             // Update code
             resultElement.innerHTML = this.escapeHtml(value);
+            if (this.templateObject == undefined) {
+                this.syncSize();
+                return;
+            }
+
             this.pluginEvt("beforeHighlight");
 
             // Syntax Highlight
@@ -543,7 +560,7 @@ var codeInput = {
         }
 
         getStyledHighlightingElement() {
-            if(this.templateObject.preElementStyled) {
+            if(this.templateObject != undefined && this.templateObject.preElementStyled) {
                 return this.preElement;
             } else {
                 return this.codeElement;
@@ -660,16 +677,12 @@ var codeInput = {
 
         /**
          * Get the template object this code-input element is using.
-         * @returns {Object} - Template object
+         * @param {string} [templateName] - Optional template name to use instead of the current attribute/default.
+         * @returns {Object|undefined} - Template object, or undefined while waiting for it to be registered.
          */
-        getTemplate() {
-            let templateName;
-            if (this.getAttribute("template") == undefined) {
-                // Default
-                templateName = codeInput.defaultTemplate;
-            } else {
-                templateName = this.getAttribute("template");
-            }
+        getTemplate(templateName) {
+            if (templateName == undefined) templateName = this.getAttribute("template") || codeInput.defaultTemplate;
+
             if (templateName in codeInput.usedTemplates) {
                 return codeInput.usedTemplates[templateName];
             } else {
@@ -677,7 +690,9 @@ var codeInput = {
                 if (!(templateName in codeInput.templateNotYetRegisteredQueue)) {
                     codeInput.templateNotYetRegisteredQueue[templateName] = [];
                 }
-                codeInput.templateNotYetRegisteredQueue[templateName].push(this);
+                if (!codeInput.templateNotYetRegisteredQueue[templateName].includes(this)) {
+                    codeInput.templateNotYetRegisteredQueue[templateName].push(this);
+                }
                 return undefined;
             }
         }
@@ -966,13 +981,13 @@ var codeInput = {
                 // Children not yet present - wait until they are
                 window.addEventListener("DOMContentLoaded", () => {
                     const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
-                    if(fallbackTextarea) {
+                    if(fallbackTextarea && this.textareaElement == null) {
                         this.setupTextareaSyncEvents(fallbackTextarea);
                     }
                 })
             } else {
                 const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
-                if(fallbackTextarea) {
+                if(fallbackTextarea && this.textareaElement == null) {
                     this.setupTextareaSyncEvents(fallbackTextarea);
                 }
             }
@@ -1022,9 +1037,25 @@ var codeInput = {
                         this.value = newValue;
                         break;
                     case "template":
-                        this.templateObject = codeInput.usedTemplates[newValue || codeInput.defaultTemplate];
-                        if (this.templateObject.preElementStyled) this.classList.add("code-input_pre-element-styled");
-                        else this.classList.remove("code-input_pre-element-styled");
+                        const previousTemplateName = oldValue || codeInput.defaultTemplate;
+                        if (previousTemplateName in codeInput.templateNotYetRegisteredQueue) {
+                            codeInput.templateNotYetRegisteredQueue[previousTemplateName] = codeInput.templateNotYetRegisteredQueue[previousTemplateName].filter((elem) => elem != this);
+                            if (codeInput.templateNotYetRegisteredQueue[previousTemplateName].length == 0) {
+                                delete codeInput.templateNotYetRegisteredQueue[previousTemplateName];
+                            }
+                        }
+
+                        this.templateObject = this.getTemplate(newValue || codeInput.defaultTemplate);
+                        if (this.templateObject == undefined) {
+                            this.classList.remove("code-input_pre-element-styled");
+                            this.classList.remove("code-input_loaded");
+                            this.textareaElement.setAttribute("data-code-input-fallback", "");
+                        } else {
+                            this.textareaElement.removeAttribute("data-code-input-fallback");
+                            this.classList.add("code-input_loaded");
+                            if (this.templateObject.preElementStyled) this.classList.add("code-input_pre-element-styled");
+                            else this.classList.remove("code-input_pre-element-styled");
+                        }
                         // Syntax Highlight
                         this.scheduleHighlight();
 
