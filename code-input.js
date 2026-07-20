@@ -142,11 +142,7 @@ var codeInput = {
                 if (elem.textareaElement == null) {
                     elem.setup();
                 } else {
-                    elem.textareaElement.removeAttribute("data-code-input-fallback");
-                    elem.classList.add("code-input_loaded");
-                    if (template.preElementStyled) elem.classList.add("code-input_pre-element-styled");
-                    else elem.classList.remove("code-input_pre-element-styled");
-                    elem.scheduleHighlight();
+                    elem.removeTemporaryFallback()
                 }
             }
             delete codeInput.templateNotYetRegisteredQueue[queueName];
@@ -488,6 +484,8 @@ var codeInput = {
          * @param {Array} args - the arguments to pass into the event callback in the template after the code-input element. Normally left empty
         */
         pluginEvt(eventName, args) {
+            // To handle already-loaded code-input elements whose template has since been
+            // not found
             if (this.templateObject == undefined) return;
 
             for (let i in this.templateObject.plugins) {
@@ -537,12 +535,14 @@ var codeInput = {
          * Update the text value to the result element, after the textarea contents have changed.
          */
         update() {
+
             let resultElement = this.codeElement;
             let value = this.value;
             value += "\n"; // Placeholder for next line
 
             // Update code
             resultElement.innerHTML = this.escapeHtml(value);
+            // Fallback view
             if (this.templateObject == undefined) {
                 this.syncSize();
                 return;
@@ -560,6 +560,8 @@ var codeInput = {
         }
 
         getStyledHighlightingElement() {
+            // this.templateObject == undefined when code-input element has been loaded
+            // and then changed to a nonexistent template (so shows fallback textarea).
             if(this.templateObject != undefined && this.templateObject.preElementStyled) {
                 return this.preElement;
             } else {
@@ -677,10 +679,10 @@ var codeInput = {
 
         /**
          * Get the template object this code-input element is using.
-         * @param {string} [templateName] - Optional template name to use instead of the current attribute/default.
+         * @param {string|undefined} [templateName] - Optional template name to use instead of the current attribute/default.
          * @returns {Object|undefined} - Template object, or undefined while waiting for it to be registered.
          */
-        getTemplate(templateName) {
+        getTemplate(templateName=undefined) {
             if (templateName == undefined) templateName = this.getAttribute("template") || codeInput.defaultTemplate;
 
             if (templateName in codeInput.usedTemplates) {
@@ -920,6 +922,21 @@ var codeInput = {
             this.classList.add("code-input_loaded");
         }
 
+
+        /**
+         * Set up and initialise the textarea with a new template, a second or later time.
+         * Assumes the element has already been loaded once using setup, but that the
+         * template attribute was then changed to refer to no existing template and thus
+         * force fallback styling again.
+         */
+        removeTemporaryFallback() {
+            this.textareaElement.removeAttribute("data-code-input-fallback");
+            this.classList.add("code-input_loaded");
+            if (this.templateObject.preElementStyled) this.classList.add("code-input_pre-element-styled");
+            else this.classList.remove("code-input_pre-element-styled");
+            this.scheduleHighlight();
+        }
+
         /**
          * @deprecated This shouldn't have been accessed as part of the library's public interface (to enable more flexibility in backwards-compatible versions), but is still here just in case it was.
          */
@@ -982,12 +999,18 @@ var codeInput = {
                 window.addEventListener("DOMContentLoaded", () => {
                     const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
                     if(fallbackTextarea && this.textareaElement == null) {
+                        // Check this.textareaElement == null to check the code-input
+                        // element is not loaded, rather than a post-load change to an
+                        // unregistered template.
                         this.setupTextareaSyncEvents(fallbackTextarea);
                     }
                 })
             } else {
                 const fallbackTextarea = this.querySelector("textarea[data-code-input-fallback]");
                 if(fallbackTextarea && this.textareaElement == null) {
+                    // Check this.textareaElement == null to check the code-input
+                    // element is not loaded, rather than a post-load change to an
+                    // unregistered template.
                     this.setupTextareaSyncEvents(fallbackTextarea);
                 }
             }
@@ -1039,6 +1062,8 @@ var codeInput = {
                     case "template":
                         const previousTemplateName = oldValue || codeInput.defaultTemplate;
                         if (previousTemplateName in codeInput.templateNotYetRegisteredQueue) {
+                            // This element is no longer waiting for its old template.
+                            // TODO is this the best
                             codeInput.templateNotYetRegisteredQueue[previousTemplateName] = codeInput.templateNotYetRegisteredQueue[previousTemplateName].filter((elem) => elem != this);
                             if (codeInput.templateNotYetRegisteredQueue[previousTemplateName].length == 0) {
                                 delete codeInput.templateNotYetRegisteredQueue[previousTemplateName];
@@ -1047,10 +1072,12 @@ var codeInput = {
 
                         this.templateObject = this.getTemplate(newValue || codeInput.defaultTemplate);
                         if (this.templateObject == undefined) {
+                            // Load fallback template
                             this.classList.remove("code-input_pre-element-styled");
-                            this.classList.remove("code-input_loaded");
+                            this.classList.remove("code-input_loaded"); // TODO Can we keep code-input_loaded here since technically is loaded
                             this.textareaElement.setAttribute("data-code-input-fallback", "");
                         } else {
+                            // Load existing template
                             this.textareaElement.removeAttribute("data-code-input-fallback");
                             this.classList.add("code-input_loaded");
                             if (this.templateObject.preElementStyled) this.classList.add("code-input_pre-element-styled");

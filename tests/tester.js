@@ -319,10 +319,13 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     assertEqual("Core", "Unregistered template has no active template object", switchableCodeInput.templateObject, undefined);
     assertEqual("Core", "Unregistered template preserves editable plain-text rendering", switchableCodeInput.codeElement.textContent, "after\n");
     assertEqual("Core", "Unregistered template returns to fallback display", switchableCodeInput.classList.contains("code-input_loaded"), false);
-    assertEqual("Core", "Unregistered template keeps its textarea editable", switchableCodeInput.textareaElement.hasAttribute("data-code-input-fallback"), true);
+    assertEqual("Core", "Unregistered template uses fallback textarea styling", switchableCodeInput.textareaElement.hasAttribute("data-code-input-fallback"), true);
 
-    switchableCodeInput.setAttribute("template", recoveredTemplateName);
+    switchableCodeInput.setAttribute("template", recoveredTemplateName); // TODO why here not later
+
     await waitAsync(50);
+
+    // TODO do we want this
     assertEqual("Core", "Stale unregistered template is removed from the waiting queue", staleTemplateName in codeInput.templateNotYetRegisteredQueue, false);
     const staleTemplate = new codeInput.Template((codeElement) => {
         codeElement.classList.add("test-stale-template-highlighted");
@@ -342,7 +345,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     assertEqual("Core", "Registered missing template preserves the edited value", switchableCodeInput.value, "after");
     assertEqual("Core", "Registered missing template is removed from the waiting queue", recoveredTemplateName in codeInput.templateNotYetRegisteredQueue, false);
     assertEqual("Core", "Registered missing template restores the loaded display", switchableCodeInput.classList.contains("code-input_loaded"), true);
-    assertEqual("Core", "Registered missing template removes the fallback marker", switchableCodeInput.textareaElement.hasAttribute("data-code-input-fallback"), false);
+    assertEqual("Core", "Registered missing template removes the fallback styling", switchableCodeInput.textareaElement.hasAttribute("data-code-input-fallback"), false);
 
     switchableCodeInput.setAttribute("template", "code-editor");
     await waitAsync(50);
