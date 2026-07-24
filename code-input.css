@@ -281,7 +281,7 @@ code-input:has(textarea[data-code-input-fallback]) {
 code-input textarea[data-code-input-fallback] {
   overflow: auto;
   background-color: inherit;
-  color: var(--code-input_highlight-text-color, inherit);
+  color: inherit;
 
   /* Don't overlap with message */
   min-height: calc(100% - var(--padding-top, 16px) - max(2em, var(--padding-bottom, 16px)));

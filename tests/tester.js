@@ -307,31 +307,46 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
 
     const switchableCodeInput = document.createElement("code-input");
     switchableCodeInput.setAttribute("template", "code-editor");
-    switchableCodeInput.textContent = "before";
+    switchableCodeInput.value = "before";
     document.body.append(switchableCodeInput);
+    switchableCodeInput.scrollIntoView();
     await waitAsync(50);
 
     const staleTemplateName = "test-unregistered-stale";
     const recoveredTemplateName = "test-unregistered-recovered";
     switchableCodeInput.setAttribute("template", staleTemplateName);
+    await waitAsync(50);
+
+    assertEqual("Core", "Changing code-input element to unregistered template keeps programmatic value", switchableCodeInput.value, "before");
+
+    testAssertion("Core", "Changing code-input element to unregistered template keeps visible value", confirm("Is the text 'before'?"), "user-judged");
+
+    switchableCodeInput.value = "";
+    await waitAsync(50);
+
+    testAssertion("Core", "Unregistered-template code-input element without text looks correct", confirm("Is the placeholder grey?"), "user-judged");
+
     switchableCodeInput.value = "after";
     await waitAsync(50);
+
+    testAssertion("Core", "Unregistered-template code-input element containing text looks correct", confirm("Is the text 'after' and black?"), "user-judged");
+
     assertEqual("Core", "Unregistered template has no active template object", switchableCodeInput.templateObject, undefined);
     assertEqual("Core", "Unregistered template preserves editable plain-text rendering", switchableCodeInput.codeElement.textContent, "after\n");
     assertEqual("Core", "Unregistered template returns to fallback display", switchableCodeInput.classList.contains("code-input_loaded"), false);
     assertEqual("Core", "Unregistered template uses fallback textarea styling", switchableCodeInput.textareaElement.hasAttribute("data-code-input-fallback"), true);
 
-    switchableCodeInput.setAttribute("template", recoveredTemplateName); // TODO why here not later
+    switchableCodeInput.setAttribute("template", recoveredTemplateName);
 
     await waitAsync(50);
 
-    // TODO do we want this
-    assertEqual("Core", "Stale unregistered template is removed from the waiting queue", staleTemplateName in codeInput.templateNotYetRegisteredQueue, false);
+    assertEqual("Core", "Past unregistered template a code-input element had not treated as its current template", staleTemplateName in codeInput.templateNotYetRegisteredQueue, false);
     const staleTemplate = new codeInput.Template((codeElement) => {
         codeElement.classList.add("test-stale-template-highlighted");
     });
     codeInput.registerTemplate(staleTemplateName, staleTemplate);
     await waitAsync(50);
+
     assertEqual("Core", "Stale queued template does not replace current missing template", switchableCodeInput.templateObject, undefined);
     assertEqual("Core", "Stale queued template does not highlight the element", switchableCodeInput.codeElement.classList.contains("test-stale-template-highlighted"), false);
 

@@ -1063,7 +1063,6 @@ var codeInput = {
                         const previousTemplateName = oldValue || codeInput.defaultTemplate;
                         if (previousTemplateName in codeInput.templateNotYetRegisteredQueue) {
                             // This element is no longer waiting for its old template.
-                            // TODO is this the best
                             codeInput.templateNotYetRegisteredQueue[previousTemplateName] = codeInput.templateNotYetRegisteredQueue[previousTemplateName].filter((elem) => elem != this);
                             if (codeInput.templateNotYetRegisteredQueue[previousTemplateName].length == 0) {
                                 delete codeInput.templateNotYetRegisteredQueue[previousTemplateName];
@@ -1074,7 +1073,6 @@ var codeInput = {
                         if (this.templateObject == undefined) {
                             // Load fallback template
                             this.classList.remove("code-input_pre-element-styled");
-                            this.classList.remove("code-input_loaded"); // TODO Can we keep code-input_loaded here since technically is loaded
                             this.textareaElement.setAttribute("data-code-input-fallback", "");
                         } else {
                             // Load existing template
