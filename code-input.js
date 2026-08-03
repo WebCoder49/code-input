@@ -704,9 +704,15 @@ var codeInput = {
         }
 
         getVisibleLineRange() {
-          const paddingTop = Number(getComputedStyle(this.textareaElement).paddingTop.match(/^(\d+(\.\d+)?)px$/)[1]);
-          const paddingBottom = Number(getComputedStyle(this.textareaElement).paddingBottom.match(/^(\d+(\.\d+)?)px$/)[1]);
-          const lineHeight = Number(getComputedStyle(this).lineHeight.match(/^(\d+(\.\d+)?)px$/)[1]);
+          const paddingTopMatches = getComputedStyle(this.textareaElement).paddingTop.match(/^(\d+(\.\d+)?)px$/);
+          const paddingTop = (paddingTopMatches !== null && paddingTopMatches.length > 1) ? Number(paddingTopMatches[1]) : 16;
+
+          const paddingBottomMatches = getComputedStyle(this.textareaElement).paddingBottom.match(/^(\d+(\.\d+)?)px$/);
+          const paddingBottom = (paddingBottomMatches !== null && paddingBottomMatches.length > 1) ? Number(paddingBottomMatches[1]) : 16;
+
+          const lineHeightMatches = getComputedStyle(this.textareaElement).lineHeight.match(/^(\d+(\.\d+)?)px$/);
+          const lineHeight = (lineHeightMatches !== null && lineHeightMatches.length > 1) ? Number(lineHeightMatches[1]) : 20;
+
           const realScrollTop = this.scrollTop - paddingTop;
           const firstLine = Math.floor(realScrollTop / lineHeight);
           const lastLine = Math.ceil((realScrollTop + this.clientHeight) / lineHeight);
