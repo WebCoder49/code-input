@@ -761,6 +761,38 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     codeInputElement.querySelector(".code-input_find-and-replace_dialog").dispatchEvent(new KeyboardEvent("keydown", { "key": "Escape" }));
     codeInputElement.querySelector(".code-input_find-and-replace_dialog").dispatchEvent(new KeyboardEvent("keyup", { "key": "Escape" }));
 
+    // Opening the dialog searches from the caret's position at that moment, rather than
+    // carrying on from wherever the previous search left off. In the code above, "hi" is
+    // at indexes 3, 16 and 29.
+    // Open the dialog with the caret at the given index, then close it, which selects the
+    // focused match; returns the index that match starts at.
+    async function findFromCaret(caret) {
+        findInput.value = "hi";
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = caret;
+        if(navigator.platform.startsWith("Mac") || navigator.platform === "iPhone") {
+            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "metaKey": true }));
+        } else {
+            textarea.dispatchEvent(new KeyboardEvent("keydown", { "cancelable": true, "key": "f", "ctrlKey": true }));
+        }
+        await waitAsync(250); // Wait for highlighting so matches update
+
+        const dialog = codeInputElement.querySelector(".code-input_find-and-replace_dialog");
+        dialog.dispatchEvent(new KeyboardEvent("keydown", { "key": "Escape" }));
+        dialog.dispatchEvent(new KeyboardEvent("keyup", { "key": "Escape" }));
+        await waitAsync(150); // Wait for the dialog to close and select the focused match
+
+        return textarea.selectionStart;
+    }
+
+    // These two are ordered so the match the previous one left focused differs from the
+    // correct answer, so they fail if the caret's position is ignored.
+    assertEqual("FindAndReplace", "Finds First Match After Caret when Reopened", await findFromCaret(17), 29);
+    assertEqual("FindAndReplace", "Finds Match Starting Exactly at Caret", await findFromCaret(16), 16);
+    // These two lock in the surrounding behaviour, and pass either way.
+    assertEqual("FindAndReplace", "Wraps to First Match when Caret is After Last Match", await findFromCaret(30), 3);
+    assertEqual("FindAndReplace", "Keeps Focused Match when Reopened without Moving Caret", await findFromCaret(3), 3);
+
     // GoToLine
     // Replace all code
     textarea.selectionStart = 0;
