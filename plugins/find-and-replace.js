@@ -186,7 +186,9 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
     }
 
     /**
-     * Show a find-and-replace dialog.
+     * Show a find-and-replace dialog. The first match focused is the first one at or
+     * after the caret's position when this is called, wrapping back round to the start
+     * of the code if there is no such match.
      * @param {codeInput.CodeInput} codeInputElement the `<code-input>` element.
      * @param {boolean} replacePartExpanded whether the replace part of the find-and-replace dialog should be expanded
     */
@@ -411,6 +413,12 @@ codeInput.plugins.FindAndReplace = class extends codeInput.Plugin {
         // Save selection position
         dialog.selectionStart = codeInputElement.textareaElement.selectionStart;
         dialog.selectionEnd = codeInputElement.textareaElement.selectionEnd;
+
+        // Start searching from the caret's position at the moment the dialog was
+        // opened, like most IDEs do. The findMatchState is only constructed when the
+        // dialog is first created, so without this every reopening of the dialog would
+        // carry on from wherever the previous search left off instead.
+        dialog.findMatchState.focusedMatchStartIndex = dialog.selectionStart;
 
         if(dialog.selectionStart < dialog.selectionEnd) {
             // Copy selected text to Find input
