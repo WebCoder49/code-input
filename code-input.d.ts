@@ -8,8 +8,8 @@ export as namespace codeInput;
 export abstract class Plugin {
   /**
    * Create a Plugin
-   * 
-   * @param {Array<string>} observedAttributes - The HTML attributes to watch for this plugin, and report any 
+   *
+   * @param {Array<string>} observedAttributes - The HTML attributes to watch for this plugin, and report any
    * modifications to the `codeInput.Plugin.attributeChanged` method.
    */
   constructor(observedAttributes: Array<string>)
@@ -42,7 +42,7 @@ export abstract class Plugin {
    */
   attributeChanged(codeInput: CodeInput, name: string, oldValue: string, newValue: string): void
   /**
-   * The HTML attributes to watch for this plugin, and report any 
+   * The HTML attributes to watch for this plugin, and report any
    * modifications to the `codeInput.Plugin.attributeChanged` method.
    */
   observedAttributes: Array<string>
@@ -60,13 +60,13 @@ export abstract class Plugin {
  * Before using any plugin in this namespace, please ensure you import its JavaScript
  * files (in the plugins folder), or continue to get a more detailed error in the developer
  * console.
- * 
+ *
  * Where plugins are stored, after they are imported. The plugin
  * file assigns them a space in this object.
  * For adding completely new syntax-highlighting algorithms, please see `codeInput.templates`.
- * 
+ *
  * Key - plugin name
- * 
+ *
  * Value - plugin object
  * @type {Object}
  */
@@ -118,7 +118,7 @@ export namespace plugins {
 
   // ESM-SUPPORT-START-PLUGIN-autodetect Do not (re)move this - it's needed for ESM generation
   /**
-   * Autodetect the language live and change the `lang` attribute using the syntax highlighter's 
+   * Autodetect the language live and change the `lang` attribute using the syntax highlighter's
    * autodetect capabilities. Works with highlight.js only.
    * Files: autodetect.js
    */
@@ -171,7 +171,7 @@ export namespace plugins {
     showPrompt(codeInputElement: CodeInput, replacePartExpanded: boolean): void;
   }
   // ESM-SUPPORT-END-PLUGIN-find-and-replace Do not (re)move this - it's needed for ESM generation
-  
+
   // ESM-SUPPORT-START-PLUGIN-go-to-line Do not (re)move this - it's needed for ESM generation
   /**
    * Add Go-To-Line (Ctrl/Cmd+G by default) functionality to the code editor.
@@ -204,7 +204,7 @@ export namespace plugins {
 
   // ESM-SUPPORT-START-PLUGIN-indent Do not (re)move this - it's needed for ESM generation
   /**
-   * Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it 
+   * Adds indentation using the `Tab` key, and auto-indents after a newline, as well as making it
    * possible to indent/unindent multiple lines using Tab/Shift+Tab
    * Files: indent.js
    */
@@ -233,9 +233,9 @@ export namespace plugins {
   class SelectTokenCallbacks extends Plugin {
     /**
      * Set up the behaviour of tokens text-selected in the `<code-input>` element, and the exact definition of a token being text-selected.
-     * 
+     *
      * All parameters are optional. If you provide no arguments to the constructor, this will dynamically apply the "code-input_select-token-callbacks_selected" class to selected tokens only, for you to style via CSS.
-     * 
+     *
      * @param {codeInput.plugins.SelectTokenCallbacks.TokenSelectorCallbacks} tokenSelectorCallbacks What to do with text-selected tokens. See docstrings for the TokenSelectorCallbacks class.
      * @param {boolean} onlyCaretNotSelection If true, tokens will only be marked as selected when no text is selected but rather the caret is inside them (start of selection == end of selection). Default false.
      * @param {boolean} caretAtStartIsSelected Whether the caret or text selection's end being just before the first character of a token means said token is selected. Default true.
@@ -255,18 +255,18 @@ export namespace plugins {
     class TokenSelectorCallbacks {
       /**
        * Pass any callbacks you want to customise the behaviour of selected tokens via JavaScript.
-       * 
-       * (If the behaviour you want is just differently styling selected tokens _via CSS_, you should probably use the createClassSynchronisation static method.) 
+       *
+       * (If the behaviour you want is just differently styling selected tokens _via CSS_, you should probably use the createClassSynchronisation static method.)
        * @param {(token: HTMLElement) => void} tokenSelectedCallback Runs multiple times when the text selection inside the code-input changes, each time inputting a single (part of the highlighted `<pre><code>`) token element that is selected in the new text selection.
        * @param {(tokenContainer: HTMLElement) => void} selectChangedCallback Each time the text selection inside the code-input changes, runs once before any tokenSelectedCallback calls, inputting the highlighted `<pre><code>`'s `<code>` element that contains all token elements.
        */
       constructor(tokenSelectedCallback: (token: HTMLElement) => void, selectChangedCallback: (tokenContainer: HTMLElement) => void);
-      
+
       /**
        * Use preset callbacks which ensure all tokens in the selected text range in the `<code-input>`, and only such tokens, are given a certain CSS class.
-       * 
-       * (If the behaviour you want requires more complex behaviour or JavaScript, you should use TokenSelectorCallbacks' constructor.) 
-       * 
+       *
+       * (If the behaviour you want requires more complex behaviour or JavaScript, you should use TokenSelectorCallbacks' constructor.)
+       *
        * @param {string} selectedClass The CSS class that will be present on tokens only when they are part of the selected text in the `<code-input>` element. Defaults to "code-input_select-token-callbacks_selected".
        * @returns {TokenSelectorCallbacks} A new TokenSelectorCallbacks instance that encodes this behaviour.
        */
@@ -314,7 +314,7 @@ export namespace plugins {
 export class Template {
   /**
    * **When `includeCodeInputInHighlightFunc` is `false`, `highlight` takes only the `<pre><code>` element as a parameter.**
-   * 
+   *
    * Constructor to create a custom template instance. Pass this into `codeInput.registerTemplate` to use it.
    * I would strongly recommend using the built-in simpler template `codeInput.templates.prism` or `codeInput.templates.hljs`.
    * @param {(codeElement: HTMLElement) => void} highlight - a callback to highlight the code, that takes an HTML `<code>` element inside a `<pre>` element as a parameter
@@ -327,7 +327,7 @@ export class Template {
   constructor(highlight?: (codeElement: HTMLElement) => void, preElementStyled?: boolean, isCode?: boolean, includeCodeInputInHighlightFunc?: false, plugins?: Plugin[])
   /**
    * **When `includeCodeInputInHighlightFunc` is `true`, `highlight` takes two parameters: the `<pre><code>` element, and the `<code-input>` element.**
-   * 
+   *
    * Constructor to create a custom template instance. Pass this into `codeInput.registerTemplate` to use it.
    * I would strongly recommend using the built-in simpler template `codeInput.templates.prism` or `codeInput.templates.hljs`.
    * @param {(codeElement: HTMLElement, codeInput: CodeInput) => void} highlight - a callback to highlight the code, that takes an HTML `<code>` element inside a `<pre>` element as a parameter
@@ -342,21 +342,21 @@ export class Template {
   preElementStyled: boolean
   isCode: boolean
   includeCodeInputInHighlightFunc: boolean
-  plugins: Plugin[] 
+  plugins: Plugin[]
 }
 
 // ESM-SUPPORT-START-NAMESPACE-2 Do not (re)move this - it's needed for ESM generation
-/** 
+/**
  * Shortcut functions for creating templates.
- * Each code-input element has a template attribute that 
+ * Each code-input element has a template attribute that
  * tells it which template to use.
- * Each template contains functions and preferences that 
- * run the syntax-highlighting and let code-input control 
+ * Each template contains functions and preferences that
+ * run the syntax-highlighting and let code-input control
  * the highlighting.
- * 
- * For creating a custom template from scratch, please 
+ *
+ * For creating a custom template from scratch, please
  * use `new codeInput.Template(...)`.
- * 
+ *
  * For adding small pieces of functionality, please see `codeInput.plugins`.
  */
 export namespace templates {
@@ -424,7 +424,7 @@ export class CodeInput extends HTMLTextAreaElement { // Tries to implement texta
   /**
    * When the code-input's template is registered, this contains its codeInput.Template object.
    */
-  templateObject?: readonly Template
+  templateObject?: Template
   /**
    * Exposed child textarea element for user to input code in; in this version of code-input you shouldn't need to access
    * it because most textarea functionality is present on the code-input element itself.
@@ -463,6 +463,6 @@ export class CodeInput extends HTMLTextAreaElement { // Tries to implement texta
  * Register a template so code-input elements with a template attribute that equals the templateName will use the template.
  * See `codeInput.templates` for constructors to create templates.
  * @param {string} templateName - the name to register the template under
- * @param {Object} template - a Template object instance - see `codeInput.templates`  
+ * @param {Object} template - a Template object instance - see `codeInput.templates`
  */
 export function registerTemplate(templateName: string, template: Template): void;
