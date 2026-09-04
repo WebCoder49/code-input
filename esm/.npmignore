@@ -1,4 +1,4 @@
-# In NPM, ignore generator files and keep ES modules
 .gitignore
-generate.mjs
-generate.sh
+# generate.mjs and generate.sh are deleted by the prepare script and not here,
+# to allow installing code-input.js from Git via a package manager.
+# (Such a process downloads git repo, deletes npmignored files, THEN runs prepare.)
