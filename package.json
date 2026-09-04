@@ -78,7 +78,7 @@
   },
   "scripts": {
     "test": "echo \"This is a front-end library, not a Node library. Please see https://code-input-js.org for how to use.\" && exit 1",
-    "prepack": "cd esm ; node generate.mjs ; cd .."
+    "prepare": "cd esm ; node generate.mjs ; cd .."
   },
   "repository": {
     "type": "git",
