@@ -7,7 +7,7 @@ If you are using Yarn, NPM, or a similar package manager, the files should have 
 Otherwise, after changing directory to the one containing this file:
 
 - If you have Node.js installed, run `node generate.mjs`.
-- If you don't have Node.js installed but are on a POSIX-like system with `bash`/`zsh`, run `sh ./generate.sh`.
+- If you don't have Node.js installed but are on a POSIX-like system with `bash`/`zsh`, run `sh ./generate.sh`. (This uses features like `grep -o`, so won't work on *absolutely all* POSIX systems. It works on many computers though, so try it out first!) **Security-wise, we don't prevent JavaScript**
 - If neither of the above are true, install Node.js or (slightly harder; look online) a POSIX/"Linux" compatible shell.
 
 ## Extra Information

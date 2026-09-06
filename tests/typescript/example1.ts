@@ -1,6 +1,8 @@
+// Example 1: imports { registerTemplate, CodeInput, Template, Plugin }
+
 // To check for bugs in code-input.d.ts, and in ESM generation of d.ts files:
 // 1. Generate ECMAScript modules in the esm/ directory, using esm/README.md
-// 2. Compile this TypeScript file, by changing to its directory and running `tsc example.ts --lib dom,es6`
+// 2. Compile each TypeScript file, by changing to its directory and running `tsc example.ts --lib dom,es6`
 // 3. Fix any compilation bugs that occur
 
 
@@ -80,7 +82,7 @@ const plugins1: Array<Plugin> = [
     new GoToLine(false, goToLineTranslations),
     new Indent(true, 4, {"(": ")"}, true, indentTranslations),
     new SelectTokenCallbacks(tokenSelectorCallbacks1, true, true, true, false, true, false),
-    new SpecialChars(true, false, /(?!\n)(?!\t)[\u{0000}-\u{001F}]|[\u{007F}-\u{009F}]|[\u{0200}-\u{FFFF}]/ug),
+    new SpecialChars(true, false, /[^\n\t ]/g),
     new Test()
 ];
 
