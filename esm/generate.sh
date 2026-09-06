@@ -124,14 +124,14 @@ mkdir -p plugins
     echo "import type { Plugin, CodeInput } from \"../code-input.d.mts\";" >> plugins/$0.d.mts
     # Code after start and before end of this template, making use of the imported Plugin, not codeInput.Plugin and the imported CodeInput, not codeInput.CodeInput, exporting the class as default
     # export default class replacement should work but won"t leave indentation as JS version does.
-    head -n $(($(sed -n "/ESM-SUPPORT-END-PLUGIN-$0/=" ../code-input.d.ts | head -n 1) - 1)) ../code-input.d.ts | tail --line=+$(($(sed -n "/ESM-SUPPORT-START-PLUGIN-$0/=" ../code-input.d.ts | head -n 1) + 1)) | sed "s/codeInput\.Plugin/Plugin/g" | sed "s/codeInput\.CodeInput/CodeInput/g" >> plugins/$0.d.mts;
+    head -n $(($(sed -n "/ESM-SUPPORT-END-PLUGIN-$0/=" ../code-input.d.ts | head -n 1) - 1)) ../code-input.d.ts | tail --line=+$(($(sed -n "/ESM-SUPPORT-START-PLUGIN-$0/=" ../code-input.d.ts | head -n 1) + 1)) >> plugins/$0.d.mts;
 
-    # Declare the first class defined in the file and if it exists the namespace with the
-    # same name, then export it at the end of the file so the class and namespace are
-    # merged if necessary.
+    # Declare the first class defined in the file and, if a namespace with the same name
+    # exists, declare that as well, then export it at the end of the file so the class and
+    # namespace are merged if necessary.
     classname=$(grep -Eo "^ *class [A-Za-z]+" plugins/$0.d.mts | head -n 1 | sed "s/^ *class //");
 
-    cat plugins/$0.d.mts | sed "s/class ${classname} /declare class ${classname} /g" | sed "s/namespace ${classname} /declare namespace ${classname} /g" | sed "s/codeInput\.plugins\.${classname}/${classname}/g" | sed "s/prevname/oldname/g" >> plugins/$0.new.d.mts;
+    cat plugins/$0.d.mts | sed "s/codeInput\.Plugin/Plugin/g" | sed "s/codeInput\.CodeInput/CodeInput/g" | sed "s/class ${classname} /declare class ${classname} /g" | sed "s/namespace ${classname} /declare namespace ${classname} /g" | sed "s/codeInput\.plugins\.${classname}/${classname}/g" >> plugins/$0.new.d.mts;
     # New file in middle so concurrent pipes dont read and write same file
     mv plugins/$0.new.d.mts plugins/$0.d.mts;
 
