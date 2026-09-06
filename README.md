@@ -1,4 +1,4 @@
-# code-input
+# [code-input.js](https://v2.code-input-js.org/)
 
 ![Click to Switch](https://img.shields.io/static/v1?label=&message=Click%20to%20Switch:%20&color=grey&style=for-the-badge)[![Website and Demos](https://img.shields.io/static/v1?label=&message=Website&color=444400&style=for-the-badge)](https://code-input-js.org)[![GitHub](https://img.shields.io/static/v1?label=&message=GitHub&color=black&style=for-the-badge&logo=github)](https://github.com/WebCoder49/code-input)[![Codeberg](https://img.shields.io/static/v1?label=&message=Codeberg&color=navy&style=for-the-badge&logo=codeberg)](https://codeberg.org/code-input-js/code-input-js)[![Yarn](https://img.shields.io/static/v1?label=&message=Yarn&color=purple&style=for-the-badge&logo=yarn)](https://yarnpkg.com/package?name=@webcoder49/code-input)[![NPM](https://img.shields.io/static/v1?label=&message=NPM&color=red&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@webcoder49/code-input)
 
