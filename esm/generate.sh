@@ -132,6 +132,7 @@ mkdir -p plugins
     classname=$(grep -Eo "^ *class [A-Za-z]+" plugins/$0.d.mts | head -n 1 | sed "s/^ *class //");
 
     cat plugins/$0.d.mts | sed "s/class ${classname} /declare class ${classname} /g" | sed "s/namespace ${classname} /declare namespace ${classname} /g" | sed "s/codeInput\.plugins\.${classname}/${classname}/g" | sed "s/prevname/oldname/g" >> plugins/$0.new.d.mts;
+    # New file in middle so concurrent pipes dont read and write same file
     mv plugins/$0.new.d.mts plugins/$0.d.mts;
 
     echo "export default ${classname};" >> plugins/$0.d.mts;
