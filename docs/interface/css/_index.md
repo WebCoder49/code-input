@@ -7,6 +7,7 @@ title = 'Styling `code-input` elements with CSS'
 > Contributors: 2025 Oliver Geer
 
 `code-input` elements can be styled like `textarea` elements in most cases; however, there are some exceptions:
+* In major version 2 of code-input.js, `code-input` elements must keep the CSS `display: grid;` rather than `display: block;` when they are shown (but can be `display: none;` when hidden). Setting `display: block;` on a `code-input` element breaks the internal CSS grid styling core to the current version of code-input.js.
 * The CSS variable `--padding` should be used rather than the property `padding` (e.g. `<code-input style="--padding: 10px;">...`), or `--padding-left`, `--padding-right`, `--padding-top` and `--padding-bottom` instead of the CSS properties of the same names. For technical reasons, the value must have a unit (i.e. `0px`, not `0`). To avoid overcomplicating the code, this padding is always *included in* any width/heights of `code-input` elements, so if you want to style `textarea`s and `code-input` elements with best consistency set `box-sizing: border-box` on them.
 * Background colours set on `code-input` elements will not work with highlighters that set background colours themselves - use `(code-input's selector) pre[class*="language-"]` for Prism.js or `.hljs` for highlight.js to target the highlighted element with higher specificity than the highlighter's theme. You may also set the `background-color` of the code-input element for its appearance when its template is unregistered / there is no JavaScript.
 * To minimise the chance of [this bug](https://github.com/WebCoder49/code-input/issues/130): if you import a monospace font family from an online source (for example, Google Fonts or Bunny Fonts) to style `code-input` elements, and use a syntax highlighting theme that includes **bold text**, import both the standard (400) and bold (700) weights of the font.
@@ -15,6 +16,11 @@ title = 'Styling `code-input` elements with CSS'
 * For now, elements on top of `code-input` elements should have a CSS `z-index` at least 3 greater than the `code-input` element.
 
 Please do **not** use `className` in JavaScript referring to code-input elements, because the code-input library needs to add its own classes to code-input elements for easier progressive enhancement. You can, however, use `classList` and `style` as much as you want - it will make your code cleaner anyway.
+
+**code-input.js works with most highlighter themes from major syntax highlighting libraries.** However, if you're making your own theme please note:
+
+* Token elements in highlighter themes shouldn't have padding, margins, borders, etc. which make text move around and change its position code compared to its unhighlighted layout. code-input.js relies on unhighlighted, editable text, 
+* The earlier point: to minimise the chance of [this bug](https://github.com/WebCoder49/code-input/issues/130), if you import a monospace font family from an online source (for example, Google Fonts or Bunny Fonts) to style `code-input` elements, and use a syntax highlighting theme that includes **bold text**, import both the standard (400) and bold (700) weights of the font.
 
 ## Methods of resizing
 
