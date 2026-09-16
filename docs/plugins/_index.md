@@ -643,6 +643,35 @@ See https://github.com/WebCoder49/code-input/issues?q=is%3Aissue%20state%3Aopen%
 </html>
 ```
 
+#### `Wrap`: Wrap text inside a `code-input` element {#playground-preset-wrap}
+
+```
+<!DOCTYPE html>
+<html>
+    <body>
+        <!--For convenience, this demo uses files from JSDelivr CDN; for more privacy and security download and host them yourself.-->
+        <!--Prism+code-input-->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" data-manual></script><!--Remove data-manual if also using Prism normally-->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css"></link>
+        <script src="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/code-input.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/code-input.min.css">
+
+        
+        <!--Import-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/WebCoder49/code-input@2.8/plugins/wrap.min.css"/>
+
+        <script>
+            codeInput.registerTemplate("syntax-highlighted", new codeInput.templates.Prism(Prism, [
+                // CSS only - don't pass here
+            ]));
+        </script>
+        <p>The Latin's all on one line:</p>
+        <code-input class="code-input_wrap" language="Markdown"><textarea data-code-input-fallback>Natus dolores reprehenderit ut. Accusantium assumenda in sed dignissimos asperiores. Expedita fugiat error aliquid nulla beatae dignissimos culpa. Est odit et dolores ipsum ea quae aliquam dolor. Magni dolores facilis ad voluptate voluptatem. Aut consectetur autem veniam. Excepturi porro magni laudantium. Et eos corporis exercitationem. Est ut nam incidunt totam praesentium itaque. Neque corporis esse porro facilis ut nulla _necessitatibus_ harum. Autem iusto atque dolor. Quisquam sit est minima. Atque ad officiis sed quia est fugiat neque. Quos aut officiis quas velit voluptas eligendi a facere. Omnis quia porro qui autem inventore quod ut. Quis saepe et pariatur assumenda eos aut. Natus excepturi modi nam a id **eum**.
+***And another line!***</textarea></code-input>
+    </body>
+</html>
+```
 
 
 ### Plugins for highlight.js Only

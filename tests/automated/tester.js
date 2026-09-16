@@ -119,14 +119,14 @@ async function beginTest(isHLJS) {
     startLoad(codeInputElem, isHLJS);
     codeInputElem.style.height = "calc(1lh + 2em)"; // 2em for the "No highlighting." message
     codeInputElem.style.setProperty("--padding", "0px");
-    await waitAsync(50); // Wait for display to update
+    await waitAsync(100); // Wait for display to update
     // Select the "A" in the fallback textarea's last line
     fallbackTextarea.selectionStart = 50;
     fallbackTextarea.selectionEnd = 51;
     fallbackTextarea.focus();
     fallbackTextarea.scrollTo(0, codeInputElem.clientHeight * 3); // At least 3 lines
 
-    await waitAsync(50); // Wait for scroll to occur
+    await waitAsync(100); // Wait for scroll to occur
     testAssertion("FallbackTextarea", "Scrolls Correctly", confirm("Is the phrase 'A third', with 'A' highlighted, visible? "), "user-judged");
     codeInputElem.style.removeProperty("--padding");
     codeInputElem.style.removeProperty("height");
@@ -137,40 +137,40 @@ async function beginTest(isHLJS) {
     fallbackTextarea.focus();
 
     codeInputElem.style.setProperty("--padding", "100px");
-    await waitAsync(50); // Wait for display to update
+    await waitAsync(100); // Wait for display to update
     testAssertion("FallbackTextarea", "Displayed Correctly With More Padding", confirm("Is the highlighted 'log' properly aligned after the 'console.', which is then properly aligned inside the visible (non-highlighted) textarea? Also, there should be a lot of padding."), "user-judged");
     codeInputElem.style.setProperty("--padding", "0px");
-    await waitAsync(50); // Wait for display to update
+    await waitAsync(100); // Wait for display to update
     testAssertion("FallbackTextarea", "Displayed Correctly With No Padding", confirm("Does the element have zero padding, but otherwise the display remains correct?"), "user-judged");
     codeInputElem.style.removeProperty("--padding");
-    await waitAsync(50); // Wait for display to update
+    await waitAsync(100); // Wait for display to update
     testAssertion("FallbackTextarea", "Displayed Correctly By Default", confirm("Is the highlighted 'log' properly aligned after the 'console.', which is then properly aligned inside the visible (non-highlighted) textarea?"), "user-judged");
 
-
+    // FallbackTextarea-Autogrow
     codeInputElem.classList.add("code-input_autogrow_height");
-    await waitAsync(50); // Wait for display to update
+    await waitAsync(100); // Wait for display to update
     testAssertion("FallbackTextarea-Autogrow", "Displayed Correctly With Default Autogrow Height", confirm("Is the element not very tall (but tall enough to properly show some code), but otherwise the display remains correct?"), "user-judged");
 
     codeInputElem.style.setProperty("--code-input_autogrow_min-height", "200px");
-    await waitAsync(50); // Wait for display to update
+    await waitAsync(100); // Wait for display to update
     assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-height Sets Height", codeInputElem.clientHeight, 200);
     codeInputElem.style.removeProperty("--code-input_autogrow_min-height");
     codeInputElem.classList.remove("code-input_autogrow_height");
 
     codeInputElem.classList.add("code-input_autogrow_width");
-    await waitAsync(50); // Wait for display to update
+    await waitAsync(100); // Wait for display to update
     testAssertion("FallbackTextarea-Autogrow", "Displayed Correctly With Default Autogrow Width", confirm("Is the element a sensible but narrow width, and otherwise the display remains correct?"), "user-judged");
 
     codeInputElem.style.setProperty("--code-input_autogrow_min-width", "200px");
-    await waitAsync(50); // Wait for display to update
+    await waitAsync(100); // Wait for display to update
     assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-height Sets Height", codeInputElem.clientWidth, 200);
     codeInputElem.style.removeProperty("--code-input_autogrow_min-width");
     codeInputElem.classList.remove("code-input_autogrow_width");
 
-
+    // FallbackTextarea+PrismLineNumbers
     if(!isHLJS) {
         codeInputElem.classList.add("line-numbers");
-        await waitAsync(50); // Wait for display to update
+        await waitAsync(100); // Wait for display to update
         testAssertion("FallbackTextarea-PrismLineNumbers", "Displayed Correctly With line-numbers Class", confirm("Is there more padding to the left now, but otherwise the display remains correct?"), "user-judged");
     }
 
@@ -255,7 +255,7 @@ async function beginTestsAfterLoad(textarea, isHLJS) {
 
     } else {
         await waitAsync(200); // Wait for display to update
-        testAssertion("FallbackTextarea+PrismLineNumbers", "Alignment between Fallback and Loaded Texareas", confirm("Now with the highlighting, is all the code in the same horizontal position (don't mind the vertical offset by keyboard navigation instructions) as with the last question?"), "user-judged");
+        testAssertion("FallbackTextarea-PrismLineNumbers", "Alignment between Fallback and Loaded Texareas", confirm("Now with the highlighting, is all the code in the same horizontal position (don't mind the vertical offset by keyboard navigation instructions) as with the last question?"), "user-judged");
     }
 
     codeInputElement = textarea.parentElement;
@@ -282,7 +282,7 @@ async function beginTestsAfterLoad(textarea, isHLJS) {
     codeInputElement.value += `
 console.log("I've got another line!", 2 < 3, "should be true.");`;
 
-    await waitAsync(50); // Wait for rendered value to update
+    await waitAsync(100); // Wait for rendered value to update
 
     // Textarea's value once updated with JavaScript should be correct.
     assertEqual("Core", "JS-updated Textarea Value", textarea.value, `console.log("Hello, World!");
@@ -302,7 +302,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     programmaticCodeInput.focus();
     document.execCommand("insertText", false, "Hello, World!");
     assertEqual("Core", "Programmatically-created element JS-accessible value", programmaticCodeInput.value, "Hello, World!");
-    await waitAsync(50);
+    await waitAsync(100);
     assertEqual("Core", "Programmatically-created element rendered value", programmaticCodeInput.preElement.textContent, "Hello, World!\n");
 
     // Event Listener Tests
@@ -429,7 +429,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
 
         codeInputElement.setAttribute("language", "HTML");
     
-        await waitAsync(50); // Wait for attribute change to be handled
+        await waitAsync(100); // Wait for attribute change to be handled
 
         testAssertion("Core", "Language attribute Changed value 1", 
             codeInputElement.codeElement.classList.contains("language-html")
@@ -438,7 +438,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
         
         codeInputElement.setAttribute("language", "JavaScript");
 
-        await waitAsync(50); // Wait for attribute change to be handled
+        await waitAsync(100); // Wait for attribute change to be handled
 
         testAssertion("Core", "Language attribute Changed value 2", 
             codeInputElement.codeElement.classList.contains("language-javascript")
@@ -449,7 +449,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     let formElement = codeInputElement.parentElement;
     formElement.reset();
     
-    await waitAsync(50); // Wait for rendered value to update
+    await waitAsync(100); // Wait for rendered value to update
     
     assertEqual("Core", "Form Reset resets Code-Input Value", codeInputElement.value, `console.log("Hello, World!");
 // A second line
@@ -495,7 +495,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
       // These tests require autodetect plugin to be absent
 
       codeInputElement.setAttribute("language", "css");
-      await waitAsync(50); // Wait for language to propogate to class
+      await waitAsync(100); // Wait for language to propogate to class
       testAssertion("Core", "Language Class Propogates", codeInputElement.querySelector("pre").classList.contains("language-css"), `Class name of pre element was "${codeInputElement.querySelector("pre").className}" but code-input element had language="css"`);
 
       window.requestAnimationFrame(function() {
@@ -507,7 +507,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
 
       codeInputElement.removeAttribute("placeholder");
       codeInputElement.setAttribute("language", "JavaScript");
-      await waitAsync(50); // Wait for language to propogate to class
+      await waitAsync(100); // Wait for language to propogate to class
     }
 
     /*--- Tests for plugins ---*/
@@ -525,27 +525,27 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     // Autocomplete
     addText(textarea, "popup");
     
-    await waitAsync(50); // Wait for popup to be rendered
+    await waitAsync(100); // Wait for popup to be rendered
         
     testAssertion("Autocomplete", "Popup Shows on input", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
     move(textarea, -1);
     
-    await waitAsync(50); // Wait for popup disappearance to be rendered
+    await waitAsync(100); // Wait for popup disappearance to be rendered
     
     testAssertion("Autocomplete", "Popup Disappears on arrow key", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
     move(textarea, 1);
 
-    await waitAsync(50); // Wait for popup to be rendered
+    await waitAsync(100); // Wait for popup to be rendered
 
     testAssertion("Autocomplete", "Popup Shows on arrow key", confirm("Does the autocomplete popup display correctly? (OK=Yes)"), "user-judged");
 
 
     backspace(textarea);
-    await waitAsync(50); // Wait for popup disappearance to be rendered
+    await waitAsync(100); // Wait for popup disappearance to be rendered
     testAssertion("Autocomplete", "Popup Disappears on backspace", confirm("Has the popup disappeared? (OK=Yes)"), "user-judged");
 
     addText(textarea, "p");
-    await waitAsync(50);
+    await waitAsync(100);
 
     const beforeClickSelectionStart = textarea.selectionStart;
     const beforeClickSelectionEnd = textarea.selectionEnd;
@@ -576,7 +576,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
         textarea.selectionEnd = textarea.value.length;
         backspace(textarea);
         addText(textarea, 'console.log("Hello, World!");\nfunction sayHello(name) {\n  console.log("Hello, " + name + "!");\n}\nsayHello("code-input");');
-        await waitAsync(50); // Wait for highlighting so language attribute updates
+        await waitAsync(100); // Wait for highlighting so language attribute updates
         assertEqual("Autodetect", "Detects JavaScript", codeInputElement.getAttribute("language"), "javascript");
     
         // Check detects Python - Replace all code with Python
@@ -584,7 +584,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
         textarea.selectionEnd = textarea.value.length;
         backspace(textarea);
         addText(textarea, '#!/usr/bin/python\nprint("Hello, World!")\nfor i in range(5):\n  print(i)');
-        await waitAsync(50); // Wait for highlighting so language attribute updates
+        await waitAsync(100); // Wait for highlighting so language attribute updates
         assertEqual("Autodetect", "Detects Python", codeInputElement.getAttribute("language"), "python");
 
         // Check detects CSS - Replace all code with CSS
@@ -592,7 +592,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
         textarea.selectionEnd = textarea.value.length;
         backspace(textarea);
         addText(textarea, "body, html {\n  height: 100%;\n  background-color: blue;\n  color: red;\n}");
-        await waitAsync(50); // Wait for highlighting so language attribute updates
+        await waitAsync(100); // Wait for highlighting so language attribute updates
         assertEqual("Autodetect", "Detects CSS", codeInputElement.getAttribute("language"), "css");
     }
 
@@ -674,7 +674,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     addText(textarea, "// hello /\\S/g\nhe('llo', /\\s/g);\nhello\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\na very very very very very very very very very very very very long line with many many many many many many many many many many many words\nline\nline\nline\nline\nline\nline\nline");
     textarea.selectionStart = textarea.selectionEnd = 0; // So focuses on first match
 
-    await waitAsync(50); // Wait for highlighting so text updates
+    await waitAsync(100); // Wait for highlighting so text updates
 
     // Open dialog and get interactive elements
     // Thanks to https://developer.mozilla.org/en-US/docs/Web/API/Navigator/platform
@@ -714,7 +714,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     previousMatchButton.click();
     replaceInput.value = "do('hello";
     replaceButton.click();
-    await waitAsync(50); // Wait for buttons to work
+    await waitAsync(100); // Wait for buttons to work
     assertEqual("FindAndReplace", "Replaces Once Correctly", textarea.value, "// hello /\\S/g\ndo('hello', /\\s/g);\nhello\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\na very very very very very very very very very very very very long line with many many many many many many many many many many many words\nline\nline\nline\nline\nline\nline\nline");
     nextMatchButton.click(); // Back to first match
 
@@ -848,21 +848,21 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
         addText(textarea, "\nlet x = 1;\nlet y = 2;\nconsole.log(`${x} + ${y} = ${x+y}`);");
         move(textarea, -4); // Ends at |: "${x+y|}`);"
         textarea.selectionStart -= 35; // Starts at |: "let y = |2;"
-        await waitAsync(50); // Wait for highlighting so text updates
+        await waitAsync(100); // Wait for highlighting so text updates
         assertEqual("SelectTokenCallbacks", "Number of Selected Tokens", codeInputElement.querySelectorAll(".in-selection").length, 13);
         assertEqual("SelectTokenCallbacks", "Number of Selected .hljs-string Tokens", codeInputElement.querySelectorAll(".hljs-string.in-selection").length, 0); // Since parentTokensAreSelected set to false    
         assertEqual("SelectTokenCallbacks", "Number of Selected .hljs-subst Tokens", codeInputElement.querySelectorAll(".hljs-subst.in-selection").length, 2);    
     } else {
         // Combined with compatiblity-added match-braces plugin
         addText(textarea, "\n[(),((),'Hi')]");
-        await waitAsync(50); // Wait for highlighting so text updates
+        await waitAsync(100); // Wait for highlighting so text updates
         // Move back 2 characters so just after 'Hi'
         move(textarea, -2);
-        await waitAsync(50); // Wait for highlighting so text updates
+        await waitAsync(100); // Wait for highlighting so text updates
         assertEqual("SelectTokenCallbacks", "Number of Selected Braces 1", codeInputElement.getElementsByClassName("brace-hover").length, 2);
         // Move forward 1 character so between )]
         move(textarea, 1);
-        await waitAsync(50); // Wait for highlighting so text updates
+        await waitAsync(100); // Wait for highlighting so text updates
         assertEqual("SelectTokenCallbacks", "Number of Selected Braces 2", codeInputElement.getElementsByClassName("brace-hover").length, 4);    
     }
 
@@ -876,9 +876,79 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     textarea.selectionStart = textarea.value.length-4;
     textarea.selectionEnd = textarea.value.length;
 
-    await waitAsync(50); // Wait for special characters to be rendered
+    await waitAsync(100); // Wait for special characters to be rendered
     
     testAssertion("SpecialChars", "Displays Correctly", confirm("Do the special characters read (0096),(0001)(0003),(0002) and align with the ellipsis? (OK=Yes)"), "user-judged");
+
+    // Wrap
+    codeInputElement.classList.add("code-input_wrap");
+    // Clear all code
+    textarea.selectionStart = 0;
+    textarea.selectionEnd = textarea.value.length;
+    backspace(textarea);
+
+    addText(textarea, 'Eum rem sed beatae qui amet. Ea nihil quisquam qui et molestiae quas in quasi. Quia ipsum et qui provident. Vitae esse aut nam id libero distinctio deleniti nobis. Ipsa temporibus deserunt debitis veritatis aliquid sed. Ea ex reiciendis eos. Eius sed et in officiis expedita veniam neque officia. At ex quia optio nihil. Nesciunt natus aut aliquid praesentium. Delectus alias velit quidem. Consequatur consequatur cum quo est voluptates. Occaecati ut perspiciatis sed excepturi aut voluptatem corporis. Praesentium possimus aut dolor reiciendis error temporibus placeat quia. Ut repudiandae necessitatibus qui. Cum aut delectus molestiae ipsam dolor praesentium est. Non harum odit voluptatem dolorem non. Est deserunt at magnam amet sed sunt aut. Quia voluptatem dolor similique. Inventore voluptas quia commodi eum.');
+    textarea.selectionStart = textarea.value.length-4;
+    textarea.selectionEnd = textarea.value.length;
+
+    await waitAsync(100); // Wait for line to be rendered
+
+    testAssertion("Wrap", "Wrapping Line Aligns between pre code and textarea", confirm("Is the line wrapped, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
+
+    textarea.selectionStart = textarea.value.length;
+    addText(textarea, '\nAnother Line');
+    textarea.selectionStart = textarea.value.length-4;
+
+    await waitAsync(100); // Wait for line to be rendered
+
+    testAssertion("Wrap", "Second Line Aligns between pre code and textarea", confirm("Is the first line wrapped, the second positioned correctly, and the last 'Line' in it highlighted? (OK=Yes)"), "user-judged");
+
+    // Autogrow-Wrap
+    codeInputElement.classList.add("code-input_autogrow_width");
+    codeInputElement.style.setProperty("--code-input_autogrow_min-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)");
+    codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 69ch)"); // Just enough to store the 2 sentences below
+    // Clear all code
+    textarea.selectionStart = 0;
+    textarea.selectionEnd = textarea.value.length;
+    backspace(textarea);
+
+    addText(textarea, 'Quia voluptatem dolor similique. Inventore voluptas quia commodi eum.');
+    textarea.selectionStart = textarea.value.length-4;
+    textarea.selectionEnd = textarea.value.length;
+
+    await waitAsync(100); // Wait for line to be rendered
+
+    testAssertion("Autogrow-Wrap", "Long Line Grows code-input, Doesn't Wrap", confirm("Is the line *NOT* wrapped, the code-input element *NOT* scrolled horizontally, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
+
+    codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 32ch)"); // Just enough to store the 2 sentences below
+    await waitAsync(100); // Wait for line to be rendered
+
+    testAssertion("Autogrow-Wrap", "Long Line Grows code-input, Does Wrap", confirm("Is the line wrapped just after the first sentence, the code-input element *NOT* scrolled horizontally, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
+
+    codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)"); // Just enough to store the 2 sentences below
+    await waitAsync(100); // Wait for line to be rendered
+
+    testAssertion("Autogrow-Wrap", "Long Line that Doesn't Grow code-input, Does Wrap", confirm("Is the line wrapped, the code-input element *NOT* scrolled horizontally, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
+
+    // Clear all code
+    textarea.selectionStart = 0;
+    textarea.selectionEnd = textarea.value.length;
+    backspace(textarea);
+    codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)"); // Just enough to store the 2 sentences below
+    testAssertion("Autogrow-Wrap", "Long Line Didn't Grow code-input", confirm("Has the code-input element remained the same width since the last question? (OK=Yes)"), "user-judged");
+
+    textarea.selectionStart = textarea.value.length;
+    addText(textarea, 'Quia voluptatem dolor similique. Inventore voluptas quia commodi eum.\nAnother Line');
+    textarea.selectionStart = textarea.value.length-4;
+
+    await waitAsync(100); // Wait for line to be rendered
+
+    testAssertion("Autogrow-Wrap", "Second Line Aligns between pre code and textarea", confirm("Is the first line wrapped, the second positioned correctly, and the last 'Line' in it highlighted? (OK=Yes)"), "user-judged");
+
+    codeInputElement.style.removeProperty("--code-input_autogrow_min-width");
+    codeInputElement.style.removeProperty("--code-input_autogrow_max-width");
+    codeInputElement.classList.remove("code-input_autogrow_width");
+    codeInputElement.classList.remove("code-input_wrap");
 
     // Large amounts of code
     // Clear all code
