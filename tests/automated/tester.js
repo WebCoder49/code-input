@@ -906,7 +906,8 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     // Autogrow-Wrap
     codeInputElement.classList.add("code-input_autogrow_width");
     codeInputElement.style.setProperty("--code-input_autogrow_min-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)");
-    codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 69ch)"); // Just enough to store the 2 sentences below
+    codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 69ch + 10px)");
+    // Just enough to store the 2 sentences below, plus 10 pixels because, for example, DuckDuckGo Android browser wraps a bit early.
     // Clear all code
     textarea.selectionStart = 0;
     textarea.selectionEnd = textarea.value.length;
