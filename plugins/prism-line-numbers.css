@@ -29,6 +29,11 @@ code-input .line-numbers .line-numbers-rows {
   left: max(0em, calc(var(--padding-left, 16px) - 3.8em));
   top: var(--padding-top);
 }
+/* When line-numbers class has been added then removed, but remains on the highlighted
+ * element, just hide the line numbers. */
+code-input:not(.line-numbers, .line-numbers code-input) .line-numbers-rows {
+  display: none;
+}
 /* Things with padding when instructions are present */
 code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused) .line-numbers .line-numbers-rows {
   top: calc(var(--padding-top) + 3em);

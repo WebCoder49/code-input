@@ -880,76 +880,92 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
     
     testAssertion("SpecialChars", "Displays Correctly", confirm("Do the special characters read (0096),(0001)(0003),(0002) and align with the ellipsis? (OK=Yes)"), "user-judged");
 
-    // Wrap
-    codeInputElement.classList.add("code-input_wrap");
-    // Clear all code
-    textarea.selectionStart = 0;
-    textarea.selectionEnd = textarea.value.length;
-    backspace(textarea);
+    // One item per iteration of the wrap tests: whether to remove the line-numbers class
+    // from the code-input element on that iteration (to deactivate prism-line-numbers)
+    let removeLineNumbersClassPerIteration = [false];
+    if(!isHLJS) removeLineNumbersClassPerIteration.push(true); // Prism.js
 
-    addText(textarea, 'Eum rem sed beatae qui amet. Ea nihil quisquam qui et molestiae quas in quasi. Quia ipsum et qui provident. Vitae esse aut nam id libero distinctio deleniti nobis. Ipsa temporibus deserunt debitis veritatis aliquid sed. Ea ex reiciendis eos. Eius sed et in officiis expedita veniam neque officia. At ex quia optio nihil. Nesciunt natus aut aliquid praesentium. Delectus alias velit quidem. Consequatur consequatur cum quo est voluptates. Occaecati ut perspiciatis sed excepturi aut voluptatem corporis. Praesentium possimus aut dolor reiciendis error temporibus placeat quia. Ut repudiandae necessitatibus qui. Cum aut delectus molestiae ipsam dolor praesentium est. Non harum odit voluptatem dolorem non. Est deserunt at magnam amet sed sunt aut. Quia voluptatem dolor similique. Inventore voluptas quia commodi eum.');
-    textarea.selectionStart = textarea.value.length-4;
-    textarea.selectionEnd = textarea.value.length;
+    for(const removeLineNumbersClass of removeLineNumbersClassPerIteration) {
+      const testLabelSuffix = removeLineNumbersClass ? "-WithoutLineNumbers" : "";
+      if(removeLineNumbersClass) codeInputElement.classList.remove("line-numbers");
+      await waitAsync(100);
 
-    await waitAsync(100); // Wait for line to be rendered
+      // Wrap
+      codeInputElement.classList.add("code-input_wrap");
+      // Clear all code
+      textarea.selectionStart = 0;
+      textarea.selectionEnd = textarea.value.length;
+      backspace(textarea);
 
-    testAssertion("Wrap", "Wrapping Line Aligns between pre code and textarea", confirm("Is the line wrapped, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
+      addText(textarea, 'Eum rem sed beatae qui amet. Ea nihil quisquam qui et molestiae quas in quasi. Quia ipsum et qui provident. Vitae esse aut nam id libero distinctio deleniti nobis. Ipsa temporibus deserunt debitis veritatis aliquid sed. Ea ex reiciendis eos. Eius sed et in officiis expedita veniam neque officia. At ex quia optio nihil. Nesciunt natus aut aliquid praesentium. Delectus alias velit quidem. Consequatur consequatur cum quo est voluptates. Occaecati ut perspiciatis sed excepturi aut voluptatem corporis. Praesentium possimus aut dolor reiciendis error temporibus placeat quia. Ut repudiandae necessitatibus qui. Cum aut delectus molestiae ipsam dolor praesentium est. Non harum odit voluptatem dolorem non. Est deserunt at magnam amet sed sunt aut. Quia voluptatem dolor similique. Inventore voluptas quia commodi eum.');
+      textarea.selectionStart = textarea.value.length-4;
+      textarea.selectionEnd = textarea.value.length;
 
-    textarea.selectionStart = textarea.value.length;
-    addText(textarea, '\nAnother Line');
-    textarea.selectionStart = textarea.value.length-4;
+      await waitAsync(100); // Wait for line to be rendered
 
-    await waitAsync(100); // Wait for line to be rendered
+      testAssertion("Wrap"+testLabelSuffix, "Wrapping Line Aligns between pre code and textarea", confirm("Is the line wrapped, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
 
-    testAssertion("Wrap", "Second Line Aligns between pre code and textarea", confirm("Is the first line wrapped, the second positioned correctly, and the last 'Line' in it highlighted? (OK=Yes)"), "user-judged");
+      textarea.selectionStart = textarea.value.length;
+      addText(textarea, '\nAnother Line');
+      textarea.selectionStart = textarea.value.length-4;
 
-    // Autogrow-Wrap
-    codeInputElement.classList.add("code-input_autogrow_width");
-    codeInputElement.style.setProperty("--code-input_autogrow_min-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)");
-    codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 69ch + 10px)");
-    // Just enough to store the 2 sentences below, plus 10 pixels because, for example, DuckDuckGo Android browser wraps a bit early.
-    // Clear all code
-    textarea.selectionStart = 0;
-    textarea.selectionEnd = textarea.value.length;
-    backspace(textarea);
+      await waitAsync(100); // Wait for line to be rendered
 
-    addText(textarea, 'Quia voluptatem dolor similique. Inventore voluptas quia commodi eum.');
-    textarea.selectionStart = textarea.value.length-4;
-    textarea.selectionEnd = textarea.value.length;
+      testAssertion("Wrap"+testLabelSuffix, "Second Line Aligns between pre code and textarea", confirm("Is the first line wrapped, the second positioned correctly, and the last 'Line' in it highlighted? (OK=Yes)"), "user-judged");
 
-    await waitAsync(100); // Wait for line to be rendered
+      // Autogrow-Wrap
+      codeInputElement.classList.add("code-input_autogrow_width");
+      codeInputElement.style.setProperty("--code-input_autogrow_min-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)");
+      codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 69ch + 10px)");
+      // Just enough to store the 2 sentences below, plus 10 pixels because, for example, DuckDuckGo Android browser wraps a bit early.
+      // Clear all code
+      textarea.selectionStart = 0;
+      textarea.selectionEnd = textarea.value.length;
+      backspace(textarea);
 
-    testAssertion("Autogrow-Wrap", "Long Line Grows code-input, Doesn't Wrap", confirm("Is the line *NOT* wrapped, the code-input element *NOT* scrolled horizontally, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
+      addText(textarea, 'Quia voluptatem dolor similique. Inventore voluptas quia commodi eum.');
+      textarea.selectionStart = textarea.value.length-4;
+      textarea.selectionEnd = textarea.value.length;
 
-    codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 32ch)"); // Just enough to store the 2 sentences below
-    await waitAsync(100); // Wait for line to be rendered
+      await waitAsync(100); // Wait for line to be rendered
 
-    testAssertion("Autogrow-Wrap", "Long Line Grows code-input, Does Wrap", confirm("Is the line wrapped just after the first sentence, the code-input element *NOT* scrolled horizontally, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
+      testAssertion("Autogrow-Wrap"+testLabelSuffix, "Long Line Grows code-input, Doesn't Wrap", confirm("Is the line *NOT* wrapped, the code-input element *NOT* scrolled horizontally, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
 
-    codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)"); // Just enough to store the 2 sentences below
-    await waitAsync(100); // Wait for line to be rendered
+      codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 32ch)"); // Just enough to store the 2 sentences below
+      await waitAsync(100); // Wait for line to be rendered
 
-    testAssertion("Autogrow-Wrap", "Long Line that Doesn't Grow code-input, Does Wrap", confirm("Is the line wrapped, the code-input element *NOT* scrolled horizontally, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
+      testAssertion("Autogrow-Wrap"+testLabelSuffix, "Long Line Grows code-input, Does Wrap", confirm("Is the line wrapped just after the first sentence, the code-input element *NOT* scrolled horizontally, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
 
-    // Clear all code
-    textarea.selectionStart = 0;
-    textarea.selectionEnd = textarea.value.length;
-    backspace(textarea);
-    codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)"); // Just enough to store the 2 sentences below
-    testAssertion("Autogrow-Wrap", "Long Line Didn't Grow code-input", confirm("Has the code-input element remained the same width since the last question? (OK=Yes)"), "user-judged");
+      codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)"); // Just enough to store the 2 sentences below
+      await waitAsync(100); // Wait for line to be rendered
 
-    textarea.selectionStart = textarea.value.length;
-    addText(textarea, 'Quia voluptatem dolor similique. Inventore voluptas quia commodi eum.\nAnother Line');
-    textarea.selectionStart = textarea.value.length-4;
+      testAssertion("Autogrow-Wrap"+testLabelSuffix, "Long Line that Doesn't Grow code-input, Does Wrap", confirm("Is the line wrapped, the code-input element *NOT* scrolled horizontally, and the last 'eum.' in it highlighted? (OK=Yes)"), "user-judged");
 
-    await waitAsync(100); // Wait for line to be rendered
+      const oldCodeInputWidth = codeInputElement.offsetWidth;
 
-    testAssertion("Autogrow-Wrap", "Second Line Aligns between pre code and textarea", confirm("Is the first line wrapped, the second positioned correctly, and the last 'Line' in it highlighted? (OK=Yes)"), "user-judged");
+      // Clear all code
+      textarea.selectionStart = 0;
+      textarea.selectionEnd = textarea.value.length;
+      backspace(textarea);
+      codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)"); // Just enough to store the 2 sentences below
 
-    codeInputElement.style.removeProperty("--code-input_autogrow_min-width");
-    codeInputElement.style.removeProperty("--code-input_autogrow_max-width");
-    codeInputElement.classList.remove("code-input_autogrow_width");
-    codeInputElement.classList.remove("code-input_wrap");
+      assertEqual("Autogrow-Wrap"+testLabelSuffix, "Long Line Didn't Change code-input Width", codeInputElement.offsetWidth, oldCodeInputWidth);
+
+      textarea.selectionStart = textarea.value.length;
+      addText(textarea, 'Quia voluptatem dolor similique. Inventore voluptas quia commodi eum.\nAnother Line');
+      textarea.selectionStart = textarea.value.length-4;
+
+      await waitAsync(100); // Wait for line to be rendered
+
+      testAssertion("Autogrow-Wrap"+testLabelSuffix, "Second Line Aligns between pre code and textarea", confirm("Is the first line wrapped, the second positioned correctly, and the last 'Line' in it highlighted? (OK=Yes)"), "user-judged");
+
+      codeInputElement.style.removeProperty("--code-input_autogrow_min-width");
+      codeInputElement.style.removeProperty("--code-input_autogrow_max-width");
+      codeInputElement.classList.remove("code-input_autogrow_width");
+      codeInputElement.classList.remove("code-input_wrap");
+
+      if(removeLineNumbersClass) codeInputElement.classList.add("line-numbers");
+    }
 
     // Large amounts of code
     // Clear all code
