@@ -16,3 +16,5 @@ code-input.code-input_wrap textarea, code-input.code-input_wrap pre code, code-i
     overflow-wrap: break-word; /* Prevent horizontal scrolling from ever occurring */
     max-width: calc(100% - var(--padding-left, 16px) - var(--padding-right, 16px))!important;
 }
+/* ^^ Don't need to change for prism-line-numbers plugin since
+ * grid width already decreased for prism-line-numbers. */

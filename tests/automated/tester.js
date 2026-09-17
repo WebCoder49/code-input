@@ -163,7 +163,8 @@ async function beginTest(isHLJS) {
 
     codeInputElem.style.setProperty("--code-input_autogrow_min-width", "200px");
     await waitAsync(100); // Wait for display to update
-    assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-height Sets Height", codeInputElem.clientWidth, 200);
+
+    assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-width Sets Width", codeInputElem.clientWidth, 200);
     codeInputElem.style.removeProperty("--code-input_autogrow_min-width");
     codeInputElem.classList.remove("code-input_autogrow_width");
 
@@ -887,7 +888,7 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
 
     for(const removeLineNumbersClass of removeLineNumbersClassPerIteration) {
       const testLabelSuffix = removeLineNumbersClass ? "-WithoutLineNumbers" : "";
-      if(removeLineNumbersClass) codeInputElement.classList.remove("line-numbers");
+      // if(removeLineNumbersClass) codeInputElement.classList.remove("line-numbers");
       await waitAsync(100);
 
       // Wrap
@@ -916,15 +917,15 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
       // Autogrow-Wrap
       codeInputElement.classList.add("code-input_autogrow_width");
       codeInputElement.style.setProperty("--code-input_autogrow_min-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 15ch)");
-      codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 69ch + 10px)");
+      codeInputElement.style.setProperty("--code-input_autogrow_max-width", "calc(max(3.8em, var(--padding-left)) + var(--padding-right) + 75ch)");
       // Just enough to store the 2 sentences below, plus 10 pixels because, for example, DuckDuckGo Android browser wraps a bit early.
       // Clear all code
       textarea.selectionStart = 0;
       textarea.selectionEnd = textarea.value.length;
       backspace(textarea);
 
-      addText(textarea, 'Quia voluptatem dolor similique. Inventore voluptas quia commodi eum.');
-      textarea.selectionStart = textarea.value.length-4;
+      addText(textarea, 'Quia voluptatem dolor similique. Inventore voluptas quia commodi eum. '); // Space at end encourages wrapping in some browsers
+      textarea.selectionStart = textarea.value.length-5;
       textarea.selectionEnd = textarea.value.length;
 
       await waitAsync(100); // Wait for line to be rendered

@@ -40,8 +40,8 @@ code-input.code-input_autogrow_width {
     max-width: var(--code-input_autogrow_max-width);
 }
 code-input.code-input_autogrow_width textarea {
-    width: calc(var(--code-input_autogrow_true-min-width) - var(--padding-left, 16px) - var(--padding-right, 16px))!important; /* So minimum width possible while containing highlighted code */
-    min-width: max(var(--code-input_synced-width), calc(100% - var(--padding-left, 16px) - var(--padding-right, 16px)));
+    min-width: calc(var(--code-input_autogrow_true-min-width) - var(--padding-left, 16px) - var(--padding-right, 16px));
+    width: var(--code-input_synced-width)!important; /* So minimum width possible while containing highlighted code */
 }
 code-input.code-input_autogrow_width pre code,
 code-input.code-input_autogrow_width pre {
@@ -74,4 +74,11 @@ code-input.code-input_autogrow_height:has(textarea[data-code-input-fallback]) {
 code-input.code-input_autogrow_height textarea[data-code-input-fallback] {
     height: calc(var(--code-input_autogrow_true-min-height) - var(--padding-top, 16px) - max(2em, var(--padding-bottom, 16px)))!important;
     min-height: calc(var(--code-input_autogrow_true-min-height) - var(--padding-top, 16px) - max(2em, var(--padding-bottom, 16px)));
+}
+code-input.code-input_autogrow_width:has(textarea[data-code-input-fallback]) {
+    width: var(--code-input_autogrow_true-min-width);
+}
+code-input.code-input_autogrow_width textarea[data-code-input-fallback] {
+    width: calc(var(--code-input_autogrow_true-min-width) - var(--padding-left, 16px) - max(2em, var(--padding-right, 16px)))!important;
+    min-width: calc(var(--code-input_autogrow_true-min-width) - var(--padding-left, 16px) - max(2em, var(--padding-right, 16px)));
 }
