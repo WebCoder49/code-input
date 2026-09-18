@@ -29,6 +29,11 @@ code-input .line-numbers .line-numbers-rows {
   left: max(0em, calc(var(--padding-left, 16px) - 3.8em));
   top: var(--padding-top);
 }
+/* When line-numbers class has been added then removed, but remains on the highlighted
+ * element, just hide the line numbers. */
+code-input:not(.line-numbers, .line-numbers code-input) .line-numbers-rows {
+  display: none;
+}
 /* Things with padding when instructions are present */
 code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(textarea:not([data-code-input-fallback]):focus):not(.code-input_mouse-focused) .line-numbers .line-numbers-rows {
   top: calc(var(--padding-top) + 3em);
@@ -36,12 +41,17 @@ code-input:not(:has(.code-input_keyboard-navigation-instructions:empty)):has(tex
 
 /* Compatibility with autogrow plugin */
 code-input.line-numbers.code-input_autogrow_width textarea, .line-numbers code-input.code-input_autogrow_width textarea {
-  width: calc(var(--code-input_autogrow_true-min-width) - max(3.8em, var(--padding-left, 16px)) - var(--padding-right, 16px))!important; /* So minimum width possible while containing highlighted code */
-  min-width: max(var(--code-input_synced-width), calc(100% - max(3.8em, var(--padding-left, 16px)) - var(--padding-right, 16px)));
+  min-width: calc(var(--code-input_autogrow_true-min-width) - max(3.8em, var(--padding-left, 16px)) - var(--padding-right, 16px));
+  width: var(--code-input_synced-width)!important; /* So minimum width possible while containing highlighted code */
 }
 code-input.line-numbers.code-input_autogrow_width pre code,
 code-input.line-numbers.code-input_autogrow_width pre,
 .line-numbers code-input.code-input_autogrow_width pre code,
 .line-numbers code-input.code-input_autogrow_width pre {
   min-width: calc(var(--code-input_autogrow_true-min-width) - max(3.8em, var(--padding-left, 16px)) - var(--padding-right, 16px));
+}
+code-input.line-numbers.code-input_autogrow_height textarea[data-code-input-fallback],
+.line-numbers code-input.code-input_autogrow_height textarea[data-code-input-fallback] {
+  width: calc(var(--code-input_autogrow_true-min-width) - max(3.8em, var(--padding-left, 16px)) - max(2em, var(--padding-right, 16px)))!important;
+  min-width: calc(var(--code-input_autogrow_true-min-width) - max(3.8em, var(--padding-left, 16px)) - max(2em, var(--padding-right, 16px)));
 }

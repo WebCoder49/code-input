@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>code-input should be global: highlight.js</title>
+        <title>code-input.js should be global: highlight.js</title>
 
         <meta charset="utf-8"/>
 
@@ -32,6 +32,7 @@
         <script src="../../plugins/select-token-callbacks.js"></script>
         <script src="../../plugins/special-chars.js"></script>
         <link rel="stylesheet" href="../../plugins/special-chars.css">
+        <link rel="stylesheet" href="../../plugins/wrap.css">
 
         <!--Register templates-->
 
@@ -44,8 +45,12 @@
         </style>
         <code-input dir="rtl" template="hljs" language="markdown"><textarea data-code-input-fallback placeholder="hljs rtl"></textarea></code-input>
         <code-input dir="ltr" template="hljs" language="markdown"><textarea data-code-input-fallback placeholder="hljs ltr"></textarea></code-input>
+        <code-input dir="rtl" template="hljs" language="markdown" class="code-input_wrap"><textarea data-code-input-fallback placeholder="hljs rtl"></textarea></code-input>
+        <code-input dir="ltr" template="hljs" language="markdown" class="code-input_wrap"><textarea data-code-input-fallback placeholder="hljs ltr"></textarea></code-input>
         <code-input dir="rtl" template="hljs+" language="markdown"><textarea data-code-input-fallback placeholder="hljs rtl"></textarea></code-input>
         <code-input dir="ltr" template="hljs+" language="markdown"><textarea data-code-input-fallback placeholder="hljs ltr"></textarea></code-input>
+        <code-input dir="rtl" template="hljs+" language="markdown" class="code-input_wrap"><textarea data-code-input-fallback placeholder="hljs rtl"></textarea></code-input>
+        <code-input dir="ltr" template="hljs+" language="markdown" class="code-input_wrap"><textarea data-code-input-fallback placeholder="hljs ltr"></textarea></code-input>
 
 	<script src="common.js"></script>
         <script>
