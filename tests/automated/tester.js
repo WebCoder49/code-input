@@ -987,10 +987,10 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
 
     /* Make it clear if any tests have failed */
     if(testsFailed) {
-        document.querySelector("h2").style.backgroundColor = "red";
-        document.querySelector("h2").textContent = "Some Tests have Failed.";
+        document.querySelector("#status").style.backgroundColor = "red";
+        document.querySelector("#status").textContent = "Some Tests have Failed.";
     } else {
-        document.querySelector("h2").style.backgroundColor = "lightgreen";
-        document.querySelector("h2").textContent = "All Tests have Passed.";
+        document.querySelector("#status").style.backgroundColor = "lightgreen";
+        document.querySelector("#status").textContent = "All Tests have Passed.";
     }
 }
