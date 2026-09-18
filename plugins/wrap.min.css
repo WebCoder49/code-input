@@ -1,0 +1,1 @@
+code-input.code-input_wrap textarea,code-input.code-input_wrap pre code,code-input.code-input_wrap.code-input_pre-element-styled pre{white-space:pre-wrap;overflow-wrap:break-word;max-width:calc(100% - var(--padding-left,16px) - var(--padding-right,16px))!important}
