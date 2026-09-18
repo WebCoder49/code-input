@@ -108,69 +108,69 @@ function waitAsync(milliseconds) {
 var loadEventFired = false; // Global variable so can check the load event is fired in startLoad function
 var popupClicked = false; // Global variable for Autocomplete plugin
 async function beginTest(isHLJS) {
-    let codeInputElem = document.querySelector("code-input");
-    codeInputElem.addEventListener("code-input_load", () => {
+    let codeInputElement = document.querySelector("code-input");
+    codeInputElement.addEventListener("code-input_load", () => {
         loadEventFired = true;
-        testAssertion("Load", "code-input_load Event Fired Late Enough", codeInputElem.querySelector("textarea:not([data-code-input-fallback])") != null, "code-input_load event fired before non-fallback textarea element appeared");
+        testAssertion("Load", "code-input_load Event Fired Late Enough", codeInputElement.querySelector("textarea:not([data-code-input-fallback])") != null, "code-input_load event fired before non-fallback textarea element appeared");
     });
-    const fallbackTextarea = codeInputElem.querySelector("textarea[data-code-input-fallback]");
+    const fallbackTextarea = codeInputElement.querySelector("textarea[data-code-input-fallback]");
 
 
-    startLoad(codeInputElem, isHLJS);
-    codeInputElem.style.height = "calc(1lh + 2em)"; // 2em for the "No highlighting." message
-    codeInputElem.style.setProperty("--padding", "0px");
+    startLoad(codeInputElement, isHLJS);
+    codeInputElement.style.height = "calc(1lh + 2em)"; // 2em for the "No highlighting." message
+    codeInputElement.style.setProperty("--padding", "0px");
     await waitAsync(100); // Wait for display to update
     // Select the "A" in the fallback textarea's last line
     fallbackTextarea.selectionStart = 50;
     fallbackTextarea.selectionEnd = 51;
     fallbackTextarea.focus();
-    fallbackTextarea.scrollTo(0, codeInputElem.clientHeight * 3); // At least 3 lines
+    fallbackTextarea.scrollTo(0, codeInputElement.clientHeight * 3); // At least 3 lines
 
     await waitAsync(100); // Wait for scroll to occur
     testAssertion("FallbackTextarea", "Scrolls Correctly", confirm("Is the phrase 'A third', with 'A' highlighted, visible? "), "user-judged");
-    codeInputElem.style.removeProperty("--padding");
-    codeInputElem.style.removeProperty("height");
+    codeInputElement.style.removeProperty("--padding");
+    codeInputElement.style.removeProperty("height");
 
     // Select the "log" in the fallback textarea's initial line
     fallbackTextarea.selectionStart = 8;
     fallbackTextarea.selectionEnd = 11;
     fallbackTextarea.focus();
 
-    codeInputElem.style.setProperty("--padding", "100px");
+    codeInputElement.style.setProperty("--padding", "100px");
     await waitAsync(100); // Wait for display to update
     testAssertion("FallbackTextarea", "Displayed Correctly With More Padding", confirm("Is the highlighted 'log' properly aligned after the 'console.', which is then properly aligned inside the visible (non-highlighted) textarea? Also, there should be a lot of padding."), "user-judged");
-    codeInputElem.style.setProperty("--padding", "0px");
+    codeInputElement.style.setProperty("--padding", "0px");
     await waitAsync(100); // Wait for display to update
     testAssertion("FallbackTextarea", "Displayed Correctly With No Padding", confirm("Does the element have zero padding, but otherwise the display remains correct?"), "user-judged");
-    codeInputElem.style.removeProperty("--padding");
+    codeInputElement.style.removeProperty("--padding");
     await waitAsync(100); // Wait for display to update
     testAssertion("FallbackTextarea", "Displayed Correctly By Default", confirm("Is the highlighted 'log' properly aligned after the 'console.', which is then properly aligned inside the visible (non-highlighted) textarea?"), "user-judged");
 
     // FallbackTextarea-Autogrow
-    codeInputElem.classList.add("code-input_autogrow_height");
+    codeInputElement.classList.add("code-input_autogrow_height");
     await waitAsync(100); // Wait for display to update
     testAssertion("FallbackTextarea-Autogrow", "Displayed Correctly With Default Autogrow Height", confirm("Is the element not very tall (but tall enough to properly show some code), but otherwise the display remains correct?"), "user-judged");
 
-    codeInputElem.style.setProperty("--code-input_autogrow_min-height", "200px");
+    codeInputElement.style.setProperty("--code-input_autogrow_min-height", "200px");
     await waitAsync(100); // Wait for display to update
-    assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-height Sets Height", codeInputElem.clientHeight, 200);
-    codeInputElem.style.removeProperty("--code-input_autogrow_min-height");
-    codeInputElem.classList.remove("code-input_autogrow_height");
+    assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-height Sets Height", codeInputElement.clientHeight, 200);
+    codeInputElement.style.removeProperty("--code-input_autogrow_min-height");
+    codeInputElement.classList.remove("code-input_autogrow_height");
 
-    codeInputElem.classList.add("code-input_autogrow_width");
+    codeInputElement.classList.add("code-input_autogrow_width");
     await waitAsync(100); // Wait for display to update
     testAssertion("FallbackTextarea-Autogrow", "Displayed Correctly With Default Autogrow Width", confirm("Is the element a sensible but narrow width, and otherwise the display remains correct?"), "user-judged");
 
-    codeInputElem.style.setProperty("--code-input_autogrow_min-width", "200px");
+    codeInputElement.style.setProperty("--code-input_autogrow_min-width", "200px");
     await waitAsync(100); // Wait for display to update
 
-    assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-width Sets Width", codeInputElem.clientWidth, 200);
-    codeInputElem.style.removeProperty("--code-input_autogrow_min-width");
-    codeInputElem.classList.remove("code-input_autogrow_width");
+    assertEqual("FallbackTextarea-Autogrow", "--code-input_autogrow_min-width Sets Width", codeInputElement.clientWidth, 200);
+    codeInputElement.style.removeProperty("--code-input_autogrow_min-width");
+    codeInputElement.classList.remove("code-input_autogrow_width");
 
     // FallbackTextarea+PrismLineNumbers
     if(!isHLJS) {
-        codeInputElem.classList.add("line-numbers");
+        codeInputElement.classList.add("line-numbers");
         await waitAsync(100); // Wait for display to update
         testAssertion("FallbackTextarea-PrismLineNumbers", "Displayed Correctly With line-numbers Class", confirm("Is there more padding to the left now, but otherwise the display remains correct?"), "user-judged");
     }
@@ -865,6 +865,16 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
         move(textarea, 1);
         await waitAsync(100); // Wait for highlighting so text updates
         assertEqual("SelectTokenCallbacks", "Number of Selected Braces 2", codeInputElement.getElementsByClassName("brace-hover").length, 4);    
+    }
+
+    // PrismLineNumbers
+    if(!isHLJS) {
+      testAssertion("PrismLineNumbers", "Displayed Correctly With line-numbers Class", confirm("Are line numbers displaying correctly?"), "user-judged");
+      codeInputElement.classList.remove("line-numbers");
+      await waitAsync(100); // Wait for display to update
+      testAssertion("PrismLineNumbers", "Displayed Correctly Without line-numbers Class", confirm("Is the padding now equal all around the code, and line numbers have gone?"), "user-judged");
+      codeInputElement.classList.add("line-numbers");
+      await waitAsync(100); // Wait for display to update
     }
 
     // SpecialChars
