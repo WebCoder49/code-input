@@ -25,7 +25,7 @@ var codeInput = {
                 text += " ";
             }
             // Update code
-            result_element.innerHTML = this.escape_html(text);
+            result_element.textContent = text;
             if(this.autodetect) { // Autodetection
                 result_element.className = ""; // CODE
                 result_element.parentElement.className = ""; // PRE
@@ -179,10 +179,11 @@ var codeInput = {
             let lang = this.getAttribute("lang");
             let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
             let value = this.value || this.innerHTML || "";
-    
-            this.innerHTML = ""; // Clear Content
-    
-            /* Create Textarea */
+
+            // Clear Content
+            this.innerHTML = ""; // textContent doesn't always clear content properly; innerHTML OK here because no user-provided input'
+
+            // Create textarea
             let textarea = document.createElement("textarea");
             textarea.placeholder = placeholder;
             textarea.value = value;
@@ -313,23 +314,35 @@ var codeInput = {
         hljs(hljs) { // Dependency: Highlight.js (https://highlightjs.org/)
             return {
                 includeCodeInputInHighlightFunc: false,
-                highlight: hljs.highlightElement, 
+                highlight: function(codeElement) {
+                    codeElement.removeAttribute("data-highlighted"); // so highlight.js ready to re-highlight the element.
+                    hljs.highlightElement(codeElement);
+                },
                 preElementStyled: false,
                 isCode: true
             };
         },
-        characterLimit() {
+        characterLimit(plugins=[]) {
             return {
-                highlight: function(result_element, code_input) {
+                highlight: function(resultElement, codeInput) {
+                    let characterLimit = Number(codeInput.getAttribute("data-character-limit"));
 
-                    let character_limit = Number(code_input.getAttribute("data-character-limit"));
+                    const normalCharacters = codeInput.value.slice(0, characterLimit);
+                    const overflowCharacters = codeInput.value.slice(characterLimit);
 
-                    let normal_characters = code_input.escape_html(code_input.value.slice(0, character_limit));
-                    let overflow_characters = code_input.escape_html(code_input.value.slice(character_limit));
-                    
-                    result_element.innerHTML = `${normal_characters}<mark class="overflow">${overflow_characters}</mark>`;
-                    if(overflow_characters.length > 0) {
-                        result_element.innerHTML += ` <mark class="overflow-msg">${code_input.getAttribute("data-overflow-msg") || "(Character limit reached)"}</mark>`;
+                    resultElement.textContent = normalCharacters;
+
+                    const overflowElement = document.createElement("mark");
+                    overflowElement.classList.add("overflow");
+                    overflowElement.textContent = overflowCharacters;
+                    resultElement.appendChild(overflowElement);
+
+                    if (overflowCharacters.length > 0) {
+                        const overflowMsgElement = document.createElement("mark");
+                        overflowMsgElement.classList.add("overflow-msg");
+                        overflowMsgElement.textContent = codeInput.getAttribute("data-overflow-msg") || "(Character limit reached)";
+                        resultElement.appendChild(new Text(" "));
+                        resultElement.appendChild(overflowMsgElement);
                     }
                 },
                 includeCodeInputInHighlightFunc: true,
@@ -339,13 +352,20 @@ var codeInput = {
         },
         rainbowText(rainbow_colors=["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue",  "magenta"], delimiter="") {
             return {
-                highlight: function(result_element, code_input) {
-                    let html_result = [];
-                    let sections = code_input.value.split(code_input.template.delimiter);
+                highlight: function(resultElement, codeInput) {
+                    resultElement.innerHTML = ""; // textContent doesn't always clear content properly; innerHTML OK here because no user-provided input'
+                    let sections = codeInput.value.split(codeInput.template.delimiter);
                     for (let i = 0; i < sections.length; i++) {
-                        html_result.push(`<span style="color: ${code_input.template.rainbow_colors[i % code_input.template.rainbow_colors.length]}">${code_input.escape_html(sections[i])}</span>`);
+
+                        const sectionElem = document.createElement("span");
+                        sectionElem.style.color = codeInput.template.rainbow_colors[i % codeInput.template.rainbow_colors.length];
+                        sectionElem.textContent = sections[i];
+                        resultElement.appendChild(sectionElem)
+
+                        if(i != sections.length-1) {
+                            resultElement.appendChild(new Text(codeInput.template.delimiter));
+                        }
                     }
-                    result_element.innerHTML = html_result.join(code_input.template.delimiter);
                 },
                 includeCodeInputInHighlightFunc: true,
                 preElementStyled: true,
