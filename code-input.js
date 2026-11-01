@@ -193,12 +193,22 @@ var codeInput = {
 
                     let characterLimit = Number(codeInput.getAttribute("data-character-limit"));
 
-                    let normalCharacters = codeInput.escapeHtml(codeInput.value.slice(0, characterLimit));
-                    let overflowCharacters = codeInput.escapeHtml(codeInput.value.slice(characterLimit));
+                    const normalCharacters = codeInput.value.slice(0, characterLimit);
+                    const overflowCharacters = codeInput.value.slice(characterLimit);
 
-                    resultElement.innerHTML = `${normalCharacters}<mark class="overflow">${overflowCharacters}</mark>`;
+                    resultElement.textContent = normalCharacters;
+
+                    const overflowElement = document.createElement("mark");
+                    overflowElement.classList.add("overflow");
+                    overflowElement.textContent = overflowCharacters;
+                    resultElement.appendChild(overflowElement);
+
                     if (overflowCharacters.length > 0) {
-                        resultElement.innerHTML += ` <mark class="overflow-msg">${codeInput.getAttribute("data-overflow-msg") || "(Character limit reached)"}</mark>`;
+                        const overflowMsgElement = document.createElement("mark");
+                        overflowMsgElement.classList.add("overflow-msg");
+                        overflowMsgElement.textContent = codeInput.getAttribute("data-overflow-msg") || "(Character limit reached)";
+                        resultElement.appendChild(new Text(" "));
+                        resultElement.appendChild(overflowMsgElement);
                     }
                 },
                 includeCodeInputInHighlightFunc: true,
@@ -218,12 +228,19 @@ var codeInput = {
         rainbowText(rainbowColors = ["red", "orangered", "orange", "goldenrod", "gold", "green", "darkgreen", "navy", "blue", "magenta"], delimiter = "", plugins = []) {
             return {
                 highlight: function (resultElement, codeInput) {
-                    let htmlResult = [];
+                    resultElement.innerHTML = ""; // textContent doesn't always clear content properly; innerHTML OK here because no user-provided input'
                     let sections = codeInput.value.split(codeInput.template.delimiter);
                     for (let i = 0; i < sections.length; i++) {
-                        htmlResult.push(`<span style="color: ${codeInput.template.rainbowColors[i % codeInput.template.rainbowColors.length]}">${codeInput.escapeHtml(sections[i])}</span>`);
+
+                        const sectionElem = document.createElement("span");
+                        sectionElem.style.color = codeInput.template.rainbowColors[i % codeInput.template.rainbowColors.length];
+                        sectionElem.textContent = sections[i];
+                        resultElement.appendChild(sectionElem)
+
+                        if(i != sections.length-1) {
+                            resultElement.appendChild(new Text(codeInput.template.delimiter));
+                        }
                     }
-                    resultElement.innerHTML = htmlResult.join(codeInput.template.delimiter);
                 },
                 includeCodeInputInHighlightFunc: true,
                 preElementStyled: true,
@@ -379,7 +396,7 @@ var codeInput = {
             }
 
             // Update code
-            resultElement.innerHTML = this.escapeHtml(value);
+            resultElement.textContent = value;
             this.pluginEvt("beforeHighlight");
 
             // Syntax Highlight
@@ -448,7 +465,8 @@ var codeInput = {
             let placeholder = this.getAttribute("placeholder") || this.getAttribute("lang") || "";
             let value = this.value || this.innerHTML || "";
 
-            this.innerHTML = ""; // Clear Content
+            // Clear Content
+            this.innerHTML = ""; // textContent doesn't always clear content properly; innerHTML OK here because no user-provided input'
 
             // Create textarea
             let textarea = document.createElement("textarea");
