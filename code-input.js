@@ -246,7 +246,10 @@ var codeInput = {
         hljs(hljs, plugins = []) { // Dependency: Highlight.js (https://highlightjs.org/)
             return {
                 includeCodeInputInHighlightFunc: false,
-                highlight: hljs.highlightElement,
+                highlight: function(codeElement) {
+                    codeElement.removeAttribute("data-highlighted"); // so highlight.js ready to re-highlight the element.
+                    hljs.highlightElement(codeElement);
+                },
                 preElementStyled: false,
                 isCode: true,
                 plugins: plugins,
