@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>code-input Tester</title>
+
+    <!--Import Highlight.JS-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+
+    <!--Import code-input-->
+    <link rel="stylesheet" href="../code-input.css">
+    <script src="../code-input.js"></script>
+
+    <!--Import code-input plugins-->
+    <script src="../plugins/autocomplete.js"></script>
+    <link rel="stylesheet" href="../plugins/autocomplete.css">
+    <script src="../plugins/indent.js"></script>
+    <link rel="stylesheet" href="../plugins/prism-line-numbers.css">
+
+    <script src="tester.js"></script>
+</head>
+<body>
+    <h1>code-input Tester (highlight.js)</h1>
+    <h2>If the page doesn't load, please reload it, and answer the questions in alert boxes.</h2>
+    <h4><a href="prism.html">Test for Prism.js</a></h4>
+    <p>This page carries out automated tests for the code-input library to check that both the core components and the plugins (except for Autodetect and DebounceUpdate) work in some ways. It doesn't fully cover every scenario so you should test any code you change by hand, but it's good for quickly checking a wide range of functionality works.</p>
+
+    <details id="collapse-results"><summary>Test Results (Click to Open)</summary><pre id="test-results"></pre></details>
+    <form method="GET" action="https://google.com/search" target="_blank">
+        <code-input name="q">console.log("Hello, World!");
+// A second line
+// A third line with &lt;html> tags</code-input>
+        <input type="submit" value="Search Google For Code"/>
+    </form>
+
+    <code-input id="ci1" template="never-register-this-template-name"></code-input>
+    <code-input id="ci2"></code-input>
+    <code-input id="ci3" template="character-limit" data-character-limit="3"></code-input>
+    <code-input id="ci4" template="rainbow-colors"></code-input>
+    <code-input id="ci5" template="rainbow-colors-2"></code-input>
+
+    <code-input id="ci-value-test-character-limit" template="character-limit" data-character-limit="3"></code-input>
+    <code-input id="ci-value-test-rainbow-colors" template="rainbow-colors"></code-input>
+    <code-input id="ci-value-test-code-editor" template="code-editor"></code-input>
+    <code-input id="ci-value-test-no-op" template="no-op"></code-input>
+
+
+    <script>
+        beginTest(true);
+    </script>
+</body>
+</html>
