@@ -372,7 +372,10 @@ var codeInput = {
         hljs(hljs, plugins=[]) { // Dependency: Highlight.js (https://highlightjs.org/)
             return {
                 includeCodeInputInHighlightFunc: false,
-                highlight: hljs.highlightElement, 
+                highlight: function(codeElement) {
+                    codeElement.removeAttribute("data-highlighted"); // so highlight.js ready to re-highlight the element.
+                    hljs.highlightElement(codeElement);
+                },
                 preElementStyled: false,
                 isCode: true,
                 plugins: plugins,
@@ -381,7 +384,6 @@ var codeInput = {
         characterLimit(plugins=[]) {
             return {
                 highlight: function(resultElement, codeInput) {
-
                     let characterLimit = Number(codeInput.getAttribute("data-character-limit"));
 
                     const normalCharacters = codeInput.value.slice(0, characterLimit);
@@ -416,7 +418,7 @@ var codeInput = {
                     for (let i = 0; i < sections.length; i++) {
 
                         const sectionElem = document.createElement("span");
-                        sectionElem.style.color = codeInput.template.rainbowColors[i % codeInput.template.rainbowColors.length];
+                        sectionElem.style.color = codeInput.template.rainbow_colors[i % codeInput.template.rainbow_colors.length];
                         sectionElem.textContent = sections[i];
                         resultElement.appendChild(sectionElem)
 
