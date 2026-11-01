@@ -106,8 +106,21 @@ var codeInput = {
             result_element.scrollLeft = input_element.scrollLeft;
         }
 
+        /**
+         * @deprecated Avoid setting/modifying innerHTML; instead set the textContent
+         * attribute of an HTML element to insert text inside it, and use DOM functionns
+         * like createElement, appendChild, and setProperty.
+         */
         escape_html(text) {
-            return text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;"); /* Global RegExp */
+            // Thanks https://stackoverflow.com/a/7382028 for this extended version
+            // of the function, that should work inside quoted attribute values as well as
+            // the content of most tags.
+            return String(text)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#39;");
         }
 
         /* Get the template for this element or add to the unrecognised template queue. */
