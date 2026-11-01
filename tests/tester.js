@@ -321,6 +321,169 @@ console.log("I've got another line!", 2 &lt; 3, "should be true.");
 // A third line with &lt;html&gt; tags
 `); // Extra newline so line numbers visible if enabled.
 
+    /*--- Tests for security ---*/
+    {
+        const codeInputElem = document.createElement("code-input");
+        codeInputElem.setAttribute("template", "never-register-this-template-name");
+        document.body.appendChild(codeInputElem);
+
+        try {
+            codeInputElem.value = '<img src=x onerror="document.title=\'XSS\'">';
+        } catch(err) {
+            if(err instanceof TypeError) {
+                console.log("Failed to set value IDL Attribute of Pre-Registration code-input Element (expected that 'can't access property ''value'', this.textareaElement is null'):", err);
+            } else {
+                throw err;
+            }
+        }
+        await waitAsync(200);
+
+        let gotXSS = false;
+        if(document.title == "XSS") {
+            gotXSS = true;
+            alert("⚠️ SECURITY VULNERABILITY PRESENT: Cross-Site Scripting for value Attribute of Pre-Registration code-input Element")
+            document.title = "code-input.js Tester";
+        }
+        testAssertion("Security", "No XSS after 200ms for value Attribute of Pre-Registration code-input Element", !gotXSS, `⚠️ SECURITY VULNERABILITY PRESENT`);
+    }
+    {
+        const codeInputElem = document.createElement("code-input");
+
+        let loaded = false
+        codeInputElem.addEventListener("code-input_load", () => {
+            codeInputElem.value = '<img src=x onerror="document.title=\'XSS\'">';
+            loaded = true;
+        });
+        document.body.appendChild(codeInputElem);
+
+        await waitAsync(200);
+
+        if(loaded) {
+            let gotXSS = false;
+            if(document.title == "XSS") {
+                gotXSS = true;
+                alert("⚠️ SECURITY VULNERABILITY PRESENT: Cross-Site Scripting for value Attribute of Post-Registration code-input")
+                document.title = "code-input.js Tester";
+            }
+            testAssertion("Security", "No XSS after 200ms for value Attribute of Post-Registration code-input With Fallback Textarea", !gotXSS, `⚠️ SECURITY VULNERABILITY PRESENT`);
+        } else {
+            alert("⚠️ code-input element didn't load template in time to test this security vulnerability: Cross-Site Scripting for value Attribute of Post-Registration code-input")
+            testAssertion("Security", "No XSS after 200ms for value Attribute of Post-Registration code-input With Fallback Textarea", false, `⚠️ code-input element didn't load template in time to test this security vulnerability!`);
+        }
+    }
+    codeInput.registerTemplate("character-limit", codeInput.templates.characterLimit([]));
+    {
+        const codeInputElem = document.createElement("code-input");
+        codeInputElem.setAttribute("template", "character-limit");
+        codeInputElem.setAttribute("data-character-limit", 3);
+        codeInputElem.setAttribute("data-overflow-msg", '<img src=x onerror="document.title=\'XSS\'">');
+        codeInputElem.innerHTML = '####';
+
+        document.body.appendChild(codeInputElem);
+
+        await waitAsync(200);
+
+        let gotXSS = false;
+        if(document.title == "XSS") {
+            gotXSS = true;
+            alert("⚠️ SECURITY VULNERABILITY PRESENT: Cross-Site Scripting for (deprecated) characterLimit template, through data-overflow-msg");
+            document.title = "code-input.js Tester";
+        }
+        testAssertion("Security", "No XSS after 200ms for (deprecated) characterLimit template, through data-overflow-msg", !gotXSS, `⚠️ SECURITY VULNERABILITY PRESENT`);
+
+    }
+    codeInput.registerTemplate("rainbow-colors", codeInput.templates.rainbowText(["red", "orange", '"><img src=x onerror="document.title=\'XSS\'"><span class="'], "\n"));
+    {
+        const codeInputElem = document.createElement("code-input");
+        codeInputElem.setAttribute("template", "rainbow-colors");
+        codeInputElem.innerHTML = 'OK\nOK\nvulnerable';
+
+        document.body.appendChild(codeInputElem);
+
+        await waitAsync(200);
+
+        let gotXSS = false;
+        if(document.title == "XSS") {
+            gotXSS = true;
+            alert("⚠️ SECURITY VULNERABILITY PRESENT: Cross-Site Scripting for (deprecated) rainbowColors template, through color name")
+            document.title = "code-input.js Tester";
+        }
+        testAssertion("Security", "No XSS after 200ms for (deprecated) rainbowColors template, through color name", !gotXSS, `⚠️ SECURITY VULNERABILITY PRESENT`);
+    }
+    codeInput.registerTemplate("rainbow-colors-2", codeInput.templates.rainbowText(["red", "orange"], '<img src=x onerror="document.title=\'XSS\'">'));
+    {
+        const codeInputElem = document.createElement("code-input");
+        codeInputElem.setAttribute("template", "rainbow-colors-2");
+
+        let loaded = false
+        codeInputElem.addEventListener("code-input_load", async () => {
+            await waitAsync(100);
+            // Wait for textarea to fully load -- in this outdated version,
+            // code-input_load event occurs before the textarea loads.
+
+            codeInputElem.value = '<img src=x onerror="document.title=\'XSS\'">';
+            loaded = true;
+        });
+        document.body.appendChild(codeInputElem);
+
+        await waitAsync(200);
+
+        if(loaded) {
+            let gotXSS = false;
+            if(document.title == "XSS") {
+                gotXSS = true;
+                alert("⚠️ SECURITY VULNERABILITY PRESENT: Cross-Site Scripting for (deprecated) rainbowColors template, through delimiter")
+                document.title = "code-input.js Tester";
+            }
+            testAssertion("Security", "No XSS after 200ms for (deprecated) rainbowColors template, through delimiter", !gotXSS, `⚠️ SECURITY VULNERABILITY PRESENT`);
+        } else {
+            alert("⚠️ code-input element didn't load template in time to test this security vulnerability: Cross-Site Scripting for (deprecated) rainbowColors template, through delimiter")
+            testAssertion("Security", "No XSS after 200ms for (deprecated) rainbowColors template, through delimiter", false, `⚠️ code-input element didn't load template in time to test this security vulnerability!`);
+        }
+    }
+
+    codeInput.registerTemplate("no-op", new codeInput.Template(function(result_element) {}, true, true, false, []));
+    for (const templateDetails of [
+        {template: "character-limit", readable: "(deprecated) characterLimit template"},
+        {template: "rainbow-colors", readable: "(deprecated) rainbowColors template"},
+        {template: "code-editor", readable: "the Prism or highlight.js template loaded on this page"},
+        {template: "no-op", readable: "custom template that does no highlighting"},
+    ]) {
+        const codeInputElem = document.createElement("code-input");
+        codeInputElem.setAttribute("template", templateDetails.template);
+        codeInputElem.setAttribute("data-character-limit", 3);
+
+
+        let loaded = false
+        codeInputElem.addEventListener("code-input_load", async () => {
+            await waitAsync(100);
+            // Wait for textarea to fully load -- in this outdated version,
+            // code-input_load event occurs before the textarea loads.
+
+            // Keep "####" here to ensure that for the characterLimit template the payload
+            // HTML is all in one element.
+            codeInputElem.value = '#### <img src=x onerror="document.title=\'XSS\'">';
+            loaded = true;
+        });
+        document.body.appendChild(codeInputElem);
+
+        await waitAsync(200);
+
+        if(loaded) {
+            let gotXSS = false;
+            if(document.title == "XSS") {
+                gotXSS = true;
+                alert("⚠️ SECURITY VULNERABILITY PRESENT: Cross-Site Scripting for "+templateDetails.readable+", through value")
+                document.title = "code-input.js Tester";
+            }
+            testAssertion("Security", "No XSS after 200ms for "+templateDetails.readable+", through value", !gotXSS, `⚠️ SECURITY VULNERABILITY PRESENT`);
+        } else {
+            alert("⚠️ code-input element didn't load template in time to test this security vulnerability: Cross-Site Scripting for "+templateDetails.readable+", through value")
+            testAssertion("Security", "No XSS after 200ms for "+templateDetails.readable+", through value", false, `⚠️ code-input element didn't load template in time to test this security vulnerability!`);
+        }
+    }
+
+
     /*--- Tests for plugins ---*/
     // AutoCloseBrackets
     testAddingText("AutoCloseBrackets", textarea, function(textarea) {
