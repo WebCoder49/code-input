@@ -7,6 +7,9 @@
 > 
 > Aiming to be more flexible, lightweight, modular, progressively enhanced and standards-based than the alternatives, we support HTML forms, the `<textarea>` JavaScript interface, more languages and more use cases.
 
+
+***Recent Security Vulnerabiliies***: Upgrade to code-input.js v2.10.0, or take [mitigations linked here](https://v2.code-input-js.org/security). [Click here for more details](https://v2.code-input-js.org/security).
+
 ---
 
 Demos and usage instructions are available at <https://code-input-js.org> and [the `docs` directory](docs/), to let you get started quickly!

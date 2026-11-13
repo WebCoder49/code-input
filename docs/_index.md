@@ -4,6 +4,12 @@ title = 'Flexible Syntax Highlighted Editable Textareas'
 
 # An <mark>editable</mark> `<textarea>` that supports *any* <mark>syntax highlighting</mark> algorithm, for code or something else. [Also, added plugins.](plugins)
 
+---
+
+***<mark>Recent Security Vulnerabilities</mark>***: Upgrade to code-input.js v2.10.0, or take [mitigations linked here](security). [Click here for more details](security).
+
+---
+
 <code>code-input.js</code> aims to be [more <mark>flexible</mark>, <mark>lightweight</mark>, <mark>modular</mark>, <mark>accessible</mark>, <mark>progressively enhanced</mark> and <mark>standards-based</mark>](#features) than [the alternatives](#alternatives). It supports [HTML forms](interface/forms), the [`<textarea>` JavaScript interface](interface/js), and a wide range of languages (the static syntax highlighter is separate from the editability!) and use cases.
 
 ## Download
