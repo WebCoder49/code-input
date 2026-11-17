@@ -4,12 +4,12 @@ title = 'Security'
 
 # Security
 
-## Vulnerabilities disclosed 2026-11-10
+## Vulnerabilities disclosed 2026-11-17
 
-Best mitigation: upgrade to code-input.js version 2.10.0. Other mitigations, workarounds, and details are linked below.
+Best mitigation: upgrade to code-input.js version 2.10.0 or later. (If you want to keep an older version of code-input.js, I have backported the fix: upgrade to another of the fixed versions listed in the advisories below.) Other mitigations, workarounds, and details are linked below.
 
-1. [Setting .value on a code-input element writes this value as unescaped HTML in some conditions, allowing DOM XSS. Click for more details in the GitHub Advisory.](https://github.com/WebCoder49/code-input/security/advisories/GHSA-hvf6-c8g4-g687)
-2. [code-input.js characterLimit template (deprecated in v2.9.0) writes data-overflow-msg as unescaped HTML, allowing DOM XSS. Click for more details in the GitHub Advisory.](https://github.com/WebCoder49/code-input/security/advisories/GHSA-2m96-6r3x-vvfr)
+1. Most likely to affect your code: [Setting .value on a code-input element writes this value as unescaped HTML in some conditions, allowing DOM XSS. Click for more details in the GitHub Advisory.](https://github.com/WebCoder49/code-input/security/advisories/GHSA-rv9c-r3v2-pwf3)
+2. [code-input.js characterLimit template (deprecated in v2.9.0) writes data-overflow-msg as unescaped HTML, allowing DOM XSS. Click for more details in the GitHub Advisory.](https://github.com/WebCoder49/code-input/security/advisories/GHSA-hvf6-c8g4-g687)
 3. [code-input.js rainbowText template (deprecated in v2.9.0) writes color names and delimiters as unescaped HTML, allowing DOM XSS. Click for more details in the GitHub Advisory.](https://github.com/WebCoder49/code-input/security/advisories/GHSA-2m96-6r3x-vvfr)
 
 Reported by [uc.surf](https://uc.surf/) security research (GitHub: [ucsurf](https://github.com/ucsurf)).
