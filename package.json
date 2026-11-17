@@ -1,6 +1,6 @@
 {
   "name": "@webcoder49/code-input",
-  "version": "2.10.0",
+  "version": "2.10.1",
   "description": "An editable &lt;textarea&gt; that supports *any* syntax highlighting algorithm, for code or something else. Also, added plugins.",
   "browser": "code-input.js",
   "exports": {
@@ -96,12 +96,12 @@
   ],
   "author": {
     "name": "Oliver Geer and contributors",
-    "email": "hi@webcoder49.dev",
+    "email": "o@ogeer.org",
     "url": "https://ogeer.org/"
   },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/WebCoder49/code-input/issues"
   },
-  "homepage": "https://code-input-js.org/"
+  "homepage": "https://v2.code-input-js.org/"
 }
