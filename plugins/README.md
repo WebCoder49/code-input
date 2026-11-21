@@ -77,9 +77,16 @@ Files: [special-chars.js](./special-chars.js) / [special-chars.css](./special-ch
 ### Select Token Callbacks
 Make tokens in the `<pre><code>` element that are included within the selected text of the `<code-input>` gain a CSS class while selected, or trigger JavaScript callbacks.
 
-Files: select-token-callbacks.js
+Files: [select-token-callbacks.js](./select-token-callbacks.js)
 
 [🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-select-token-callbacks)
+
+### Wrap
+Wrap text inside a `<code-input>` element.
+
+Files: [wrap.css](./wrap.css) (NO JS FILE)
+
+[🚀 *Demo*](https://v2.code-input-js.org/plugins/#playground-preset-wrap)
 
 ## Using Plugins
 Plugins allow you to add extra features to a template, like [automatic indentation](./indent.js) or [support for highlight.js's language autodetection](./autodetect.js). To use them, just:

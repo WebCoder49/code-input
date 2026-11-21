@@ -424,7 +424,7 @@ export class CodeInput extends HTMLTextAreaElement { // Tries to implement texta
   /**
    * When the code-input's template is registered, this contains its codeInput.Template object.
    */
-  templateObject?: readonly Template
+  /*readonly*/ templateObject?: Template // `readonly` commented for backwards compatibility
   /**
    * Exposed child textarea element for user to input code in; in this version of code-input you shouldn't need to access
    * it because most textarea functionality is present on the code-input element itself.

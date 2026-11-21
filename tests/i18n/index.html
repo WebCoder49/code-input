@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>code-input should be global</title>
+        <title>code-input.js should be global</title>
 
         <meta charset="utf-8"/>
     </head>
@@ -12,7 +12,7 @@
             }
             iframe {
                 width: 100%;
-                height: 1200px;
+                height: 2200px;
                 margin: 0;
                 border: 0;
             }
@@ -20,7 +20,7 @@
         <textarea dir="rtl" placeholder="textarea rtl"></textarea>
         <textarea dir="ltr" placeholder="textarea ltr"></textarea>
 	<p>Prism.js and highlight.js embedded separately: not in same page because their styles can interfere with each other whether or not code-input.js is present.</p>
-	<iframe src="i18n-prism.html"></iframe> 
-	<iframe src="i18n-hljs.html"></iframe> 
+	<iframe src="prism.html"></iframe>
+	<iframe src="hljs.html"></iframe>
     </body>
 </html>

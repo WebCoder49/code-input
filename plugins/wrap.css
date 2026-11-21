@@ -1,0 +1,20 @@
+/**
+ * Allows text inside a code-input element to wrap lines.
+ * Files: wrap.css
+ */
+
+/* Add wrap CSS class to code-input elements with wrapped contents
+ *
+ * Doesn't take into account .code-input_pre-element-styled, to ensure full edit-highlight
+ * text alignment.
+ * When it took into .code-input_pre-element-styled, the autogrow plugin could override
+ * wrapping on the code element of a pre-element styled code-input element, thus reversing
+ * the intended wrapping from this plugin.
+ */
+code-input.code-input_wrap textarea, code-input.code-input_wrap pre code, code-input.code-input_wrap.code-input_pre-element-styled pre {
+    white-space: pre-wrap;
+    overflow-wrap: break-word; /* Prevent horizontal scrolling from ever occurring */
+    max-width: calc(100% - var(--padding-left, 16px) - var(--padding-right, 16px))!important;
+}
+/* ^^ Don't need to change for prism-line-numbers plugin since
+ * grid width already decreased for prism-line-numbers. */
